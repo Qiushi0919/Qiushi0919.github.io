@@ -24,7 +24,7 @@
 <meta property="og:image" content="https://github.com/user-attachments/assets/56244ed1-7b20-49c8-ab2a-0d20e3cb24f8">
 <meta property="og:image" content="https://github.com/user-attachments/assets/04d5d556-ff87-4f18-8d6b-08ad1f5e314c">
 <meta property="article:published_time" content="2026-03-13T05:00:25.000Z">
-<meta property="article:modified_time" content="2026-03-13T06:55:10.531Z">
+<meta property="article:modified_time" content="2026-03-13T06:58:12.227Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.com/user-attachments/assets/c310d079-66ca-41c5-be77-b32aec239c9a">
@@ -156,12 +156,12 @@
 <p><strong>步骤 2：配置部署地址</strong></p>
 <p>严格按照以下格式修改（注意 YAML 格式极其严格，冒号后面<strong>必须</strong>有一个英文空格）：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/Qiushi0919/Qiushi0919.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
-<img src="https://github.com/user-attachments/assets/fae8e4bd-3a1c-4bda-9b61-0f17fb7f5955" width="90%" style="border-radius: 8px; border: 2px solid #007bff;"/>
+<img src="https://github.com/user-attachments/assets/fae8e4bd-3a1c-4bda-9b61-0f17fb7f5955" width="60%" style="border-radius: 8px; border: 2px solid #007bff;"/>
 <p><strong>步骤 3：一键发射连招！</strong></p>
 <p>回到终端，敲下这行最帅的终极连招（清缓存 -&gt; 生成静态网页 -&gt; 部署上云）：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
 <p><strong>🎉 预期效果：</strong> 看着终端里代码疯狂滚动，压缩、打包……直到最后一行跳出尊贵的绿色字体：<strong><code>INFO  Deploy done: git</code></strong> ！ 这四个字意味着大功告成，现在所有人都可以通过 <code>https://Qiushi0919.github.io</code> 访问你的杰作了！</p>
-<img src="https://github.com/user-attachments/assets/04471d9c-69e4-4d54-817b-126a49a4a4fb" width="90%" style="border-radius: 8px; border: 2px solid #007bff;"/>
+<img src="https://github.com/user-attachments/assets/04471d9c-69e4-4d54-817b-126a49a4a4fb" width="80%" style="border-radius: 8px; border: 2px solid #007bff;"/>
 <hr>
 <h2 id="板块五：白嫖-GitHub-Issues-做零成本图床">板块五：白嫖 GitHub Issues 做零成本图床</h2>
 <p>我的文章里要放几个演示动图（GIF）。但把几十兆的 GIF 塞进代码仓库里，不仅会让后续上传慢如蜗牛，还会撑爆本地空间。这里我问了一下Gemini，学到了一个“神级偷懒操作”。</p>
@@ -171,13 +171,13 @@
 <p>稍微等几秒钟，输入框里会自动生成类似这样的 Markdown 代码：</p>
 <p><code>![Image](https://github.com/user-attachments/assets/...)</code> 。 把这些链接复制下来，直接粘贴到我本地的 Typora 文章源码里。Issue 可以提交也可以关闭，只要链接生成，图片就已经永久白嫖存放在 GitHub 的全球 CDN 加速节点上了，加载极其丝滑！</p>
 <p>这里我上传了3张图片，包含2个GIF和一个PNG。</p>
-<img src="https://github.com/user-attachments/assets/2b6f2ccc-8afc-4aa6-a87a-a8cbda0b103f" width="90%" style="border-radius: 8px; border: 2px solid #007bff;"/>
-<img src="https://github.com/user-attachments/assets/1b122b1c-e2f6-457a-b5eb-94a525368d65" width="90%" style="border-radius: 8px; border: 2px solid #007bff;"/>
+<img src="https://github.com/user-attachments/assets/2b6f2ccc-8afc-4aa6-a87a-a8cbda0b103f" width="50%" style="border-radius: 8px; border: 2px solid #007bff;"/>
+<img src="https://github.com/user-attachments/assets/1b122b1c-e2f6-457a-b5eb-94a525368d65" width="50%" style="border-radius: 8px; border: 2px solid #007bff;"/>
 <hr>
 <h2 id="板块六：填坑指南-Markdown-渲染方言差异">板块六：填坑指南 - Markdown 渲染方言差异</h2>
 <p>就在我以为一切完美，跑到网页上验收时，却迎头撞上了一个经典名场面：“本地 Typora 岁月静好，一发到网上原形毕露”。</p>
 <p><strong>💥 翻车现场：</strong> 在我的文章里，有一段加粗的重点词汇 <code>***滚动陷阱(Scroll Trap)***</code> 。在 Typora 里看是完美的粗体字，但部署到网页上后，它不仅没加粗，那几颗星号反而像乱码一样原样暴露在页面上。</p>
-  <img src="https://github.com/user-attachments/assets/56244ed1-7b20-49c8-ab2a-0d20e3cb24f8" width="90%" style="border-radius: 8px; border: 2px solid #007bff;"/>
+<img src="https://github.com/user-attachments/assets/56244ed1-7b20-49c8-ab2a-0d20e3cb24f8" width="60%" style="border-radius: 8px; border: 2px solid #007bff;"/>
 <p><strong>🔍 破案分析：</strong></p>
 <p>这根本不是写错了，而是撞上了臭名昭著的**“Markdown 解析器方言差异”**！</p>
 <p>Hexo 默认携带的解析器（<code>hexo-renderer-marked</code>）是一位古板的老顽固，它对中文标点符号和全角字符边界极其敏感。星号一旦紧贴着中文，它就直接罢工不认了。</p>
@@ -186,7 +186,7 @@
 <p>执行以下神仙救火指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 卸载笨蛋老解析器</span></span><br><span class="line">npm uninstall hexo-renderer-marked</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 安装聪明的下一代解析器</span></span><br><span class="line">npm install hexo-renderer-markdown-it --save</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 重新清空缓存并推上云端</span></span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
 <p><strong>🎉 预期效果：</strong> 等待 1 分钟后强制刷新网页（<code>Ctrl + F5</code>），那些刺眼的星号终于乖乖消失，变成了极其舒适、优雅的<strong>加粗黑体字</strong> ！图片完美显示，整个技术博客的交互质感瞬间拉满 。</p>
-<img src="https://github.com/user-attachments/assets/04d5d556-ff87-4f18-8d6b-08ad1f5e314c" width="90%" style="border-radius: 8px; border: 2px solid #007bff;">
+<img src="https://github.com/user-attachments/assets/04d5d556-ff87-4f18-8d6b-08ad1f5e314c" width="60%" style="border-radius: 8px; border: 2px solid #007bff;">
 <hr>
 <h2 id="总结">总结</h2>
 <p>踩完这些坑，看着最终丝滑运行的独立博客，那种全权掌控自己代码和内容的成就感是无与伦比的。</p>
@@ -195,7 +195,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmojll0b00010sesam8ef4b5" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmojp5he0000mwesbieg0795" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
