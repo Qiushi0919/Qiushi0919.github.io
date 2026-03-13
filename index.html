@@ -103,10 +103,8 @@
 <li><strong>无缝退出：</strong> 鼠标一旦移出展示框，滚轮立刻恢复正常的网页上下滚动功能。</li>
 </ol>
 <p>这套行为在行业里被称为 **“容器作用域轨道交互” (Container-scoped orbit interaction)**，在 Three.js 中主要依赖 <code>OrbitControls</code> 来实现。</p>
-<img src="./告别网页3D滚动陷阱.assets/轨道控制版.gif" alt="轨道控制版" style="zoom:25%;" />
-
-<img src="./告别网页3D滚动陷阱.assets/第一人称版-1773327617188-1.gif" alt="第一人称版" style="zoom:25%;" />
-
+<p><img src="https://github.com/user-attachments/assets/af6e5b63-0adf-4f9d-9a4b-9fd223ac8ce0" alt="Image"></p>
+<p><img src="https://github.com/user-attachments/assets/0bbadd85-6ea6-4bd1-816a-404130c54093" alt="Image"></p>
 <hr>
 <h2 id="二、-底层实现原理与核心代码"><a href="#二、-底层实现原理与核心代码" class="headerlink" title="二、 底层实现原理与核心代码"></a>二、 底层实现原理与核心代码</h2><p>要做到“只拦截局部滚轮，不影响外部页面滚动”，核心机制就两点：</p>
 <ul>
@@ -136,7 +134,9 @@
 <p><strong>原因：</strong> 并非代码逻辑错误，而是原有的外部模型链接 (unpkg) 存在单点失败风险，恰好网络波动导致加载失败。</p>
 <p><strong>解决：</strong> 为外部模型加载增加 Fallback（备用）策略，首选 URL 失败时自动切换至 jsdelivr 等备用线路，防止静默失败。</p>
 <hr>
-<h2 id="五、-UI-交互体验的极限打磨-小手光标之战"><a href="#五、-UI-交互体验的极限打磨-小手光标之战" class="headerlink" title="五、 UI 交互体验的极限打磨 (小手光标之战)"></a>五、 UI 交互体验的极限打磨 (小手光标之战)</h2><p>底层的交互逻辑虽然通了，但视觉反馈还差一点：<strong>鼠标移入 3D 画布时，没有出现经典的“摊开小手 (grab)”和拖拽时的“握紧拳头 (grabbing)”</strong>。为了这个看似简单的功能，我与前端玄学展开了拉锯战：</p>
+<h2 id="五、-UI-交互体验的极限打磨-小手光标之战"><a href="#五、-UI-交互体验的极限打磨-小手光标之战" class="headerlink" title="五、 UI 交互体验的极限打磨 (小手光标之战)"></a>五、 UI 交互体验的极限打磨 (小手光标之战)</h2><img width="294" height="170" alt="Image" src="https://github.com/user-attachments/assets/16067039-cf6e-4480-a890-e3025ebeee1d" />
+
+<p>底层的交互逻辑虽然通了，但视觉反馈还差一点：<strong>鼠标移入 3D 画布时，没有出现经典的“摊开小手 (grab)”和拖拽时的“握紧拳头 (grabbing)”</strong>。为了这个看似简单的功能，我与前端玄学展开了拉锯战：</p>
 <ul>
 <li><strong>尝试 1：常规 CSS 类名绑定。</strong> 失败。因为 <code>canvas</code> 内联样式或 Three.js 底层可能存在冲突。</li>
 <li><strong>尝试 2：直接操作 <code>renderer.domElement</code> 内联样式。</strong> 结合 <code>pointerdown/pointerup</code> 并强制写入 <code>!important</code>。失败。疑似鼠标事件被外层透明 DOM 拦截。</li>
@@ -160,7 +160,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmodcykr0001doesa94fbvrv" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmodsvsi00002kesb3j07vfo" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -211,7 +211,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmodcyko0000doesbs9b7wo7" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmodsvsk00012kes8ejvdim9" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
