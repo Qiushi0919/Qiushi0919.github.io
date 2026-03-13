@@ -24,7 +24,7 @@
 <meta property="og:image" content="https://github.com/user-attachments/assets/56244ed1-7b20-49c8-ab2a-0d20e3cb24f8">
 <meta property="og:image" content="https://github.com/user-attachments/assets/04d5d556-ff87-4f18-8d6b-08ad1f5e314c">
 <meta property="article:published_time" content="2026-03-13T05:00:25.000Z">
-<meta property="article:modified_time" content="2026-03-13T07:56:51.611Z">
+<meta property="article:modified_time" content="2026-03-13T08:03:49.457Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.com/user-attachments/assets/c310d079-66ca-41c5-be77-b32aec239c9a">
@@ -124,7 +124,7 @@
 <p>执行完毕后，终端会跳出一行激动人心的绿字：<code>INFO  Hexo is running at http://localhost:4000/</code> 。</p>
 <img src="https://github.com/user-attachments/assets/c310d079-66ca-41c5-be77-b32aec239c9a" width="90%" style="border-radius: 8px; border: 2px solid #007bff;"/>
 <p><strong>🎉 预期效果：</strong> 立刻打开浏览器访问 <code>http://localhost:4000/</code>，你会看到 Hexo 官方为你生成的第一个基础版博客页面，里面静静地躺着一篇《Hello World》 ！</p>
-<img src="https://github.com/user-attachments/assets/0da9180b-eb89-45e3-a49e-2ee8afc9b4ae" width="90%" style="border-radius: 8px; border: 2px solid #007bff;"/>
+<img src="https://github.com/user-attachments/assets/0da9180b-eb89-45e3-a49e-2ee8afc9b4ae" width="90%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 255, 128, 0.4);"/>
 <hr>
 <h2 id="板块二：在-GitHub-安家">板块二：在 GitHub 安家</h2>
 <p>本地地基打好了，接下来我们要去 GitHub 上给博客搞一个免费的公网“海景房”。</p>
@@ -177,7 +177,7 @@
 <h2 id="板块六：填坑指南-Markdown-渲染方言差异">板块六：填坑指南 - Markdown 渲染方言差异</h2>
 <p>就在我以为一切完美，跑到网页上验收时，却迎头撞上了一个经典名场面：“本地 Typora 岁月静好，一发到网上原形毕露”。</p>
 <p><strong>💥 翻车现场：</strong> 在我的文章里，有一段加粗的重点词汇 <code>***滚动陷阱(Scroll Trap)***</code> 。在 Typora 里看是完美的粗体字，但部署到网页上后，它不仅没加粗，那几颗星号反而像乱码一样原样暴露在页面上。</p>
-<img src="https://github.com/user-attachments/assets/56244ed1-7b20-49c8-ab2a-0d20e3cb24f8" width="60%" style="border-radius: 8px; border: 2px solid #007bff;"/>
+<img src="https://github.com/user-attachments/assets/56244ed1-7b20-49c8-ab2a-0d20e3cb24f8" width="60%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);"/>
 <p><strong>🔍 破案分析：</strong></p>
 <p>这根本不是写错了，而是撞上了臭名昭著的 <strong>“Markdown 解析器方言差异”</strong>  ！</p>
 <p>Hexo 默认携带的解析器（<code>hexo-renderer-marked</code>）是一位古板的老顽固，它对中文标点符号和全角字符边界极其敏感。星号一旦紧贴着中文，它就直接罢工不认了。</p>
@@ -186,7 +186,7 @@
 <p>执行以下神仙救火指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 卸载笨蛋老解析器</span></span><br><span class="line">npm uninstall hexo-renderer-marked</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 安装聪明的下一代解析器</span></span><br><span class="line">npm install hexo-renderer-markdown-it --save</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 重新清空缓存并推上云端</span></span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
 <p><strong>🎉 预期效果：</strong> 等待 1 分钟后强制刷新网页（<code>Ctrl + F5</code>），那些刺眼的星号终于乖乖消失，变成了极其舒适、优雅的<strong>加粗黑体字</strong> ！图片完美显示，整个技术博客的交互质感瞬间拉满 。</p>
-<img src="https://github.com/user-attachments/assets/04d5d556-ff87-4f18-8d6b-08ad1f5e314c" width="60%" style="border-radius: 8px; border: 2px solid #007bff;">
+<img src="https://github.com/user-attachments/assets/04d5d556-ff87-4f18-8d6b-08ad1f5e314c" width="60%" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 <hr>
 <h2 id="总结">总结</h2>
 <p>踩完这些坑，看着最终丝滑运行的独立博客，那种全权掌控自己代码和内容的成就感是无与伦比的。</p>
@@ -195,7 +195,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmolsm2y0002soes55ihc9g6" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmom1lh20001bkes85c7e1ul" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
