@@ -71,6 +71,178 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-把本地-Three-js-项目部署到云服务器全记录" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" class="article-date">
+  <time class="dt-published" datetime="2026-03-14T12:08:41.000Z" itemprop="datePublished">2026-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/">把本地 Three.js 项目部署到云服务器全记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>【保姆级教程】拒绝单机自嗨！零基础小白把本地 Three.js 项目部署到云服务器全记录（附防坑指南）</h1>
+<p>我用 Three.js + model-viewer 做了一个数字展厅，里面塞满了高精度古希腊陶瓶 GLB 模型——最大的一个足足 65MB！</p>
+<p>本地开发时其实超级流畅！我直接在 Windows 上跑了一个本地服务器，命令一敲就显示 “Serving!”，本地用 <code>http://localhost:3000</code>，局域网还能用 <code>http://192.168.127.1:3000</code>，模型加载飞快，预览效果完美。</p>
+<img src="https://github.com/user-attachments/assets/8695df27-0f97-4cbf-9627-6d5137814ffa" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);"/>
+<p>但是很快我就发现两个让人抓狂的痛点：</p>
+<ol>
+<li><strong>必须一直开着自己电脑</strong>——服务器一关，网站就下线，电脑还白白占用内存，睡觉都得挂着机。</li>
+<li><strong>只能局域网内访问</strong>——朋友在外网根本打不开，敲任何地址都连不上，完全没法分享成果！</li>
+</ol>
+<p>我当时就想：要是能把这个站点搬到云服务器上，既不用占自己电脑资源，又能得到一个随时随地都能打开的公网网址该多好！</p>
+<p>于是我决定把整个本地项目完整托管到阿里云服务器上，让用户只需敲 <code>yourdomain.com:8510</code> 就能直接打开整个站点，GLB 模型也稳定加载。结果呢？现在一敲域名，页面秒开。那种**“本地文件夹飞上云端、别人随时随地都能看到我成果”**的成就感，真的太爽了！</p>
+<p>下面我把从本地文件夹到云服务器域名访问的全过程，一步步讲给你听。纯小白视角，带坑、带命令、带原理、带截图说明，照着做就能复现。</p>
+<hr>
+<h2 id="0-准备：小白专属部署清单">0. 准备：小白专属部署清单</h2>
+<p>在正式动手前，咱们先把需要的“装备”清点一下（其实非常简单）：</p>
+<ul>
+<li><strong>💻 云服务器（必选）：</strong> 比如阿里云 ECS 或轻量应用服务器，操作系统选主流的 Ubuntu 或 CentOS 即可。它就像是你为了办展览，在网上“租的一块24小时不断电的场地”。</li>
+<li><strong>📁 完整的本地项目代码（必选）：</strong> 包含你的 <code>index.html</code>、JS/CSS 文件以及大头 <code>*.glb</code> 模型文件。这就像是你要展出的“展品”。</li>
+<li><strong>🌐 公网域名（强烈推荐，可选）：</strong> 可以在阿里云或腾讯云买个喜欢的域名（比如我的 <code>yourdomain.com</code>），一年也就几十块钱。虽然没有域名也能直接用 IP 访问，但有一块好记的“专属招牌”，分享给别人时逼格直接拉满！</li>
+<li><strong>🔑 终端连接工具（必选）：</strong> 比如 Windows 自带的 CMD/PowerShell、Mac 的 Terminal，或者 Xshell、Tabby。这是用来远程连接服务器敲命令的“钥匙”。</li>
+</ul>
+<p>准备好这些，咱们就可以直接起飞了！</p>
+<hr>
+<h2 id="1-项目背景与目标">1. 项目背景与目标</h2>
+<p>当时我面临的核心问题是：本地静态站点（<code>index.html</code> + <code>app.js</code> + 大量 <code>models/*.glb</code>）无法稳定公网访问，尤其是 GLB 大文件加载慢且容易失败。</p>
+<p>最根本的原因其实是我想让别人看到我的网址和成果，所以目标非常明确——<strong>把整个本地项目完整托管到阿里云服务器，让用户通过 <code>yourdomain.com:8510</code> 就能直接打开整个站点</strong>，同时接入现有导航页面，并大幅提升 GLB 加载稳定性和速度。</p>
+<p>这就是典型的本地 Three.js 部署痛点：本地 <code>file://</code> 协议下浏览器安全限制太多，GLB 大文件又特别吃网络。我决定一步到位，先上云再说。</p>
+<hr>
+<h2 id="2-本地文件是怎么“飞”到云服务器的？（最关键的一步）">2. 本地文件是怎么“飞”到云服务器的？（最关键的一步）</h2>
+<p>这是整个流程最核心的部分——我要把本地电脑里的文件夹完整传到服务器 <code>/opt/html</code> 目录。</p>
+<p>我的项目本质就是纯静态资源 + 大量二进制模型，结构超级清晰：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">DigitalExhibition/          # 本地项目根目录</span><br><span class="line">├── index.html              # 站点入口</span><br><span class="line">├── js/</span><br><span class="line">│   └── app.js</span><br><span class="line">├── css/</span><br><span class="line">│   └── app.css</span><br><span class="line">├── models/                 # 大头！GLB 文件都在这里</span><br><span class="line">│   ├── xxx.glb</span><br><span class="line">│   └── ...</span><br><span class="line">└── DigitalExhibition/      # 子展厅页面</span><br><span class="line">    ├── index.html</span><br><span class="line">    └── models/default_vase.glb</span><br></pre></td></tr></table></figure>
+<p>上传后，服务器上对应就是 <code>/opt/html</code>，路径 1:1 映射。</p>
+<p>所有上传方法我都试过，我把常见方法全部列出来给你参考，按推荐顺序：</p>
+<p><strong>方式 A：rsync（最推荐，大 GLB 必备）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -avzP --delete <span class="string">&quot;/.../你的本地路径/DigitalExhibition/&quot;</span> root@YOUR_PUBLIC_IP:/opt/html/</span><br></pre></td></tr></table></figure>
+<p>支持断点续传，65MB 文件中断也不怕。</p>
+<p><strong>方式 B：scp（我实际用的！超级简单）</strong></p>
+<p>我在阿里云控制台「基本信息」页直接复制公网 IP，然后一条命令搞定：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r <span class="string">&quot;/.../你的本地路径/DigitalExhibition/&quot;</span> root@YOUR_PUBLIC_IP:/opt/html</span><br></pre></td></tr></table></figure>
+<p>这就是我当时的操作——只需要找到公网 IP 就够了，不用任何额外工具，5 分钟传完所有 GLB。</p>
+<img src="https://github.com/user-attachments/assets/99aa44de-e742-42a4-8a37-b7902283c018" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" width="80%"/>
+<blockquote>
+<p>**💡 避坑提示：**上传后服务器端记得整理一下权限，防止 Nginx 读取不到文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chown</span> -R root:root /opt/html</span><br><span class="line">find /opt/html -<span class="built_in">type</span> d -<span class="built_in">exec</span> <span class="built_in">chmod</span> 755 &#123;&#125; \;</span><br><span class="line">find /opt/html -<span class="built_in">type</span> f -<span class="built_in">exec</span> <span class="built_in">chmod</span> 644 &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<h2 id="3-服务器基础环境与域名端口绑定原理（重点教安全组放行）">3. 服务器基础环境与域名端口绑定原理（重点教安全组放行）</h2>
+<p>文件传上去了，接下来要把域名和端口打通。为什么通过公网 IP 或域名，就能访问云服务器上的网站呢？这个问题小白最容易卡住，我用一个“寄快递 + 商场窗口”的比喻，你一下就懂了。</p>
+<ul>
+<li><strong>1）公网 IP 是“互联网上的唯一门牌号”</strong>：想象你的云服务器是一栋楼，公网 IP（比如 <code>YOUR_PUBLIC_IP</code>）就是这栋楼在全城唯一的门牌号。只要有这个门牌号，全网的人都能找到这栋楼。而 <code>192.168.x.x</code> 这种局域网 IP，更像“你家里的房间号”——在你家内部有用，出了小区别人根本找不到。</li>
+<li><strong>2）域名是“店铺招牌”，DNS 是“通讯录翻译员”</strong>：门牌号（IP）太难记了，所以我们用域名（比如 <code>yourdomain.com</code>）当“招牌名”。那浏览器怎么知道这个名字对应哪栋楼？靠 DNS 解析。你可以把 DNS 想成手机通讯录：你输入的是“张三（域名）”，通讯录查到的是“手机号（IP）”。</li>
+<li><strong>3）端口 8510 是“具体服务窗口”，Nginx 是“窗口接待员”</strong>：找到这栋楼之后，还要知道“去几号窗口办事”。这里的 <code>:8510</code> 就是窗口号。</li>
+</ul>
+<p>所以访问 <code>yourdomain.com:8510</code> 的真实含义是：先把域名翻译成公网 IP → 再去这台服务器的 8510 窗口 → 这个窗口的接待员是 <strong>Nginx</strong> → Nginx 按你配置的路径，把模型文件递给访问者！</p>
+<h4 id="DNS-绑定怎么做？超级简单！">DNS 绑定怎么做？超级简单！</h4>
+<img src="https://github.com/user-attachments/assets/4c0e58e6-768a-4a08-96e3-50f0aae0fc07" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" width="80%"/>
+<p>在阿里云域名解析页面，点击“添加记录”：</p>
+<ul>
+<li><strong>记录类型</strong>选 <code>A</code>：意思是把域名直接指向一个 IPv4 地址（也就是我们的服务器门牌号）。</li>
+<li><strong>主机记录</strong>填 <code>@</code>：意思是不带 www，让大家直接敲主域名 <code>yourdomain.com</code> 就能访问。</li>
+<li><strong>记录值</strong>填服务器的公网 IP（<code>YOUR_PUBLIC_IP</code>）。</li>
+</ul>
+<h4 id="8510-端口如何公网可达（阿里云安全组详细教学）">8510 端口如何公网可达（阿里云安全组详细教学）</h4>
+<p>这是小白最容易卡住的一步。我当时在阿里云控制台「网络与安全组」页面操作：</p>
+<ol>
+<li>点开「网络与安全组」标签 → 找到当前安全组。</li>
+<li>在「入方向」规则里点击「添加入方向规则」。</li>
+<li>配置如下（我当时为了快速测试，直接用了最宽松的设置）：
+<ul>
+<li>授权策略：允许</li>
+<li>协议类型：所有 TCP</li>
+<li>访问来源：任何位置 (0.0.0.0/0)</li>
+<li>访问目的：端口范围填 <code>8510/8510</code></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>**⚠️ 重点避坑：*<em>我当时为了快速上线全开放了 TCP，但*<em>生产环境强烈建议只放行 8510 端口</em></em>，否则安全风险太大！</p>
+<p>记住三层放通检查：云安全组（必须）、服务器防火墙（<code>ufw allow 8510</code>）、Nginx 监听 8510。任何一层没开，外网就不通。</p>
+</blockquote>
+<hr>
+<h2 id="4-代码与文件部署过程">4. 代码与文件部署过程</h2>
+<p>我最终切到 Nginx 直出，配置如下（核心就是把 <code>/opt/html</code> 映射成站点根目录）：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">     <span class="attribute">listen</span> <span class="number">8510</span>;</span><br><span class="line">     <span class="attribute">root</span> /opt/html;</span><br><span class="line">     <span class="section">location</span> / &#123; <span class="attribute">try_files</span> <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.html; &#125;</span><br><span class="line">     <span class="section">location</span> <span class="regexp">~* \.glb$</span> &#123;</span><br><span class="line">         <span class="section">types</span> &#123; model/gltf-<span class="attribute">binary</span> glb; &#125;</span><br><span class="line">         <span class="attribute">add_header</span> Cache-Control <span class="string">&quot;public, max-age=2592000, immutable&quot;</span>;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>重点来了！在云服务器上到底敲什么指令，网站才算“真的跑起来”？</strong></p>
+<p>你看，这一步其实超级简单。本地你习惯 <code>npx serve</code>，云服务器上我们换成了 Nginx 托管静态文件，所以核心动作就两步：先检查配置有没有写错，再让 Nginx 重新加载配置。终端敲下面这两行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1) 先检查 Nginx 配置语法（非常重要）</span></span><br><span class="line"><span class="built_in">sudo</span> nginx -t</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2) 让配置生效（推荐“重载”，不中断服务）</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl reload nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果你想粗暴一点“重启服务”，排障的时候也可以用：</span></span><br><span class="line"><span class="comment"># sudo systemctl restart nginx</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>sudo nginx -t</code>：就像“交卷前先做一次错别字检查”，它会告诉你配置文件有没有语法错误。</li>
+<li><code>sudo systemctl reload nginx</code>：像“让前台接待员换上新流程继续上班”，服务不中断，用户几乎无感。</li>
+</ul>
+<p>只要记住：<strong>每次改完配置，先 <code>nginx -t</code>，再 <code>reload nginx</code>。</strong></p>
+<hr>
+<h2 id="5-关掉电脑网站会不会挂？（小白终极焦虑）">5. 关掉电脑网站会不会挂？（小白终极焦虑）</h2>
+<p>这个问题我太懂了，几乎每个小白都会怕：“我现在能访问，是不是因为我电脑还开着？我一关黑框框/关机，网站就没了？”</p>
+<p>你放心，程序的运行有三个等级，咱们继续用大白话讲清楚：</p>
+<ol>
+<li><strong>前台运行（比如 <code>npx serve</code> 直跑）</strong>：就像<strong>你自己举着店铺招牌站街</strong>。你一走（关掉终端黑框框、断开 SSH），招牌就倒了，网站就挂了。</li>
+<li><strong>后台运行（比如用 <code>nohup</code> 或 <code>pm2</code>）</strong>：就像<strong>你雇了个保安替你举招牌</strong>。你回家睡觉没问题，网站还能在线；但如果“商场停电”（云服务器意外重启），保安下班了就不会自己回来，网站还是会挂。</li>
+<li><strong>开机自启 / 系统服务（守护进程）</strong>：这就是**“你和高级物业签了托管合同”**。就算停电又来电（服务器重启），物业也会第一时间自动把招牌重新挂上去！</li>
+</ol>
+<p>我们前面费劲配置的 Nginx，就是这第三种**“最高级的物业托管”**级别！它不是靠你一直开着命令行窗口硬撑着，而是交给系统托管，稳定性完全不是一个级别。</p>
+<p>为了做到万无一失，<strong>你一定要在终端补上这条极其重要的命令</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> nginx</span><br></pre></td></tr></table></figure>
+<p>这条命令的意思是：<strong>把 Nginx 设置成开机自启</strong>。从此真正做到 24 小时无人值守：哪怕你关电脑、断 SSH，甚至云服务商的机器重启了，你的展厅依然可以随时随地被访问！</p>
+<hr>
+<h2 id="6-测试与验证步骤">6. 测试与验证步骤</h2>
+<ul>
+<li>本地测试：用 <code>npx serve .</code> 检查没问题。</li>
+<li>云端测试：敲 <code>curl -I http://yourdomain.com:8510/models/xxx.glb</code> 检查头部信息，只要 HTTP 状态码和 Cache-Control 都在，就一切 OK。</li>
+</ul>
+<hr>
+<h2 id="7-最终架构与原理设计总结">7. 最终架构与原理设计总结</h2>
+<p>理顺一下，你的整个心血是怎么传递给外网用户的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[本地电脑]</span><br><span class="line">DigitalExhibition 文件夹</span><br><span class="line">  | (scp 一条命令飞上云端)</span><br><span class="line">  v</span><br><span class="line">[阿里云服务器]</span><br><span class="line">/opt/html</span><br><span class="line">  | (交给系统托管)</span><br><span class="line">  v</span><br><span class="line">[Nginx :8510] + 安全组放行 8510</span><br><span class="line">  | (解析公网门牌号)</span><br><span class="line">  v</span><br><span class="line">[公网用户]</span><br><span class="line">http://yourdomain.com:8510   ← 别人现在就能看到我的成果！</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="8-成本、维护与后续扩展">8. 成本、维护与后续扩展</h2>
+<p>成本主要是云主机 + 带宽，目前很省。后续计划上 HTTPS 加密和 CDN 加速，让全国各地的加载速度起飞。</p>
+<p><strong>总结：</strong></p>
+<p>从本地文件夹到云服务器域名访问，现在别人敲 <code>yourdomain.com:8510</code> 就能看到我的 Three.js 展厅，GLB 加载又稳又快。整个过程让我彻底理解了本地 Three.js 部署、GLB 大文件托管、Nginx 静态站点的精髓。</p>
+<p>给小白的 3 条血泪建议：</p>
+<ol>
+<li><strong>大文件直接用 <code>scp</code> + 阿里云公网 IP</strong>，最快！别折腾花里胡哨的工具。</li>
+<li><strong>安全组先开 8510 测试</strong>，千万别长期全开所有 TCP。</li>
+<li><strong>先跑通域名访问</strong>，再慢慢优化缓存和模型体积。</li>
+</ol>
+<h2 id="9-最终成果展示与总结：一切心血都值了！">9. 最终成果展示与总结：一切心血都值了！</h2>
+<p>当你在浏览器地址栏敲下 <code>yourdomain.com:8510</code>，按下回车的瞬间，看到自己辛辛苦苦在本地调整的 3D 模型完美展现在公网上，那一刻真的成就感爆棚！</p>
+<p>放一张我部署成功后的真实截图：</p>
+<img src="https://github.com/user-attachments/assets/c2fe7d55-1cff-4cee-9ca2-c8680fb6f668" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" width="60%"/>
+<p><em>（图注：只要在有网的地方打开浏览器，高清的古希腊陶瓶 3D 模型瞬间加载完毕，还能随意旋转缩放，再也不用局限在本地的 <code>localhost</code> 孤芳自赏了！）</em></p>
+<p><strong>总结：</strong> 从本地文件夹到云服务器域名访问，现在别人敲域名就能看到我的 Three.js 展厅，GLB 加载又稳又快。整个过程让我彻底理解了本地部署、云端托管、域名解析以及 Nginx 静态代理的精髓。</p>
+<p>觉得有帮助的话，欢迎点赞收藏！你也是用阿里云吗？踩过什么 GLB 或 Nginx 相关的坑？欢迎在评论区一起讨论~</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmqahjz2000218es77zb2oq5" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-从零搭建个人独立博客：Hexo-GitHub-Pages-极速建站与踩坑实录" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" class="article-date">
@@ -182,7 +354,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmom5blg00027ses9gel9dm6" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmqahjz2000118esehvze9mo" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -288,7 +460,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmom5blf00017sesebs10d1o" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmqahjz3000318es00wrer36" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -340,7 +512,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmom5bla00007sesg1qegs0u" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmqahjz0000018es7bcwg8x2" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -381,6 +553,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/">把本地 Three.js 项目部署到云服务器全记录</a>
+          </li>
         
           <li>
             <a href="/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/">从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录</a>
