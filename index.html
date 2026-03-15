@@ -71,6 +71,146 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-从零搭建个人独立博客(二)：发文工作流与排版美化实战" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/03/14/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" class="article-date">
+  <time class="dt-published" datetime="2026-03-14T12:35:57.000Z" itemprop="datePublished">2026-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/03/14/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/">从零搭建个人独立博客 (二)：发文工作流与排版美化实战</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>从零搭建个人独立博客 (二)：发文工作流与排版美化实战</h1>
+<p>上一篇教程中，我们一起经历了激动人心的“极速建站”与“手撕 Bug”之旅，成功在 GitHub 上拥有了一套带全球 CDN 加速的“海景房”。</p>
+<p>房子建好了，以后的日常就是写文章和装修。这篇文章就来手把手教你如何建立一套<strong>极速发文工作流</strong>，以及如何利用 AI 工具让你的文章排版瞬间高大上！</p>
+<h2 id="📖-文章总览">📖 文章总览</h2>
+<p>[TOC]</p>
+<hr>
+<h2 id="板块一：日常发文“三步曲”-复习与巩固">板块一：日常发文“三步曲” (复习与巩固)</h2>
+<p>很多人搭完博客后，发第二篇文章时就忘了命令。其实日常发文根本不需要重新走一遍繁琐的配置，只需要记住这最核心的“三步曲”：</p>
+<p><strong>步骤 1：一键新建文章</strong></p>
+<p>打开终端，进入你的博客根目录，敲下新建命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new <span class="string">&quot;你的新文章标题&quot;</span></span><br></pre></td></tr></table></figure>
+<p>（Hexo 会自动在 <code>source/_posts</code> 目录下为你生成一个同名 <code>.md</code> 文件，并且已经帮你写好了带有时间戳的 Front-matter 头部信息。）</p>
+<p><strong>步骤 2：专注内容创作</strong></p>
+<p>打开刚刚生成的 Markdown 文件，保留最上方被 <code>---</code> 包围的两行配置区域。直接在下方尽情挥洒你的灵感，写代码、插图片、做记录。</p>
+<p><strong>步骤 3：一键终极连招上云</strong></p>
+<p>写完保存后，回到终端，敲下这句你最熟悉的“魔法咒语”：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+<p>（清空本地旧缓存 -&gt; 重新生成所有静态页面 -&gt; 推送部署到 GitHub。看到 <code>Deploy done</code>，你的新文章就已经在全球网络上同步更新了！）</p>
+<hr>
+<h2 id="板块二：图片语法进阶与-AI-提效黑魔法">板块二：图片语法进阶与 AI 提效黑魔法</h2>
+<p>你是不是也遇到过这种情况：辛辛苦苦写了一篇干货，用 Markdown 默认语法 <code>![图片名字](链接)</code> 插进去的配图，却像个毫无美感可言的“傻大黑粗”，直愣愣地铺满整个屏幕，让文章显得非常廉价？</p>
+<p><strong>想让你的博客中也出现像下面这样大小精致、边缘温润、甚至带有高级悬浮 3D 质感的图片吗？</strong></p>
+<p><strong>其实，在 Markdown 编辑器（如 Typora）中，你复制粘贴看到的所谓“图片”，本质上其实是一条条底层的源代码。</strong> 如果你只是用 Markdown 默认的 <code>![图片名字](链接)</code> 语法，图片往往会死板地铺满整个屏幕，不仅比例失调，直愣愣的边角也毫无美感可言。想要让博客看起来像专业技术专栏，我们需要降维打击——<strong>直接抛弃 Markdown 死板的默认语法，深入这层源代码，使用 HTML 的 <code>&lt;img&gt;</code> 标签来进行精细化控制。</strong></p>
+<p>别听到 HTML 就头大，其实核心的控制魔法只有三个属性。看看下面这张我整理的代码拆解图：</p>
+<img src="https://github.com/user-attachments/assets/6ba69457-1c04-4c6c-8a09-2b117899a04c" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<img src="https://github.com/user-attachments/assets/9e3e0a93-b20a-4210-abec-b6438a295ff9" width="60%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p>如上图所示，我们主要通过三个维度来拿捏图片的颜值：</p>
+<ol>
+<li><strong>宽度 (width)：</strong> 比如 <code>20%</code>、<code>30%</code>，用来控制图片大小，给网页留出呼吸感。</li>
+<li><strong>平滑圆角 (border-radius)：</strong> 比如 <code>8px</code>，告别死板的直角，让图片边缘变得温润。</li>
+<li><strong>外框或阴影 (border / box-shadow)：</strong> 用来给图片增加边界感或立体的悬浮感。</li>
+</ol>
+<p>空谈无益，我们直接来看这三组代码渲染出的<strong>实际效果对比</strong>：</p>
+<img src="https://github.com/user-attachments/assets/e4b55cb6-44e8-4211-8a29-144065fb5684" width="30%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<ul>
+<li>
+<p><strong>Figure 1 (小巧精致风)：</strong></p>
+<ul>
+<li>
+<p><strong>代码：</strong><code>&lt;img src=&quot;...&quot; width=&quot;20%&quot; style=&quot;border-radius: 8px; border: 5px solid green;&quot; /&gt;</code></p>
+</li>
+<li>
+<p><strong>效果：</strong> 宽度设为 20%，配合 8px 的圆角和 5px 的<strong>绿色实线边框 (<code>solid green</code>)</strong>。非常适合用来展示一些小巧的图标或强调某个局部细节。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Figure 2 (活泼虚线风)：</strong></p>
+<ul>
+<li>
+<p><strong>代码：</strong> <code>&lt;img src=&quot;...&quot; width=&quot;20%&quot; style=&quot;border-radius: 8px; border: 5px solid green;&quot; /&gt;</code></p>
+</li>
+<li>
+<p><strong>效果：</strong> 宽度放大到 30%，边框换成了 5px 的<strong>蓝色虚线 (<code>dashed blue</code>)</strong>。这种样式视觉上比较跳跃，很适合用来圈出文章里的“易错点”或“补充说明”。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Figure 3 (质感悬浮风 - 强烈推荐！)：</strong></p>
+<ul>
+<li>
+<p><strong>代码：</strong> <code>&lt;img src=&quot;...&quot; width=&quot;40%&quot; style=&quot;border-radius: 0px; box-shadow: 0 8px 24px rgba(0,123,255,0.4);&quot; /&gt;</code></p>
+</li>
+<li>
+<p><strong>效果：</strong> 宽度设为 40%，取消了圆角（设为 0px），但加入了一层<strong>淡蓝色的弥散阴影 (<code>box-shadow</code>)</strong>。这个阴影参数会让图片产生一种极其优雅的 3D 悬浮错觉，科技感和高级感瞬间拉满！</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>🚀 我的独家偷懒秘籍（AI 极速批量排版）</strong></p>
+<p>虽然上面的悬浮和圆角效果极其好看，但每次发博客都要手动敲这么多 HTML 和 CSS 样式，简直是反人类！作为一名追求极致效率的开发者，我摸索出了一套无敌的工作流：</p>
+<p><strong>1. 暴力白嫖：</strong> 像上篇文章教的那样，把图片拖进 GitHub Issue 获取原始的纯净图片直链。</p>
+<p><strong>2. 光速粘贴：</strong> 不用管格式，把你获取到的纯链接（或者默认的 Markdown 图片代码）一股脑地全扔进本地的 Markdown 文章里。 <strong>3. 召唤 AI 批量施法：</strong> 打开你的 AI 编程助手，直接甩给它下面这段**“万能 Prompt”**。这里我用的是 Cursor（直接按 <code>Ctrl + K</code> 或在右侧 Chat 面板输入），<strong>但请注意，这招在 Claude Code、GitHub Copilot、Cline 等任何主流 AI 代码助手中都完美通用！</strong></p>
+<blockquote>
+<p><strong>👇 直接复制这段极速排版 Prompt：</strong></p>
+<p>当前文件中有 [填入具体数字] 张图片，请帮我保留它们原本的 <code>src</code> 链接，并将所有图片的 HTML 格式批量替换为以下高级样式： <code>&lt;img src=&quot;原来的链接&quot; width=&quot;90%&quot; style=&quot;border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);&quot; /&gt;</code></p>
+</blockquote>
+<p><strong>4. 一键 Apply (见证奇迹)：</strong> 不要用抽象的词汇去让 AI “加个好看的阴影”，直接把写好的 HTML 模板喂给它。AI 看到模板就会瞬间顿悟，精准提取出每张图片的原始链接，然后像套壳一样，把这些高级属性完美地套上去！</p>
+<img src="https://github.com/user-attachments/assets/c0e395dc-3a3c-42d0-b2a7-384d279b9740" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p>看看上面这张图，只需一键 Apply，全篇几十张图的格式瞬间统一被替换！排版质感秒出，极其优雅，再也不用去背那些繁琐的 CSS 属性了！</p>
+<hr>
+<h2 id="板块三：给你的代码仓库挂上“专属招牌”">板块三：给你的代码仓库挂上“专属招牌”</h2>
+<p>现在你的博客已经完美运行，但如果别人偶然逛到了你的 <code>用户名.github.io</code> 代码仓库，他们面对一堆源码可能不知道去哪里看实际的网页。</p>
+<img src="https://github.com/user-attachments/assets/ac05dde4-e427-45f2-a860-8bdd1b0fde8c" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p>我们需要在 GitHub 仓库主页挂上你的网站直达链接：</p>
+<ol>
+<li>打开你的 GitHub 仓库主页。</li>
+<li>在页面右侧边栏找到 <strong>About</strong> 区域，点击旁边的齿轮图标（⚙️ Edit repository details）。</li>
+<li>在弹出的菜单中，找到 <strong>Website</strong> 一栏。</li>
+<li>勾选 <code>Use your GitHub Pages website</code>，或者手动填入你的博客地址（例如 <code>https://Qiushi0919.github.io</code>）。</li>
+<li>点击 <strong>Save changes</strong> 保存。</li>
+</ol>
+<p>现在，你的仓库主页右侧就会出现一个亮眼的链接图标，任何路过的大佬都能一键直达你的极客大本营！</p>
+<hr>
+<h2 id="下集预告：颜值即正义！">下集预告：颜值即正义！</h2>
+<p>目前我们用的还是 Hexo 官方那套极简（简陋）的初始皮肤。既然是个人独立博客，怎么能没有炫酷的夜间模式、酷炫的侧边栏和极具个人风格的 UI 呢？</p>
+<p><strong>在下一篇的“终极美化篇”中，我将为你揭秘：</strong></p>
+<ul>
+<li>如何为 Hexo 注入灵魂，换上业内顶级的高颜值主题（Theme）。</li>
+<li>如何在你的博客导航栏中添加一个优雅的“GitHub 图标”，让读者在欣赏文章之余，一键穿越回你的开源仓库一探究竟！</li>
+</ul>
+<p>敬请期待，我们下期见！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/03/14/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" data-id="cmmrki1c70001xces4mw2hyq1" data-title="从零搭建个人独立博客 (二)：发文工作流与排版美化实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-把本地-Three-js-项目部署到云服务器全记录" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" class="article-date">
@@ -231,7 +371,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmqajw2p0003fges1rcigu0m" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmrki1hw0002xces8lt2dgga" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -354,7 +494,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmqajw2m0000fgesb5i09a6z" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmrki1hx0004xcesgc7v5a56" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -460,7 +600,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmqajw2o0002fges411z5riy" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmrki1hx0003xces23ri8z73" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -512,7 +652,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmqajw2o0001fges4tin44gi" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmrki1c50000xces634433v4" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -553,6 +693,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2026/03/14/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/">从零搭建个人独立博客 (二)：发文工作流与排版美化实战</a>
+          </li>
         
           <li>
             <a href="/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/">把本地 Three.js 项目部署到云服务器全记录</a>
