@@ -71,6 +71,127 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Claude-Code-初体验：基于终端-Agent-的前端项目自动化部署实战" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/" class="article-date">
+  <time class="dt-published" datetime="2026-03-16T10:33:55.000Z" itemprop="datePublished">2026-03-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/">Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战</h1>
+<img src="https://github.com/user-attachments/assets/02b5a6e5-69b2-4198-a4a8-1df06e9009af" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<h3 id="一、-开篇引入与环境说明">一、 开篇引入与环境说明</h3>
+<p>在当前的 AI 辅助开发工具链中，大多数工具仍停留在 IDE 侧边栏对话或代码片段补全的阶段。而 Claude Code 则采用了截然不同的产品形态：它是一个直接运行在终端（CLI）的自主智能体（Agent）。它不仅具备上下文理解能力，还能直接在本地操作系统中规划任务、执行系统命令（如 Bash 脚本）以及进行复杂的文件系统交互。</p>
+<p><strong>运行环境说明</strong><br>
+本次实战评估使用的底层模型为 <strong>Sonnet 4.6</strong>。</p>
+<p><strong>接入方式</strong><br>
+本次配置采用 API 接入模式。在 Windows 系统环境下，通过修改系统环境变量完成身份验证与基础配置。（注：关于 Windows 环境变量的具体配置流程及避坑指南，我将在下一篇博客中单独详细梳理，本文聚焦于工程实战）。</p>
+<h3 id="二、-实战背景：项目清理与自动化部署">二、 实战背景：项目清理与自动化部署</h3>
+<p>本次测试的目标项目为 “Vase Museum” 。这是一个包含数字展览模块的 3D 风格学术展示站 。</p>
+<p><strong>初始状态与工程挑战</strong><br>
+在开发初期，本地工程目录极度混乱。文件夹中不仅混杂了核心网页代码（HTML/CSS/JS）、Python 脚本、备份文件，还包含了数十兆的 3D 模型文件 。</p>
+<p>当前的工程诉求：需要将该项目进行一键梳理，剥离无关文件，将生产环境所需文件集中提取至独立的部署文件夹中，并完整推送到 GitHub 。同时，必须解决 3D 模型等大文件带来的 Git 提交流程阻塞问题 。</p>
+<img src="https://github.com/user-attachments/assets/60feecfd-960f-43ef-86a2-effe4a0be533" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p><strong>图注 ：</strong> 项目初始开发目录结构，代码、3D 模型与杂乱的无关备份文件混杂状态。</p>
+</blockquote>
+<h3 id="三、-核心工作流还原">三、 核心工作流还原</h3>
+<p>以下为 Claude Code 介入后的完整执行日志与原理解析。</p>
+<h4 id="第一阶段：规划与探测">第一阶段：规划与探测</h4>
+<p>在未提供详细项目清单的情况下，Agent 展现了极强的自主探索能力。首先，它读取了本地的部署计划文档以获取上下文任务目标 。<br>
+<img src="https://github.com/user-attachments/assets/525827fe-50db-44d3-be41-37118028112a" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" /></p>
+<blockquote>
+<p><strong>图注 ：</strong> Claude Code 主动读取本地 <code>.md</code> 格式的部署规划文档，获取项目部署上下文。</p>
+</blockquote>
+<p>随后，为掌握实际的目录物理结构，Claude Code 在终端中自主调用了系统命令。它执行了 <code>ls</code>、<code>du -sh</code> 以及 <code>file</code> 等 Bash 命令，精准获取了当前路径下的目录树、各子模块的文件大小（精准定位到 35MB 的模型文件夹）以及具体的脚本文件类型 。<br>
+<img src="https://github.com/user-attachments/assets/2d56be96-bd00-43a4-92cb-bd053d4fac46" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" /></p>
+<blockquote>
+<p><strong>图注 ：</strong> Agent 自主执行 <code>ls</code> 与 <code>du -sh</code> 等 Bash 命令，探查子目录层级结构并定位大文件位置。</p>
+</blockquote>
+<h4 id="第二阶段：文件提取">第二阶段：文件提取</h4>
+<p>在完成环境探查后，Claude Code 输出了一套完整的文件清理执行计划（<code>Claude's Plan</code>） 。值得一提的是其内置的安全机制：在执行具有潜在破坏性的文件 I/O 操作前，系统会触发阻断，并在终端弹出 <code>Allow this bash command?</code> 的二次确认提示 。<br>
+<img src="https://github.com/user-attachments/assets/e8d31616-ed71-473e-a7dc-132683aac9ff" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" /></p>
+<blockquote>
+<p><strong>图注 ：</strong> Claude Code 制定文件复制与清理计划，并触发命令行安全拦截机制请求人工授权确认。</p>
+</blockquote>
+<p>经人工授权（Yes）后，Agent 自动执行 <code>mkdir</code> 命令创建了隔离的 <code>deploy/</code> 目录 ，并通过连串的 <code>cp</code> 命令，将前端核心资源与静态文件精准抽离并复制到目标目录 。<br>
+<img src="https://github.com/user-attachments/assets/c673ae52-ef14-4e60-9e55-6557185a02e6" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" /></p>
+<blockquote>
+<p><strong>图注 ：</strong> 获取执行权限后，Agent 自动下发 <code>mkdir</code> 与 <code>cp</code> 命令，将核心生产文件剥离至新建的 <code>deploy/</code> 目录。</p>
+</blockquote>
+<h4 id="第三阶段：LFS-自动化配置">第三阶段：LFS 自动化配置</h4>
+<p>在准备推送 GitHub 时，Agent 分析发现 <code>deploy/</code> 目录内存在突破常规版本控制大小限制的大体积文件（即 3D 渲染所需的 <code>.glb</code> 模型文件） 。<br>
+<img src="https://github.com/user-attachments/assets/4a62c471-ffcb-4157-811f-1a542a2a0581" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" /></p>
+<blockquote>
+<p><strong>图注 ：</strong> 准备推送到远端前，系统提示存在超限的大体积 <code>.glb</code> 模型文件，引出 LFS 解决方案。</p>
+</blockquote>
+<p>针对该工程瓶颈，Claude Code 未请求外部干预，而是自主规划了引入 Git Large File Storage (LFS) 的解决方案 。它在终端连续下发了以下标准 Git 流命令：</p>
+<ol>
+<li>
+<p><code>git init</code> 初始化本地仓库 。</p>
+</li>
+<li>
+<p><code>git lfs install</code> 激活 LFS 环境 。</p>
+</li>
+<li>
+<p><code>git lfs track &quot;*.glb&quot;</code> 将所有模型文件纳入 LFS 追踪体系 。</p>
+</li>
+<li>
+<p>将 <code>.gitattributes</code> 添加至暂存区以固化规则 。</p>
+</li>
+</ol>
+<img src="https://github.com/user-attachments/assets/825b549b-f09b-4d7d-859e-2723b87cdc69" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p><strong>图注 ：</strong> Claude Code 自动执行完整的 Git 工作流，包括初始化仓库及配置 Git LFS 追踪大文件。</p>
+</blockquote>
+<h4 id="第四阶段：一键推送">第四阶段：一键推送</h4>
+<p>在完成环境梳理与大文件策略配置后，Agent 将代码标准提交并推送至目标远程仓库 <code>VaseMuseum-Website</code> 。在最终的 GitHub 仓库页面中，协作者（Contributors）列表中准确记录了人工开发者与 “claude (Claude)” 的协作痕迹 。<br>
+<img src="https://github.com/user-attachments/assets/cf854dcd-e2cd-4838-9585-9c89aeb4b71b" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" /></p>
+<blockquote>
+<p><strong>图注 ：</strong> 成功推送到 GitHub 远端仓库，Contributors 列表中展示出 Claude Agent 与人类开发者的协作记录。</p>
+</blockquote>
+<h3 id="四、-客观总结">四、 客观总结</h3>
+<p>通过本次真实工程的部署测试，可以对 Claude Code + Sonnet 4.6 的组合得出以下技术结论：</p>
+<ol>
+<li><strong>工程化提效显著：</strong> 在处理繁琐的“脏活累活”（如正则匹配文件、编写 Shell 脚本提取特定格式资源、探查目录层级）时，Agent 表现出高度的准确性和极低的试错成本。</li>
+<li><strong>闭环解决能力：</strong> 其核心优势在于遇到异常（如大文件冲突）时，能够依据当前终端环境自主检索并应用解决方案（引入 Git LFS），实现了真正的任务闭环。</li>
+</ol>
+<p><strong>开发者注意事项：</strong></p>
+<ul>
+<li><strong>API 消耗控制：</strong> 频繁的 <code>ls</code> 和文件结构读取会产生较高的 Token 消耗。建议在工程根目录配置类似 <code>.claudesignore</code> 的文件，屏蔽 <code>node_modules</code> 等无关重度目录。</li>
+<li><strong>终端权限管控：</strong> 虽然系统具备 <code>Allow</code> 拦截机制，但在赋予 Agent 读写权限时，仍需开发者具备审查所生成 Bash 脚本的基本能力，切勿在包含敏感生产密钥的目录中盲目点 “Yes”。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/" data-id="cmmt2f8y00002r0es7f4k4hxn" data-title="Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-从零搭建个人独立博客(二)：发文工作流与排版美化实战" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" class="article-date">
@@ -199,7 +320,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" data-id="cmmrklaoj00023wesfsco9ktu" data-title="从零搭建个人独立博客 (二)：发文工作流与排版美化实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" data-id="cmmt2f8xx0000r0esc9ue61ji" data-title="从零搭建个人独立博客 (二)：发文工作流与排版美化实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -371,7 +492,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmrklaok00043wesh1wodibl" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmt2f8y20005r0es3n446ze1" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -494,7 +615,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmrklaoj00033wesd7hq7t28" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmt2f8y10003r0esakoagli0" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -600,7 +721,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmrklaoi00013wesfz18805a" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmt2f8y10004r0eshkf716o6" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -652,7 +773,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmrklaod00003wesek9kgdlo" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmt2f8xz0001r0esargz8l0w" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -695,6 +816,10 @@
       <ul>
         
           <li>
+            <a href="/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/">Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战</a>
+          </li>
+        
+          <li>
             <a href="/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/">从零搭建个人独立博客 (二)：发文工作流与排版美化实战</a>
           </li>
         
@@ -708,10 +833,6 @@
         
           <li>
             <a href="/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/">告别网页3D滚动陷阱</a>
-          </li>
-        
-          <li>
-            <a href="/2026/03/13/hello-world/">Hello World</a>
           </li>
         
       </ul>
