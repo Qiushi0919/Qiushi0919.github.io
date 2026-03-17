@@ -71,6 +71,127 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-驾驭大模型：从-Claude-Code-的-Agentic-逻辑看“用-AI-生成-Prompt”的降维打击" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/" class="article-date">
+  <time class="dt-published" datetime="2026-03-17T10:34:36.000Z" itemprop="datePublished">2026-03-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/">驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击</h1>
+<p>近期，Anthropic 推出的命令行代码助手 Claude Code 引发了开发者社区的极大关注。很多人惊叹于它能自动写代码，但真正值得我们深度剖析的，是其底层的 <strong>Agentic Loop（智能体工作流）</strong> 逻辑。</p>
+<img src="https://github.com/user-attachments/assets/3a39342d-e51d-4391-af4a-7acb62c74971" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p><strong>Agentic Loop（智能体工作流）</strong> 逻辑</p>
+</blockquote>
+<p>根据 Anthropic 官方的技术文档，Claude Code 并非传统的“问答式”聊天机器人，而是一个自主运行的 Agentic 编码环境。它的工作循环核心包含三个高度融合的阶段：收集上下文（Gather context）、采取行动（Take action）与验证结果（Verify results）。在实际运用中，官方极力推荐将工作流拆分为：探索（Explore）、规划（Plan）以及实现（Implement）。这是因为官方发现，如果省略规划阶段，让 AI 直接跳入编码，往往会导致大模型“解决了错误的问题”（produce code that solves the wrong problem）。</p>
+<p>这一底层逻辑揭示了一个极其深刻的现实：在面对复杂任务时，人类直接用口语化、非结构化的自然语言下达“One-shot（一次性）”指令，极易产生巨大的信息衰减。我们脑海中的构思可能很完美，但表达出来的往往挂一漏万，导致大模型输出的结果与预期相差甚远。</p>
+<p>如何打破这种人类表达的局限性？答案是借鉴 Claude Code 的“规划（Plan）”理念——<strong>用魔法打败魔法</strong>。在执行复杂任务前，不要急于让 AI 给结果，而是先让 AI 辅助我们生成或优化出一份结构严谨的 Prompt。本文将通过三个深度的实战案例，彻底拆解这种“AI 驾驭 AI”的进阶工作流。</p>
+<hr>
+<h2 id="案例一：超长上下文环境下的结构化总结（Google-AI-Studio-场景）">案例一：超长上下文环境下的结构化总结（Google AI Studio 场景）</h2>
+<h2 id="场景痛点分析">场景痛点分析</h2>
+<p>在深度的技术探讨中，我们经常会积累极其庞大的对话上下文。以我近期研究“ThinkBook 16+ 搭配 OCuLink 外接显卡”的硬核拓展方案为例，整个对话涉及了极多琐碎的硬件选型（如 5060 Ti MAX、长城 G6 电源）、走线逻辑和性能损耗原理，累积的 Token 数量巨大。</p>
+<img src="https://github.com/user-attachments/assets/fea7fac6-f45b-4a43-841c-46719627b129" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：Google AI Studio 中堆积的超长硬件配置对话上下文，包含了极高密度的技术细节与零散信息。</p>
+</blockquote>
+<p>面对如此庞杂的信息，如果仅凭人类简单的指令（例如：“帮我总结一下上面的内容”），AI 往往只能给出一个干瘪、缺乏逻辑层次的摘要，极易遗漏关键的技术防呆细节。</p>
+<h2 id="AI-辅助生成-Prompt-的过程">AI 辅助生成 Prompt 的过程</h2>
+<p>为了提取高质量的知识资产，我没有直接让它总结，而是向大模型下达了“元需求”：“帮我生成一个 prompt，能让 AI Studio 总结一下以上我们聊的全部内容”。</p>
+<p>AI 瞬间理解了这一意图，并为我输出了一段带有高级结构、可直接复制的 Prompt。这份生成的 Prompt 极其专业，它首先定义了专家身份（<code>#Role</code>：资深的 PC 硬件架构师、美学专家），接着通过 <code>#Task</code> 和 <code>#Guidelines</code> 强制约束了输出格式（Markdown、表格、Emoji），并严格划分了“战略决策”、“BOM 采购清单”、“硬核接线指南”等 5 个核心模块的颗粒度要求。</p>
+<img src="https://github.com/user-attachments/assets/fb9de705-8354-4c0a-b8d3-11a959ac1d0c" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：大模型自主生成的结构化高级 Prompt，精准定义了角色、任务边界与输出模块。</p>
+</blockquote>
+<h2 id="最终效果展示">最终效果展示</h2>
+<p>当我们将这份由 AI 亲自“主刀”编写的结构化 Prompt 喂给模型后，输出的结果发生了质的飞跃。它直接吐出了一份名为《ThinkBook 16+ OCuLink 外接显卡 AI 炼丹站搭建与使用白皮书》的硬核报告。不仅逻辑严密、排版精美，还将复杂的技术要素完美归档，彻底解决了长文本信息难以沉淀的痛点。</p>
+<img src="https://github.com/user-attachments/assets/54f410e1-d3c3-4e16-98a4-af27391c875e" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：基于 AI 生成的 Prompt 最终输出的白皮书报告，逻辑完美、要点清晰且极具实操性。</p>
+</blockquote>
+<hr>
+<h2 id="案例二：抽象脑内画面的精准转化（Gemini-AI-绘图场景）">案例二：抽象脑内画面的精准转化（Gemini AI 绘图场景）</h2>
+<h2 id="场景痛点分析-2">场景痛点分析</h2>
+<p>AI 绘图领域是 Prompt 门槛极高的重灾区。很多时候，我们脑海中有一个非常具体、甚至带有极客属性的画面，却完全不知道如何用渲染术语去引导模型。</p>
+<p>例如，我想要绘制一张类似于“大模型空间推理”风格的 3D 博物馆鸟瞰图：核心展品需要真实的 PBR 光影，周围需要悬浮红绿相间的摄像机视锥体（表示 Agent 的视角）以及发光的轨迹线。但我手头只有一张极其简陋的 3D 几何草图，用普通人类语言向生图模型描述这些抽象概念，无异于鸡同鸭讲。</p>
+<img src="https://github.com/user-attachments/assets/4ce19f5e-10f9-4891-ad69-6b43a0b34303" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：向 AI 提供基础几何体参考，并提出从基础渲染向“复合数据可视化”演进的复杂需求。</p>
+</blockquote>
+<h2 id="AI-辅助生成-Prompt-的过程-2">AI 辅助生成 Prompt 的过程</h2>
+<p>面对这种表达瓶颈，我利用了 Gemini 3.1 Pro 强大的多模态推理能力。我将简陋的草图发给它，并用口语详细描述了我的“感觉”。Gemini 没有急于敷衍给图，而是像一位专业的美术总监一样，在底层进行了一次深度的 <strong>“修改后的画面描述（Mental Render）”</strong>。</p>
+<p>它将我的抽象想法拆解成了三个专业的渲染维度：</p>
+<ol>
+<li><strong>环境基础</strong>：抛光大理石地板、高级白乳胶漆墙壁。</li>
+<li><strong>核心光影（PBR）</strong>：聚光灯、玻璃罩的反射与环境折射。</li>
+<li><strong>空间推理标记（Agentic Overlays）</strong>：悬浮的 3D 摄像机视锥体、发光的轨迹线。</li>
+</ol>
+<p>在梳理完这些严谨的逻辑后，它顺理成章地为我输出了一段专用于生图模型的高质量英文 Image Prompt。</p>
+<img src="https://github.com/user-attachments/assets/5db75e31-c5bd-497e-af4c-690784e31748" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：Gemini 深度解析画面构思（Mental Render），并输出专业的英文生图提示词。</p>
+</blockquote>
+<h2 id="最终效果展示-2">最终效果展示</h2>
+<p>依靠这段由大模型提炼的专业提示词（如 <code>A photorealistic bird's-eye isometric view... gallery-quality lighting...</code>），生图模型一次性给出了极其惊艳的视觉反馈，完美命中了红绿视锥体和光影细节。这种把抽象感觉翻译为精准机器指令的过程，就是典型的思维降维打击。</p>
+<img src="https://github.com/user-attachments/assets/2bdfa834-4161-4100-b5ea-d70685941386" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：最终生成的 3D 博物馆图像，完美还原了脑海中带有空间推理标记的复杂光影效果。</p>
+</blockquote>
+<hr>
+<h2 id="案例三：前端复杂-UI-的降维打击（Cursor-IDE-代码场景）">案例三：前端复杂 UI 的降维打击（Cursor / IDE 代码场景）</h2>
+<h2 id="场景痛点分析-3">场景痛点分析</h2>
+<p>在使用 Cursor 等 AI 代码编辑器时，如果你只是随意下达命令（例如：“帮我做个苹果风格的网页”），最后生成的代码往往令人十分痛苦。为了让 UI 达到苹果级别的克制与通透，涉及到的 <code>backdrop-filter</code>、响应式布局、以及底层 CSS 框架选型非常繁琐。模糊的指令只会让 Cursor 像无头苍蝇一样反复试错，不仅消耗大量 Token，产出的质感也极其廉价。</p>
+<h2 id="AI-辅助生成-Prompt-的过程-3">AI 辅助生成 Prompt 的过程</h2>
+<p>为了实现极致的苹果毛玻璃（Liquid Glass）质感，我再次调用大模型，让它为我撰写了一份“最佳提示词模板”，专门用于喂给 Cursor 的 Plan Mode。</p>
+<p>这份由 AI 生成的 Prompt 堪称产品级，它不仅规定了极其严苛的设计目标，甚至连底层 CSS 核心参数和极简的技术选型（Tailwind CSS v4 + 单文件）都约束得清清楚楚。</p>
+<img src="https://github.com/user-attachments/assets/bb962264-7116-46df-bc82-2a92a4f957e2" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：利用 AI 生成的详尽前端产品级提示词模板，包含视觉细节、技术要求与分步计划。</p>
+</blockquote>
+<p>为了方便大家实操，我将这段由 AI 生成的终极 Prompt 源码提取如下，强烈建议各位开发者复制备用：</p>
+<p>Markdown</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">你是世界顶级产品级前端设计师，特别擅长苹果设计语言（2025-2026 macOS Sequoia / iOS Liquid Glass 风格），追求极致克制、高级、通透、有呼吸感的质感。</span><br><span class="line"></span><br><span class="line">当前项目是 http://qiushi0919.cn/ 的个人导航页面（Streamlit实现，包含链接分类、搜索、卡片等）。我要把整个导航页升级成苹果级毛玻璃质感+一张极致好看的壁纸。</span><br><span class="line"></span><br><span class="line">**设计目标（必须严格遵循）：**</span><br><span class="line">- 整体深色模式优先，极简高级，像苹果官网 + macOS 控制中心。</span><br><span class="line">- **壁纸**：全屏高质量抽象流动渐变壁纸（参考 macOS Sequoia 官方风格：深紫-靛蓝-黑色的液态渐变 + 轻微噪点）。背景固定(background-attachment: fixed)，支持鼠标轻微视差移动(parallax)。先用一张示例壁纸，后期可扩展壁纸切换功能(用localStorage)。</span><br><span class="line">- **毛玻璃核心效果 (Liquid Glass)**：</span><br><span class="line">  - 所有卡片、搜索栏、容器都用玻璃质感：</span><br><span class="line">    background: rgba(255, 255, 255, 0.08) 或 rgba(20, 20, 25, 0.45);</span><br><span class="line">    backdrop-filter: blur(32px) saturate(180%);</span><br><span class="line">    -webkit-backdrop-filter: blur(32px);</span><br><span class="line">    border: 1px solid rgba(255, 255, 255, 0.15);</span><br><span class="line">    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);</span><br><span class="line">  - 大圆角（32px+），hover 时轻微抬起（translateY -4px）+ blur 增强 + 微光效果。</span><br><span class="line">- **布局结构**：</span><br><span class="line">  - 全屏居中主容器</span><br><span class="line">  - 顶部：动态时间 + 问候语 + 极简 logo</span><br><span class="line">  - 中间：超简洁毛玻璃搜索框（支持键盘聚焦）</span><br><span class="line">  - 主体：分类卡片网格（保持我现有的链接分类，如开发/AI/设计/娱乐等，每张卡片也是毛玻璃）</span><br><span class="line">  - 底部：极简 footer</span><br><span class="line">  - 字体：优先系统字体栈（SF Pro / Inter），图标用 Lucide。</span><br><span class="line">  - 响应式完美（手机也要好看），性能丝滑，无多余动画。</span><br><span class="line"></span><br><span class="line">**技术要求**：</span><br><span class="line">- 推荐迁移到 **单个 index.html 文件** + Tailwind CSS v4（通过 CDN 或内置）+ 少量 vanilla JS（或 Alpine.js）。</span><br><span class="line">- 如果坚持用 Streamlit，也可以用 custom CSS，但优先纯前端方案。</span><br><span class="line">- 代码结构清晰、可维护、零依赖。</span><br><span class="line"></span><br><span class="line">**工作流程（Plan Mode 必须严格分步执行）**：</span><br><span class="line">1. 先完整分析我当前页面的结构、链接分类和现有功能。</span><br><span class="line">2. 输出详细实施计划（技术选型、文件结构、组件划分、壁纸实现方式）。</span><br><span class="line">3. 推荐 3 张具体壁纸 URL（Unsplash 高清4K，最好是抽象流动渐变风格）。</span><br><span class="line">4. 先给我一个完美的 glass-card 组件示例代码 + 背景系统。</span><br><span class="line">5. 等我确认后再生成完整最终代码。</span><br><span class="line"></span><br><span class="line">追求 museum-quality 的精致感，不要花里胡哨，要干净、有质感、像苹果出品一样高级。现在开始制定计划吧！</span><br></pre></td></tr></table></figure>
+<h2 id="最终效果展示-3">最终效果展示</h2>
+<p>当我将上述高度结构化的 Prompt 直接扔给 Cursor 后，大模型在严格的规则约束下稳扎稳打地执行了技术方案。最终渲染出的个人导航页，毛玻璃的光影、模糊的层次和整体的 UI 质感几乎完美复刻了苹果的设计语言，没有出现任何廉价的拼凑感。</p>
+<img src="https://github.com/user-attachments/assets/b1c8df13-c694-407f-8d25-fbeee1e8bbac" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图注：在严谨 Prompt 约束下，Cursor 一次性生成的完美呈现苹果毛玻璃质感的前端导航页。</p>
+</blockquote>
+<hr>
+<h2 id="总结">总结</h2>
+<p>无论是面对动辄数万字的配置信息梳理，还是跨越抽象画面的描述鸿沟，亦或是进行极高精度的前端 UI 代码重构，人类单纯的自然语言都显得过于单薄且充满不确定性。</p>
+<p>这三个实战案例印证了一个不可逆的技术趋势：未来的开发和创作，绝不是去死记硬背枯燥的“提示词模板”。真正的核心竞争力在于<strong>具备 Agentic 思维</strong>——把抽象的“最终目标”丢给具备强大逻辑分解能力的 AI，让它代劳生成对机器最友好的结构化提示词（完成 Plan 阶段），最终再去执行。只有建立这种“AI 驾驭 AI”的自动化闭环，我们才能真正精准、踏实、省力地榨干大模型的全部潜力。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/" data-id="cmmuhh2ra0004owes6a3l9jc7" data-title="驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Claude-Code-初体验：基于终端-Agent-的前端项目自动化部署实战" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/" class="article-date">
@@ -180,7 +301,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/" data-id="cmmt2gsoe0001woes3b87blw1" data-title="Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/" data-id="cmmuhh2r70000owesgjrk6cte" data-title="Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -320,7 +441,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" data-id="cmmt2gsoc0000woes313lhiqo" data-title="从零搭建个人独立博客 (二)：发文工作流与排版美化实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" data-id="cmmuhh2ra0002owes3s2f6gkq" data-title="从零搭建个人独立博客 (二)：发文工作流与排版美化实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -492,7 +613,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmt2gsog0005woesbo42fr6x" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmuhh2rb0006owes86sv0i6w" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -615,7 +736,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmt2gsoe0002woes3qob3frr" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmuhh2ra0003owes2oij0zog" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -721,7 +842,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmt2gsof0003woes18bn5c4t" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmuhh2rb0005owesgd8w91m2" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -773,7 +894,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmt2gsof0004woes8kxogt2y" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmuhh2r90001owesb1xkhj51" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -816,6 +937,10 @@
       <ul>
         
           <li>
+            <a href="/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/">驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击</a>
+          </li>
+        
+          <li>
             <a href="/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/">Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战</a>
           </li>
         
@@ -829,10 +954,6 @@
         
           <li>
             <a href="/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/">从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录</a>
-          </li>
-        
-          <li>
-            <a href="/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/">告别网页3D滚动陷阱</a>
           </li>
         
       </ul>
