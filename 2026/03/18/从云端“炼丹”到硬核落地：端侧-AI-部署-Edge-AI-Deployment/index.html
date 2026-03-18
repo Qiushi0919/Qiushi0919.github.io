@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment) | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment) 现在的科技圈，“百模大战”如火如荼，千亿参数的大模型在云端数据中心里展现出了令人惊叹的智能涌现。但作为一个做了两年嵌入式开发的通信工程大学生，我的关注点往往会被拉回现实的物理世界：如果我们把这些聪明的 AI “大脑”，直接部署到本地的电脑、树莓派，甚至是只有几百 KB 内存的单片机上，会发生什么有趣的事情？ 云端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment)">
+<meta property="og:url" content="http://example.com/2026/03/18/%E4%BB%8E%E4%BA%91%E7%AB%AF%E2%80%9C%E7%82%BC%E4%B8%B9%E2%80%9D%E5%88%B0%E7%A1%AC%E6%A0%B8%E8%90%BD%E5%9C%B0%EF%BC%9A%E7%AB%AF%E4%BE%A7-AI-%E9%83%A8%E7%BD%B2-Edge-AI-Deployment/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment) 现在的科技圈，“百模大战”如火如荼，千亿参数的大模型在云端数据中心里展现出了令人惊叹的智能涌现。但作为一个做了两年嵌入式开发的通信工程大学生，我的关注点往往会被拉回现实的物理世界：如果我们把这些聪明的 AI “大脑”，直接部署到本地的电脑、树莓派，甚至是只有几百 KB 内存的单片机上，会发生什么有趣的事情？ 云端">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/user-attachments/assets/7a2f013e-0d58-4bf4-ade2-cae599efbad1">
+<meta property="og:image" content="https://github.com/user-attachments/assets/723b92a5-15a2-4f35-895d-d8a3020cafca">
+<meta property="og:image" content="https://github.com/user-attachments/assets/ddd701ec-843f-430e-bfec-d5b224c7ce7b">
+<meta property="og:image" content="https://github.com/user-attachments/assets/e3a6b683-694f-4cb8-b6a7-ddb4157b978e">
+<meta property="article:published_time" content="2026-03-18T13:12:50.000Z">
+<meta property="article:modified_time" content="2026-03-18T13:22:10.769Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/user-attachments/assets/7a2f013e-0d58-4bf4-ade2-cae599efbad1">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-从云端“炼丹”到硬核落地：端侧-AI-部署-Edge-AI-Deployment" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/03/18/%E4%BB%8E%E4%BA%91%E7%AB%AF%E2%80%9C%E7%82%BC%E4%B8%B9%E2%80%9D%E5%88%B0%E7%A1%AC%E6%A0%B8%E8%90%BD%E5%9C%B0%EF%BC%9A%E7%AB%AF%E4%BE%A7-AI-%E9%83%A8%E7%BD%B2-Edge-AI-Deployment/" class="article-date">
+  <time class="dt-published" datetime="2026-03-18T13:12:50.000Z" itemprop="datePublished">2026-03-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment)
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment)</h1>
+<p>现在的科技圈，“百模大战”如火如荼，千亿参数的大模型在云端数据中心里展现出了令人惊叹的智能涌现。但作为一个做了两年嵌入式开发的通信工程大学生，我的关注点往往会被拉回现实的物理世界：<strong>如果我们把这些聪明的 AI “大脑”，直接部署到本地的电脑、树莓派，甚至是只有几百 KB 内存的单片机上，会发生什么有趣的事情？</strong></p>
+<p>云端 AI 固然拥有海量的算力，是探索智能天花板的利器。但在很多真实的物理和通信场景中（比如一辆在极速行驶的自动驾驶汽车，或者一个正在断网火灾现场探测的无人机），我们往往没有条件、也不允许去等待几百毫秒的网络 API 响应。</p>
+<p>所以，探索如何在算力受限的本地设备上跑通 AI，对我来说是一件极具挑战又非常有意思的事情。今天，我将结合经典的“云-边-端”架构图，加上我亲自操刀的两个真实硬件项目，带大家一起拆解什么是<strong>端侧 AI 部署（Edge AI Deployment）</strong>，感受一下软硬结合的独特魅力。</p>
+<hr>
+<h2 id="🌍-理论铺垫：看懂“云-边-端”架构，你就懂了-Edge-AI-的宿命">🌍 理论铺垫：看懂“云-边-端”架构，你就懂了 Edge AI 的宿命</h2>
+<p>要理解端侧 AI，我们首先要在大脑里建立一张经典的“Edge Computing”三层架构图：</p>
+<img src="https://github.com/user-attachments/assets/7a2f013e-0d58-4bf4-ade2-cae599efbad1" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<ol>
+<li><strong>顶层 - 云端 (Cloud / Data Center)：</strong> 这里是算力的怪兽。它拥有无尽的 GPU 资源，适合做大规模的预训练和复杂的数据挖掘。但它的致命伤在于“远”——网络延迟、带宽瓶颈、数据隐私风险，让它无法直接掌控瞬息万变的物理世界。</li>
+<li><strong>底层 - 物联网端 (Internet of Things / IoT)：</strong> 工业流水线、汽车、风机、甚至是你家里的智能插座。它们是数据的绝对源头，也是动作的执行者。但它们通常只是机械的“感官”和“四肢”，自身没有聪明的“大脑”。</li>
+<li><strong>中坚力量 - 边缘侧 (Edge)：</strong> 这就是端侧 AI 的主战场！它就像人类的“脊髓反射弧”，架在云和物理世界之间，负责“实时数据处理 (Realtime Data Processing)”。</li>
+</ol>
+<p>把 AI 大脑从云端“下放”到 Edge 层，能带来三大无可替代的杀手锏：</p>
+<ul>
+<li><strong>零延迟 (快)：</strong> 数据本地产生，本地计算，毫秒级响应。</li>
+<li><strong>断网可用 (稳)：</strong> 即使在地下车库或深山老林，设备依然能聪明地工作。</li>
+<li><strong>隐私安全 (密)：</strong> 数据根本不用上传，从物理隔绝的层面上杜绝了泄露。</li>
+</ul>
+<p>说完了高大上的理论，接下来咱们直接拔掉网线，进入真刀真枪的实战环节。</p>
+<hr>
+<h2 id="🛠️-实战案例一：榨干每一滴算力！极致轻量化的“裸机部署”（Bare-metal）">🛠️ 实战案例一：榨干每一滴算力！极致轻量化的“裸机部署”（Bare-metal）</h2>
+<p><strong>项目背景：</strong> 基于瑞萨 RA MCU 的智能烟雾检测系统。</p>
+<p>在做这个项目时，我面临的挑战是：单片机（MCU）的资源极其贫瘠，根本跑不动庞大的深度学习推理框架（哪怕是 TFLite Micro 也嫌重）。但这又是一个对实时性要求极高的生命安全系统。怎么办？</p>
+<p><strong>破局思路：抛弃框架，回归本质（py -&gt; c）。</strong></p>
+<p>我先在 PC 端用 Python (PyTorch) 训练出了一个轻量级的 MLP（多层感知机）模型，用于烟雾浓度的精准预测。训练完成后，我没有导出成常规的 ONNX 模型去套用框架，而是写了一个脚本，把网络结构和训练好的权重矩阵，<strong>直接硬编码转换成了纯 C 语言的二维数组和矩阵乘法运算</strong>。</p>
+<p>然后，我把这段纯 C 代码，直接烧录到了瑞萨 RA 板卡上。</p>
+<img src="https://github.com/user-attachments/assets/723b92a5-15a2-4f35-895d-d8a3020cafca" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p><strong>基于瑞萨 RA MCU 的智能烟雾检测硬件实体</strong>。请注意看这块看似“简陋”的小板子，它没有连接任何外部网络，也没有外挂任何昂贵的显卡芯片。就在这方寸之间，它靠着纯粹的 C 语言矩阵运算，独立完成了 AI 模型的全部推理工作。这，就是对底层硬件资源最极致的压榨与掌控。</p>
+</blockquote>
+<p>这种原教旨主义的“裸机部署（Bare-metal）”，虽然没有调包那么潇洒，但它把内存占用降到了最低，把执行效率拉到了最高。</p>
+<hr>
+<h2 id="🏎️-实战案例二：NPU-降维打击！利用硬件加速器破局视觉任务">🏎️ 实战案例二：NPU 降维打击！利用硬件加速器破局视觉任务</h2>
+<p><strong>项目背景：</strong> 基于 STM32 和 K230 的智能送药小车。</p>
+<p>烟雾检测只是基于一维传感器数据，但如果是高维的图像数据呢？在开发智能送药小车时，我们需要让小车能够实时识别病房号和目标指示牌。这时候，传统的 STM32 单片机算力就彻底捉襟见肘了，跑起视觉模型来帧率惨不忍睹。</p>
+<p><strong>破局思路：引入异构计算，让专业的心干专业的事。</strong></p>
+<p>我们引入了搭载 KPU（神经网络算力加速器）的 K230 开发板。STM32 负责底盘控制（四肢），而 K230 专职负责 AI 视觉推理（眼睛和大脑）。</p>
+<p>但在真正把模型塞进小车之前，我们必须经历严苛的“驯化”阶段。</p>
+<img src="https://github.com/user-attachments/assets/ddd701ec-843f-430e-bfec-d5b224c7ce7b" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p><strong>端侧部署前的“联调地狱”</strong>。在真正“下放”到端侧前，我们需要通过数据线将硬件与电脑相连，进行严格的视觉标定、模型验证和代码调试，确保目标检测的 Bounding Box 稳如泰山。</p>
+</blockquote>
+<p>经历了无数次的改 Bug 和编译后，我们迎来了端侧工程师最激动的“高光时刻”——<strong>拔掉网线，让设备自己跑！</strong></p>
+<img src="https://github.com/user-attachments/assets/e3a6b683-694f-4cb8-b6a7-ddb4157b978e" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p><strong>Edge AI 的完全体！</strong> 重点看这张图，这辆布满排线的小车，<strong>没有插任何一根数据线连接电脑，也没有连接任何 Wi-Fi！</strong> 它完全依赖板载的 KPU 算力，在本地实时、流畅地完成了复杂的图像采集、数字目标检测（完美框选了 5846）和结果输出。</p>
+</blockquote>
+<p>当看着这台冷冰冰的机器，不依靠任何外界算力支援，独立地在赛道上“看懂”这个世界并作出反应时，那种成就感，是坐在空调房里跑一晚上 Python 脚本绝对体会不到的。<strong>让物理设备拥有独立思考的能力，这就是端侧 AI 存在的终极意义。</strong></p>
+<hr>
+<h2 id="🚀-总结：下一个十年的主战场">🚀 总结：下一个十年的主战场</h2>
+<p>云端大模型决定了 AI 智商的“天花板”，而端侧 AI 部署决定了 AI 商业落地的“基本盘”。</p>
+<p>从手搓 C 语言矩阵的裸机部署，到玩转 NPU/KPU 硬件加速器，你会发现，真正的 AI 落地从来不是单纯的算法问题，而是深刻的<strong>软硬协同工程</strong>。</p>
+<p>未来的技术世界，最稀缺的永远是那些既懂 PyTorch 算法逻辑，又能画 PCB、搞懂寄存器、把模型塞进单片机里的“全栈极客”。希望这篇硬核实战笔记，能为你推开端侧部署的大门！</p>
+<hr>
+<p><em>(注：如果你对文中的 py-&gt;c 脚本实现，或者 K230 的部署工具链细节感兴趣，欢迎在评论区交流，我们下期详细展开！)</em></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/03/18/%E4%BB%8E%E4%BA%91%E7%AB%AF%E2%80%9C%E7%82%BC%E4%B8%B9%E2%80%9D%E5%88%B0%E7%A1%AC%E6%A0%B8%E8%90%BD%E5%9C%B0%EF%BC%9A%E7%AB%AF%E4%BE%A7-AI-%E9%83%A8%E7%BD%B2-Edge-AI-Deployment/" data-id="cmmw2om0d0002e8esgqsl6n4t" data-title="从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment)" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/03/">March 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/03/18/%E4%BB%8E%E4%BA%91%E7%AB%AF%E2%80%9C%E7%82%BC%E4%B8%B9%E2%80%9D%E5%88%B0%E7%A1%AC%E6%A0%B8%E8%90%BD%E5%9C%B0%EF%BC%9A%E7%AB%AF%E4%BE%A7-AI-%E9%83%A8%E7%BD%B2-Edge-AI-Deployment/">从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment)</a>
+          </li>
+        
+          <li>
+            <a href="/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/">驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击</a>
+          </li>
+        
+          <li>
+            <a href="/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/">Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战</a>
+          </li>
+        
+          <li>
+            <a href="/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/">从零搭建个人独立博客 (二)：发文工作流与排版美化实战</a>
+          </li>
+        
+          <li>
+            <a href="/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/">把本地 Three.js 项目部署到云服务器全记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
