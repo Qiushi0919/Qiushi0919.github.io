@@ -71,6 +71,104 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Python-数据可视化（二）：多曲线对比、局部放大框（附源码）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/03/20/Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A4%9A%E6%9B%B2%E7%BA%BF%E5%AF%B9%E6%AF%94%E3%80%81%E5%B1%80%E9%83%A8%E6%94%BE%E5%A4%A7%E6%A1%86%EF%BC%88%E9%99%84%E6%BA%90%E7%A0%81%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2026-03-20T14:15:03.000Z" itemprop="datePublished">2026-03-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/03/20/Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A4%9A%E6%9B%B2%E7%BA%BF%E5%AF%B9%E6%AF%94%E3%80%81%E5%B1%80%E9%83%A8%E6%94%BE%E5%A4%A7%E6%A1%86%EF%BC%88%E9%99%84%E6%BA%90%E7%A0%81%EF%BC%89/">Python 数据可视化（二）：多曲线对比、局部放大框（附源码）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1>Python 数据可视化（二）：多曲线对比、局部放大框（附源码）</h1>
+<p>在上一篇博客中，我们成功配置了所向披靡的 <strong>VS Code + Conda 数据可视化环境</strong>。环境有了，画笔就位了，今天我们就来动真格的——<strong>手把手写代码，把数据变成能放进报告或论文的高清图！</strong></p>
+<hr>
+<h2 id="步骤-0：画图前的准备——什么是-CSV？">步骤 0：画图前的准备——什么是 CSV？</h2>
+<img src="https://github.com/user-attachments/assets/5c4d1442-152e-4cd3-a2e2-669fcc007a66" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p>很多小白一提到“数据导入”就头疼。其实，无论你用 Python 画什么神仙图表，核心逻辑只有一步：<strong>喂给 Python 数据，Python 还你一张图。</strong></p>
+<p>最常用的数据格式就是 <strong>CSV（逗号分隔值，Comma-Separated Values）</strong>。<br>
+你可以把它理解为“扒了衣服的 Excel 表格”。它没有任何字体、颜色或边框格式，纯粹用逗号把数据隔开，体积小，读取极快，是所有编程语言的“通用普通话”。<br>
+<em>注：除了 CSV，Python 的 <code>pandas</code> 库同样可以轻松秒读 <code>.xlsx</code> (Excel)、<code>.txt</code> 甚至 <code>.json</code> 格式的数据。只要你的数据整理好了，画图就成功了 80%！</em></p>
+<hr>
+<h2 id="步骤-1：背景的魔法——普通白底图-vs-透明背景图">步骤 1：背景的魔法——普通白底图 vs 透明背景图</h2>
+<p>在写论文或做 PPT 的汇报时，我们会面临两种截然不同的场景：</p>
+<ol>
+<li><strong>白纸黑字写论文</strong>：此时你需要一张带白色实心背景的常规图表，干干净净，对比度高。</li>
+<li><strong>做精美 PPT 或嵌套流程图</strong>：如果你想把折线图无缝嵌到一个有颜色的 PPT 背景里，或者放进一张复杂的 Visio 架构图中，白底图就会像一块难看的“狗皮膏药”。这时候，你需要的就是<strong>透明背景图</strong>！</li>
+</ol>
+<p>看看下面这两张图的区别，你就全明白了：</p>
+<img src="https://github.com/user-attachments/assets/789bcb97-6814-4323-958d-b3e892c9e48d" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图 1：透明背景图。无论放在什么颜色的 PPT 模板上，都能完美融入，没有突兀的白边。（注意看图中的灰色棋盘格，代表背景是完全透明的）</p>
+</blockquote>
+<img src="https://github.com/user-attachments/assets/4642fb50-4119-4002-9ce8-69a0435d4e79" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图 2：常规白底图。适合直接插入 Word 文档或作为标准配图，干净清爽。</p>
+</blockquote>
+<p>接下来，我们就用实际代码，教你把这两种图都画出来！</p>
+<hr>
+<h2 id="步骤-2：实战演练！基础篇-vs-进阶篇代码解析">步骤 2：实战演练！基础篇 vs 进阶篇代码解析</h2>
+<h3 id="1-基础篇：绘制标准白底折线图（以原容量数据为例）">1. 基础篇：绘制标准白底折线图（以原容量数据为例）</h3>
+<p>这端代码非常适合刚上手的小白，它的目标很明确：把 CSV 里的单列数据读出来，画成一条学术风的折线。</p>
+<p><strong>核心知识点：</strong></p>
+<ul>
+<li>使用 <code>header=None</code> 告诉 Python 表格里全是纯数字，没有表头名字。</li>
+<li>设置全局字体为 <code>Times New Roman</code>，符合国际学术规范。</li>
+<li><code>bbox_inches='tight'</code> 让保存的图片自动裁剪多余空白。</li>
+</ul>
+<p><strong>💻 基础版 Python 源码：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">plot_full_original_capacity</span>(<span class="params">dataset_name, start_cycle, y_label, color, file_path</span>):</span><br><span class="line">    <span class="comment"># 1. 加载无表头的数据 (header=None 是关键，告诉 Pandas 里面全是纯数字)</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        df = pd.read_csv(file_path, header=<span class="literal">None</span>)</span><br><span class="line">    <span class="keyword">except</span> FileNotFoundError:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;❌ 错误：未找到文件 <span class="subst">&#123;file_path&#125;</span>，请检查文件是否在当前文件夹下！&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 提取第一列的真实容量值</span></span><br><span class="line">    actual = df.iloc[:, <span class="number">0</span>].values</span><br><span class="line">    cycles = np.arange(start_cycle, start_cycle + <span class="built_in">len</span>(actual))</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 2. 学术论文风格配置</span></span><br><span class="line">    plt.rcParams[<span class="string">&#x27;font.family&#x27;</span>] = <span class="string">&#x27;serif&#x27;</span></span><br><span class="line">    plt.rcParams[<span class="string">&#x27;font.serif&#x27;</span>] = [<span class="string">&#x27;Times New Roman&#x27;</span>]</span><br><span class="line">    plt.rcParams[<span class="string">&#x27;axes.linewidth&#x27;</span>] = <span class="number">1.2</span></span><br><span class="line">    </span><br><span class="line">    fig, ax = plt.subplots(figsize=(<span class="number">10</span>, <span class="number">5</span>), dpi=<span class="number">300</span>) <span class="comment"># dpi=300 保证高清</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 绘制曲线</span></span><br><span class="line">    ax.plot(cycles, actual, color=color, linewidth=<span class="number">2</span>, label=<span class="string">f&#x27;Original Capacity (<span class="subst">&#123;dataset_name&#125;</span>)&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 4. 图表修饰 (坐标轴、网格、图例)</span></span><br><span class="line">    ax.set_xlabel(<span class="string">&#x27;Cycle Number&#x27;</span>, fontweight=<span class="string">&#x27;bold&#x27;</span>, fontsize=<span class="number">12</span>)</span><br><span class="line">    ax.set_ylabel(y_label, fontweight=<span class="string">&#x27;bold&#x27;</span>, fontsize=<span class="number">12</span>)</span><br><span class="line">    ax.set_title(<span class="string">f&#x27;Original Battery Capacity Data - <span class="subst">&#123;dataset_name&#125;</span>&#x27;</span>, fontweight=<span class="string">&#x27;bold&#x27;</span>, fontsize=<span class="number">14</span>)</span><br><span class="line">    ax.grid(<span class="literal">True</span>, linestyle=<span class="string">&#x27;:&#x27;</span>, alpha=<span class="number">0.6</span>)</span><br><span class="line">    ax.legend(loc=<span class="string">&#x27;upper right&#x27;</span>, frameon=<span class="literal">True</span>, edgecolor=<span class="string">&#x27;black&#x27;</span>, fontsize=<span class="number">10</span>)</span><br><span class="line">    </span><br><span class="line">    plt.tight_layout()</span><br><span class="line">    output_png = <span class="string">f&#x27;<span class="subst">&#123;dataset_name&#125;</span>_Full_Original_Capacity.png&#x27;</span></span><br><span class="line">    plt.savefig(output_png, bbox_inches=<span class="string">&#x27;tight&#x27;</span>)</span><br><span class="line">    plt.close()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;🎉 成功生成并保存了图片: <span class="subst">&#123;output_png&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ======== 运行部分 ========</span></span><br><span class="line">plot_full_original_capacity(<span class="string">&#x27;NASA_B0005&#x27;</span>, <span class="number">1</span>, <span class="string">&#x27;Capacity (Ah)&#x27;</span>, <span class="string">&#x27;#1f77b4&#x27;</span>, <span class="string">&#x27;B5.csv&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<img src="https://github.com/user-attachments/assets/4a8fd528-21e1-414d-991f-551386a7a8e1" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图 3：基础代码生成的 NASA_B0005 容量数据图，学术感拉满。</p>
+</blockquote>
+<hr>
+<h3 id="2-进阶篇：多模型对比-局部放大框-透明背景图">2. 进阶篇：多模型对比 + 局部放大框 + 透明背景图</h3>
+<p>如果你的导师要求“把咱们预测的模型和别人的模型放在一张图里对比，再加个局部放大框看细节”，怎么办？别慌，下面这段进阶代码直接帮你封神！</p>
+<p><strong>核心知识点（高能预警）：</strong></p>
+<ul>
+<li><strong>背景透明术</strong>：使用 <code>fig.patch.set_alpha(0.0)</code> 和 <code>plt.savefig(..., transparent=True)</code> 联合魔法，榨干最后一滴背景色。</li>
+<li><strong>局部放大镜</strong>：使用 <code>ax.inset_axes</code> 在大图中嵌套一个小图表，用 <code>mark_inset</code> 画出阴影连线，逼格极高！</li>
+</ul>
+<p><strong>💻 进阶版 Python 源码（局部）：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> mpl_toolkits.axes_grid1.inset_locator <span class="keyword">import</span> inset_axes, mark_inset</span><br><span class="line"></span><br><span class="line"><span class="comment"># ... (数据读取部分省略，核心展示画图逻辑) ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 学术标准配置</span></span><br><span class="line">fig, ax = plt.subplots(figsize=(<span class="number">10</span>, <span class="number">6</span>), dpi=<span class="number">300</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 【核心修改：背景透明化】</span></span><br><span class="line">fig.patch.set_alpha(<span class="number">0.0</span>) <span class="comment"># 总画布背景透明</span></span><br><span class="line">ax.patch.set_alpha(<span class="number">0.0</span>)  <span class="comment"># 主图背景透明</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 绘制多条曲线 (真实值与多个预测模型对比)</span></span><br><span class="line">ax.plot(cycles, actual, label=<span class="string">&#x27;True Capacity&#x27;</span>, color=<span class="string">&#x27;black&#x27;</span>, linewidth=<span class="number">2.5</span>, zorder=<span class="number">10</span>)</span><br><span class="line"><span class="comment"># ... (通过循环绘制其他几条预测曲线，并设置不同线型和颜色) ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 图例透明背景</span></span><br><span class="line">legend = ax.legend(loc=<span class="string">&#x27;upper right&#x27;</span>, frameon=<span class="literal">True</span>, edgecolor=<span class="string">&#x27;black&#x27;</span>, fontsize=<span class="number">11</span>)</span><br><span class="line">legend.get_frame().set_alpha(<span class="number">0.0</span>) <span class="comment"># 图例框透明</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 【高阶操作】添加局部放大框 (放置在 inset_bbox 指定位置)</span></span><br><span class="line">axins = ax.inset_axes([<span class="number">0.05</span>, <span class="number">0.05</span>, <span class="number">0.4</span>, <span class="number">0.35</span>])</span><br><span class="line">axins.patch.set_alpha(<span class="number">0.0</span>) <span class="comment"># 放大框背景也要透明</span></span><br><span class="line"><span class="comment"># ... (在放大框内再次绘制需要放大的曲线段) ...</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 用阴影线连接主图和放大框 (loc1 和 loc2 控制连线的角)</span></span><br><span class="line">mark_inset(ax, axins, loc1=<span class="number">3</span>, loc2=<span class="number">4</span>, fc=<span class="string">&quot;none&quot;</span>, ec=<span class="string">&quot;black&quot;</span>, lw=<span class="number">1</span>, alpha=<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">plt.tight_layout()</span><br><span class="line"><span class="comment"># 【关键：保存时设置 transparent=True】</span></span><br><span class="line">plt.savefig(<span class="string">&#x27;Prediction_Transparent.png&#x27;</span>, transparent=<span class="literal">True</span>, bbox_inches=<span class="string">&#x27;tight&#x27;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<img src="https://github.com/user-attachments/assets/acefd58f-f7fd-4f2e-b925-b02f04efbaa0" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<blockquote>
+<p>图 4：进阶代码生成的成果！包含了多模型预测曲线对比、精准的局部细节放大框，以及最核心的“透明化”处理（在黑色阅图器下完美显现极客质感）。</p>
+</blockquote>
+<hr>
+<h2 id="结语">结语</h2>
+<p>从一行简单的 <code>pd.read_csv</code>，到最后用 <code>inset_axes</code> 玩转空间布局，Python 赋予了我们科研绘图无限的自由度。有了这两段代码作为模板，以后再遇到什么新的数据集，你只需要改改文件名、换换颜色，3 秒钟就能出一张神图！</p>
+<p><strong>如果你觉得这篇教程对你的论文写作有帮助，别忘了点个赞 👍、点个收藏 ⭐ 支持一下博主哦！如果代码运行遇到任何问题，随时在评论区找我！我们下期再见！</strong></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/03/20/Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A4%9A%E6%9B%B2%E7%BA%BF%E5%AF%B9%E6%AF%94%E3%80%81%E5%B1%80%E9%83%A8%E6%94%BE%E5%A4%A7%E6%A1%86%EF%BC%88%E9%99%84%E6%BA%90%E7%A0%81%EF%BC%89/" data-id="cmmyzhni80001xges4sm13kat" data-title="Python 数据可视化（二）：多曲线对比、局部放大框（附源码）" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-VS-Code-Conda-零基础搭建完美-Python-数据可视化环境" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/03/19/VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83/" class="article-date">
@@ -94,7 +192,7 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <h1>VS Code + Conda 零基础搭建完美 Python 数据可视化环境</h1>
-<img src="https://github.com/user-attachments/assets/ed27679d-3bb4-42a2-9a0e-19ce44cfea2b" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/02271907016e45e48ef704f9df487056.png" alt="img"></p>
 <p>上图是一个由纯Python代码+csv格式的数据画出来的数据可视化图表。</p>
 <p>你是不是也经历过这种绝望：为了跑一个 Github 上的画图代码，随手 <code>pip install</code> 了一堆库到电脑的全局 Python 环境里。结果图没画出来，反而把以前运行完美的项目全搞崩溃了？这就是传说中让人闻风丧胆的**“依赖地狱”**！</p>
 <p>听我一句劝：<strong>千万不要把 Python 包装在全局环境里！</strong> 如今的标配是 <strong>Conda（虚拟环境）+ VS Code（宇宙最强编辑器）</strong>。今天，我将手把手带你从零开始，配置一个纯净、专业的 Python 数据可视化（作图）环境。这篇教程不仅有保姆级的实操，还有核心原理的深度原理解析，建议<strong>先收藏再看，绝对用得上！</strong></p>
@@ -104,22 +202,22 @@
 <p>简单来说，如果你直接把所有的 Python 库装在电脑的“全局环境”里，就像是把全家人的衣服都塞进同一个大衣柜。今天你的项目 A 需要穿“夏装”（<code>pandas 1.0</code>），明天项目 B 需要穿“冬装”（<code>pandas 2.0</code>），两者在同一个大衣柜里就会打架，导致系统崩溃。</p>
 <p>而 <strong>Conda 的牛逼之处，就在于它能为你创造“平行宇宙”（虚拟环境）</strong>。</p>
 <p>你可以用 Conda 创建无数个相互隔离的小房间。每个房间都有自己独立版本的 Python 解释器和专属的库文件。你在“房间 A”里怎么折腾、怎么报错，都绝对不会影响到“房间 B”和你的电脑系统。并且，Conda 不仅能管理 Python 包，连 C/C++ 等底层的复杂依赖都能一并搞定，这点是传统的 <code>pip</code> 望尘莫及的。</p>
-<img src="https://github.com/user-attachments/assets/1973d57f-2f17-4591-868a-474fee3a149b" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171033830.png" alt="image-20260319171033830"></p>
 <p><strong>准备工作：打开你的魔法控制台</strong></p>
 <p>如果你已经安装了 Anaconda（或者轻量版的 Miniconda），请点击电脑的 Windows 开始菜单，搜索并打开 <strong>Anaconda Prompt</strong>（注意：不是系统自带的 cmd 或 PowerShell）。看到那个黑乎乎的命令行窗口，我们的奇妙之旅就正式开始了！</p>
-<img src="https://github.com/user-attachments/assets/5263c5d0-1c0d-482f-acd1-0554e010d62c" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<img src="./VS-Code-Conda-零基础搭建完美-Python-数据可视化环境.assets/image-20260319171114444.png" alt="image-20260319171114444" style="zoom: 25%;" />
 <hr>
 <h2 id="步骤-1：新建专属的“作图”沙盒环境">步骤 1：新建专属的“作图”沙盒环境</h2>
 <p>现在，我们要用 Conda 建一个与世隔绝的“沙盒”。在这个沙盒里，你可以随便折腾。为了专业一点，我们给这个环境起名叫 <code>dataviz</code>（Data Visualization 的缩写）。</p>
 <p>在 Anaconda Prompt 终端里，输入以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create -n dataviz python=3.10</span><br></pre></td></tr></table></figure>
-<img src="https://github.com/user-attachments/assets/231d5f46-d538-4606-9c09-25f7c868eeaa" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319172224757.png" alt="image-20260319172224757"></p>
 <blockquote>
 <p>使用 Conda 创建名为 dataviz 的专属可视化环境，指定 Python 版本为 3.10。第一步安装环境会自动分配到对应盘符 。</p>
 </blockquote>
 <p>等待加载完毕后，输入 <code>y</code> 确认终止批处理操作 。环境装好后，我们需要“进入”这个环境，也就是激活它：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda activate dataviz</span><br></pre></td></tr></table></figure>
-<img src="https://github.com/user-attachments/assets/41e96043-be0b-436c-a18a-80d6285fce73" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171158047.png" alt="image-20260319171158047"></p>
 <blockquote>
 <p>激活成功后，命令行最前方会出现 <code>(D:\conda_envs\dataviz)</code> 的字样 ，这就说明我们已经在这个专属沙盒里了！</p>
 </blockquote>
@@ -127,7 +225,7 @@
 <h2 id="步骤-2：安装数据科学“全家桶”">步骤 2：安装数据科学“全家桶”</h2>
 <p>既然是作图环境，那就把最经典的数据分析和可视化神器一次性装齐。在刚才激活的终端里，继续输入：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install pandas numpy matplotlib seaborn</span><br></pre></td></tr></table></figure>
-<img src="https://github.com/user-attachments/assets/6451b4a6-8e31-4491-b0c8-d67af5c12fa7" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171221696.png" alt="image-20260319171221696"></p>
 <blockquote>
 <p>安装 pandas, numpy, matplotlib, seaborn 等核心数据科学库 。安装完成后，终端前缀会变成盘符路径（如 D:/），代表所有环境组件均已就位 。</p>
 </blockquote>
@@ -135,36 +233,36 @@
 <h2 id="步骤-3：VS-Code-无缝接入配置篇">步骤 3：VS Code 无缝接入配置篇</h2>
 <p>底层环境搭好了，怎么让我们的编辑器 VS Code 认出它呢？下面是见证奇迹的时刻。</p>
 <p>首先，确保你在 VS Code 扩展市场里安装了由 Microsoft 官方提供的 <strong>Python 插件</strong>。</p>
-<img src="https://github.com/user-attachments/assets/7c6ee397-6694-4e58-b119-a488d553895d" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171245169.png" alt="image-20260319171245169"></p>
 <blockquote>
 <p>在插件市场搜索“Python”，认准微软官方认证并下载安装 。</p>
 </blockquote>
 <p>安装完毕后，打开你的 Python 绘图脚本。按下键盘上的神奇快捷键 <code>Ctrl+Shift+P</code>（Mac 玩家请按 <code>Cmd+Shift+P</code>）呼出命令面板 。</p>
-<img src="https://github.com/user-attachments/assets/5d044f6d-14cf-4e01-af86-0b0fcd45c6bd" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171254151.png" alt="image-20260319171254151"></p>
 <blockquote>
 <p>在搜索框中输入“选择解释器” (Select Interpreter) 并点击 。</p>
 </blockquote>
 <p>在弹出的列表中，VS Code 会列出你电脑上所有的 Python 环境。擦亮眼睛，找到带有 Conda 标识、名字叫 <code>dataviz</code> 的那个选项，毫不犹豫地选它！</p>
-<img src="https://github.com/user-attachments/assets/195084db-a8b9-4fc5-8b89-e4dbb7f43170" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171306374.png" alt="image-20260319171306374"></p>
 <blockquote>
 <p>在解释器列表中精准选中刚刚创建的 <code>dataviz</code> 虚拟环境 。</p>
 </blockquote>
 <hr>
 <h2 id="步骤-4：运行跑图与“致命坑点”排雷">步骤 4：运行跑图与“致命坑点”排雷</h2>
 <p>配置完成，现在打开你的终端面板，你应该能看到完美的激活状态：</p>
-<img src="https://github.com/user-attachments/assets/718666da-baca-4c06-bac6-e342583d0ed3" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171316563.png" alt="image-20260319171316563"></p>
 <blockquote>
 <p>成功激活！VS Code 终端前缀已正确显示为当前 conda 环境 <code>(conda_envs\dataviz)</code>，代码随时待命 。</p>
 </blockquote>
 <p>迫不及待点击运行？等等！很多新手在这个阶段会遇到一个经典报错：<code>KeyError: 'Last_Column_Actual'</code>。</p>
-<img src="https://github.com/user-attachments/assets/7799b48a-3150-4fd1-b417-0e95d18de45d" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171326326.png" alt="image-20260319171326326"></p>
 <blockquote>
 <p>代码运行成功并保存了图片 ，但如果你的终端抛出了 <code>KeyError</code> ，不要慌！</p>
 </blockquote>
 <p><strong>避坑指南</strong>：出现这个错，其实说明环境已经通了，代码也成功读到了你的 CSV 表格！问题仅仅在于：<strong>你的代码想找一列叫 <code>Last_Column_Actual</code> 的数据，但你的 CSV 表头里根本没有这个名字</strong>。</p>
 <p><strong>解决办法</strong>：双击打开你的 CSV 文件，看看真正的数据列叫什么（比如可能是叫 <code>Capacity</code>），然后把代码里的字符串换成实际表头即可。</p>
 <p>当你扫清一切障碍，点击运行，你就能收获高质量、可直接用于学术论文的数据可视化图表啦！比如下面这张经典的 NASA 和 CALCE 电池容量衰减对比图：</p>
-<img src="https://github.com/user-attachments/assets/4438fb5b-a9bb-4ca5-86f4-878ffb05d984" width="80%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 123, 255, 0.4);" />
+<p><img src="./VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83.assets/image-20260319171356968.png" alt="image-20260319171356968"></p>
 <blockquote>
 <p>最终生成的 NASA B0005 和 CALCE CS2_38 数据集高清原容量对比图 。排版工整，完美符合学术风！</p>
 </blockquote>
@@ -176,7 +274,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/19/VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83/" data-id="cmmxifkt200008sesao7k8rhw" data-title="VS Code + Conda 零基础搭建完美 Python 数据可视化环境" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/19/VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83/" data-id="cmmyzhni90002xges2hc12ld8" data-title="VS Code + Conda 零基础搭建完美 Python 数据可视化环境" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -270,7 +368,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/18/%E4%BB%8E%E4%BA%91%E7%AB%AF%E2%80%9C%E7%82%BC%E4%B8%B9%E2%80%9D%E5%88%B0%E7%A1%AC%E6%A0%B8%E8%90%BD%E5%9C%B0%EF%BC%9A%E7%AB%AF%E4%BE%A7-AI-%E9%83%A8%E7%BD%B2-Edge-AI-Deployment/" data-id="cmmxifkt600038ses2n1158cy" data-title="从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment)" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/18/%E4%BB%8E%E4%BA%91%E7%AB%AF%E2%80%9C%E7%82%BC%E4%B8%B9%E2%80%9D%E5%88%B0%E7%A1%AC%E6%A0%B8%E8%90%BD%E5%9C%B0%EF%BC%9A%E7%AB%AF%E4%BE%A7-AI-%E9%83%A8%E7%BD%B2-Edge-AI-Deployment/" data-id="cmmyzhni90003xgesaaftfc0o" data-title="从云端“炼丹”到硬核落地：端侧 AI 部署 (Edge AI Deployment)" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -390,7 +488,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/" data-id="cmmxifkt800088ses593bct4u" data-title="驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/17/%E9%A9%BE%E9%A9%AD%E5%A4%A7%E6%A8%A1%E5%9E%8B%EF%BC%9A%E4%BB%8E-Claude-Code-%E7%9A%84-Agentic-%E9%80%BB%E8%BE%91%E7%9C%8B%E2%80%9C%E7%94%A8-AI-%E7%94%9F%E6%88%90-Prompt%E2%80%9D%E7%9A%84%E9%99%8D%E7%BB%B4%E6%89%93%E5%87%BB/" data-id="cmmyzhnid0009xgesg4i09whb" data-title="驾驭大模型：从 Claude Code 的 Agentic 逻辑看“用 AI 生成 Prompt”的降维打击" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -511,7 +609,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/" data-id="cmmxifkt500018ses1kbohqsm" data-title="Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/" data-id="cmmyzhni60000xgeshz7dd1xs" data-title="Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -651,7 +749,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" data-id="cmmxifkt700058ses7g1c4zpm" data-title="从零搭建个人独立博客 (二)：发文工作流与排版美化实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/" data-id="cmmyzhnia0005xges5n4ef11k" data-title="从零搭建个人独立博客 (二)：发文工作流与排版美化实战" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -823,7 +921,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmxifkt700068sesgbkz1jl8" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/14/%E6%8A%8A%E6%9C%AC%E5%9C%B0-Three-js-%E9%A1%B9%E7%9B%AE%E9%83%A8%E7%BD%B2%E5%88%B0%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%85%A8%E8%AE%B0%E5%BD%95/" data-id="cmmyzhnib0008xges07x80leh" data-title="把本地 Three.js 项目部署到云服务器全记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -946,7 +1044,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmxifkt600048sesbcva0dej" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2%EF%BC%9AHexo-GitHub-Pages-%E6%9E%81%E9%80%9F%E5%BB%BA%E7%AB%99%E4%B8%8E%E8%B8%A9%E5%9D%91%E5%AE%9E%E5%BD%95/" data-id="cmmyzhnia0006xges90qiea41" data-title="从零搭建个人独立博客：Hexo + GitHub Pages 极速建站与踩坑实录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1052,7 +1150,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmxifkt800078ses4xbz24b0" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/%E5%91%8A%E5%88%AB%E7%BD%91%E9%A1%B53D%E6%BB%9A%E5%8A%A8%E9%99%B7%E9%98%B1/" data-id="cmmyzhnib0007xgesf9tw9hc9" data-title="告别网页3D滚动陷阱" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1104,7 +1202,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmxifkt600028ses5zcp7ww4" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="http://example.com/2026/03/13/hello-world/" data-id="cmmyzhnia0004xgesf7z591dt" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -1147,6 +1245,10 @@
       <ul>
         
           <li>
+            <a href="/2026/03/20/Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A4%9A%E6%9B%B2%E7%BA%BF%E5%AF%B9%E6%AF%94%E3%80%81%E5%B1%80%E9%83%A8%E6%94%BE%E5%A4%A7%E6%A1%86%EF%BC%88%E9%99%84%E6%BA%90%E7%A0%81%EF%BC%89/">Python 数据可视化（二）：多曲线对比、局部放大框（附源码）</a>
+          </li>
+        
+          <li>
             <a href="/2026/03/19/VS-Code-Conda-%E9%9B%B6%E5%9F%BA%E7%A1%80%E6%90%AD%E5%BB%BA%E5%AE%8C%E7%BE%8E-Python-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96%E7%8E%AF%E5%A2%83/">VS Code + Conda 零基础搭建完美 Python 数据可视化环境</a>
           </li>
         
@@ -1160,10 +1262,6 @@
         
           <li>
             <a href="/2026/03/16/Claude-Code-%E5%88%9D%E4%BD%93%E9%AA%8C%EF%BC%9A%E5%9F%BA%E4%BA%8E%E7%BB%88%E7%AB%AF-Agent-%E7%9A%84%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/">Claude Code 初体验：基于终端 Agent 的前端项目自动化部署实战</a>
-          </li>
-        
-          <li>
-            <a href="/2026/03/15/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%8B%AC%E7%AB%8B%E5%8D%9A%E5%AE%A2(%E4%BA%8C)%EF%BC%9A%E5%8F%91%E6%96%87%E5%B7%A5%E4%BD%9C%E6%B5%81%E4%B8%8E%E6%8E%92%E7%89%88%E7%BE%8E%E5%8C%96%E5%AE%9E%E6%88%98/">从零搭建个人独立博客 (二)：发文工作流与排版美化实战</a>
           </li>
         
       </ul>
