@@ -105,9 +105,10 @@ The editable source is `tools/search/source/portfolio.html`, with English text i
 `tools/search/source/translations.json`. The bilingual biography and formal identity
 links are maintained in `tools/search/source/author-profile.json`. Its `biography`
 contains authored Chinese and English paragraphs with inline emphasis and the
-advisor's official profile link. Homepages place a compact portrait on the left
-and the name, `headline`, contact icons and visitor count on the right. The full
-biography follows at the body's full text width. Category and
+advisor's official profile link. Homepages place the name, full biography,
+contact icons and visitor count on the left, with the portrait on the right.
+The English introductory paragraphs use 12px text with 1.55 line spacing to
+reduce their height. Contact glyphs and their layout slots are 30% larger. Category and
 project pages start directly with their work, and `/about/` shows the full
 biography and selected-work links. The category navigation sits in the top
 toolbar beside the language switch on every page. On portrait phones, navigation

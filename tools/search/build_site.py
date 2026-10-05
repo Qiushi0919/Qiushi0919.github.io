@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'profile-intro-20261005'
+VERSION = 'profile-intro-refined-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -81,11 +81,11 @@ def element(tag, text=None, **attrs):
     return e
 
 
-def author_paragraphs(language, section='biography'):
+def author_paragraphs(language):
     # Authored bilingual prose keeps its emphasis and advisor link without
     # relying on text-fragment translation across nested markup.
     return [html.fragment_fromstring('<p>' + paragraph + '</p>')
-            for paragraph in AUTHOR[section][language]]
+            for paragraph in AUTHOR['biography'][language]]
 
 
 def build():
@@ -141,21 +141,14 @@ def build():
  .feature-grid,.research-grid,.nuedc-grid,.eecs-grid,.embedded-grid,.side-project-demo-grid,.codex-tidy-demo-grid,.alttab-demo-grid,.mindmap-demo-grid{grid-template-columns:1fr}
  .site-footer{margin-inline:8px;font-size:13px}
 }
-.profile-section{grid-template-columns:160px minmax(0,1fr);gap:28px;padding:2px 16px 24px;border-bottom:0}
-.profile-photo{grid-column:1;grid-row:1;width:160px}
-.profile-copy{grid-column:2;grid-row:1}
-.profile-copy :is(h1,h2){text-align:left;margin-bottom:16px}
-.profile-icon-links{justify-content:start}
-.profile-views{text-align:left;margin-top:5px}
-.home-biography{max-width:none;padding:4px 0 24px;border-bottom:1px solid var(--line)}
-.home-biography p:last-child{margin-bottom:0}
-@media(max-width:760px){
- .profile-section{grid-template-columns:132px minmax(0,1fr);gap:18px}
- .profile-photo{width:132px}
- .profile-icon-links{grid-template-columns:repeat(auto-fit,26px);max-width:250px;gap:2px}
- .profile-contact-icon{width:26px}
- .home-biography{margin-inline:8px}
-}
+html[lang="en"] .profile-copy p{font-size:12px;line-height:1.55;margin-bottom:10px}
+.profile-icon-links{grid-template-columns:repeat(9,41.6px);gap:6.5px;min-height:52px}
+.profile-contact-icon{width:41.6px;height:41.6px;padding:5.2px}
+.profile-contact-icon svg{width:29.9px;height:29.9px}
+.profile-contact-icon .cv-mark{font-size:26px}
+.profile-contact-icon .qq-symbol{transform:scale(1.3);transform-origin:center}
+html.portrait-phone .profile-icon-links{grid-template-columns:repeat(9,41.6px);gap:6.5px}
+html.portrait-phone .profile-contact-icon{width:41.6px;height:52px;padding:5.2px}
 html.portrait-phone .site-toolbar{width:78vw;max-width:100%;margin-left:auto;margin-right:0;padding-inline:0;flex-wrap:wrap;gap:calc(6px / var(--portrait-ui-scale));padding-bottom:calc(8px / var(--portrait-ui-scale));margin-bottom:calc(14px / var(--portrait-ui-scale))}
 html.portrait-phone .site-toolbar .work-category-nav{flex:1;min-width:0;max-width:100%;justify-content:space-between;gap:calc(3px / var(--portrait-ui-scale))}
 html.portrait-phone .site-toolbar .work-category-tab{min-width:calc(28px / var(--portrait-ui-scale));min-height:calc(20px / var(--portrait-ui-scale));padding:calc(4px / var(--portrait-ui-scale)) calc(3px / var(--portrait-ui-scale));font-size:calc(9px / var(--portrait-ui-scale));border-radius:calc(5px / var(--portrait-ui-scale))}
@@ -232,17 +225,8 @@ html.portrait-phone .nav-label-compact{display:inline}
                 for paragraph in profile_copy.findall('p'):
                     profile_copy.remove(paragraph)
                 if route == '':
-                    for index, paragraph in enumerate(author_paragraphs(language, 'headline'), 1):
+                    for index, paragraph in enumerate(author_paragraphs(language), 1):
                         profile_copy.insert(index, paragraph)
-                home_biography = tree.xpath('//section[contains(concat(" ",@class," ")," home-biography ")]')[0]
-                if route == '':
-                    home_biography.clear()
-                    home_biography.set('class', 'biography home-biography')
-                    home_biography.set('aria-label', '个人介绍' if language == 'zh' else 'Biography')
-                    for paragraph in author_paragraphs(language):
-                        home_biography.append(paragraph)
-                else:
-                    home_biography.getparent().remove(home_biography)
                 if route == '':
                     # A name search should summarize the author; project pages
                     # remain available for unrestricted project snippets.
