@@ -11,7 +11,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
     directory = ROOT / origin
     sitemap = etree.parse(str(directory / 'sitemap.xml'))
     locations = sitemap.xpath('//*[local-name()="loc"]/text()')
-    assert len(locations) == 14 and len(set(locations)) == 14
+    assert len(locations) == 15 and len(set(locations)) == 15
     robots = RobotFileParser()
     robots.parse((directory / 'robots.txt').read_text().splitlines())
     assert robots.site_maps() == [f'https://{host}/sitemap.xml']
@@ -37,7 +37,16 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert '谢秋实' in tree.text_content() and 'Qiushi Xie' in tree.text_content()
         assert tree.xpath('//meta[@name="description"]/@content')[0]
         schema = json.loads(tree.xpath('//script[@type="application/ld+json"]/text()')[0])
-        assert schema['@graph'][0]['@type'] == 'Person'
+        person = schema['@graph'][0]
+        assert person['@type'] == 'Person'
+        assert person['@id'] == 'https://qiushi0919.cn/#person'
+        assert 'https://scholar.google.com/citations?user=TkPyZ-UAAAAJ' in person['sameAs']
+        assert not tree.xpath('//a[starts-with(@href,"https://scholar.google.com/scholar?")]')
+        if urlsplit(canonical).path == '/about/':
+            assert schema['@graph'][1]['@type'] == 'ProfilePage'
+            assert len(tree.xpath('//section[@class="biography"]/p')) == 5
+            assert not tree.xpath('//article[@data-work-category]')
+            assert len(tree.xpath('//section[@class="biography"]//li/a')) == 4
         ids = tree.xpath('//*[@id]/@id'); assert len(ids) == len(set(ids)), str(p)
         for link in tree.xpath('//a/@href'):
             if not link.startswith('/') or link.startswith('//') or link.startswith(prefix + '/assets/'):
@@ -62,4 +71,4 @@ for p in (ROOT / 'github-legacy').rglob('index.html'):
     assert tree.xpath('//a/@href') == [target], str(p)
     legacy_count += 1
 assert legacy_count == 30
-print(json.dumps({'status':'passed','static_pages':count,'sitemap_urls':28,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, visible content, root migration redirects'}))
+print(json.dumps({'status':'passed','static_pages':count,'sitemap_urls':30,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, visible content, root migration redirects'}))

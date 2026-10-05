@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'mobile-contact-20261005'
+VERSION = 'identity-about-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -40,8 +40,9 @@ EXTERNAL_PROJECTS = {
     'https://qiushi0919.cn/nuedc-c/': 'https://qiushi0919.github.io/2026-NUEDC-C/',
     'https://qiushi0919.cn/embedded-2025/': 'https://www.socchina.net/details?id=8a9b099de40642f48e40bdeb04649df1',
 }
-ROUTES = ['', *CATEGORIES, *DETAILS.values()]
+ROUTES = ['', 'about', *CATEGORIES, *DETAILS.values()]
 TRANSLATIONS = json.loads((SOURCE / 'translations.json').read_text())
+AUTHOR = json.loads((SOURCE / 'author-profile.json').read_text())
 VERIFICATION = json.loads((SOURCE / 'search-verification.json').read_text()) if (SOURCE / 'search-verification.json').exists() else {}
 
 
@@ -102,6 +103,9 @@ def build():
 .project-copy h2{overflow-wrap:anywhere}
 .site-footer{margin:28px 16px 0;padding-top:18px;border-top:1px solid var(--line);color:#607483;line-height:1.8}
 .site-footer a{margin-right:14px}
+.biography{margin:0 16px;padding:12px 0 8px;max-width:720px;color:#344d60;font-size:15px;line-height:1.85}
+.biography p{margin:0 0 18px}.biography h2{margin:24px 0 10px;color:#213747;font-size:18px}
+.biography ul{padding-left:20px}.biography li{margin:9px 0}.biography .author-links{display:flex;flex-wrap:wrap;gap:10px 20px}
 .skip-link{position:absolute;left:12px;top:-70px;padding:10px;background:#fff;z-index:1100}
 .skip-link:focus{top:12px}
 .feature-overlay{overflow-y:auto;max-height:85vh}
@@ -185,7 +189,7 @@ def build():
                 category = CATEGORIES.get(route)
                 detail_id = next((key for key, value in DETAILS.items() if value == route), None)
                 for card in tree.xpath('//article[@data-work-category]'):
-                    if ((category and card.get('data-work-category') != category[2]) or
+                    if ((route == 'about') or (category and card.get('data-work-category') != category[2]) or
                         (detail_id and card.get('id') != detail_id)):
                         card.getparent().remove(card)
                 if language == 'en':
@@ -207,6 +211,14 @@ def build():
                                if language == 'zh' else
                                'Qiushi Xie (谢秋实), a HUST undergraduate and incoming PhD student at Zhejiang University (2027 entry). Research in trustworthy AI, clustered metasurfaces, intelligent information systems, and embedded development.')
                 heading = tree.xpath('//*[@class="works-head"]/h2')[0]
+                if route == 'about':
+                    heading.tag = 'h1'
+                    heading.text = '关于谢秋实' if language == 'zh' else 'About Qiushi Xie'
+                    title = '谢秋实（Qiushi Xie）｜个人介绍' if language == 'zh' else 'About Qiushi Xie (谢秋实)'
+                    description = AUTHOR['biography'][language][0] + ('研究方向：可信 AI 问答、集群超表面、智能信息系统与嵌入式开发。' if language == 'zh' else ' Research interests: trustworthy AI, clustered metasurfaces, intelligent information systems, and embedded development.')
+                    heading.getparent().find('p').clear()
+                    heading.getparent().find('p').text = '教育背景、研究兴趣与代表项目' if language == 'zh' else 'Education, research interests, and selected work'
+                    tree.xpath('//*[@id="profileName"]')[0].tag = 'h2'
                 if category:
                     label = category[0 if language == 'zh' else 1]
                     heading.text = label
@@ -243,14 +255,15 @@ def build():
                                     ('og:image', canonical_base + 'assets/contact/profile-photo.jpg')]:
                     head.append(element('meta', property=prop, content=value))
                 head.append(element('meta', name='twitter:card', content='summary'))
-                person = {'@type': 'Person', '@id': canonical_base + '#person', 'name': '谢秋实',
+                person = {'@type': 'Person', '@id': CN + '#person', 'name': '谢秋实',
                           'alternateName': 'Qiushi Xie', 'url': canonical_base,
                           'description': ''.join(tree.xpath('//*[contains(concat(" ",@class," ")," profile-copy ")]/p')[0].itertext()).strip(),
                           'image': canonical_base + 'assets/contact/profile-photo.jpg',
                           'affiliation': {'@type': 'CollegeOrUniversity', 'name': 'Huazhong University of Science and Technology'},
-                          'sameAs': ['https://github.com/Qiushi0919', CN, GH],
+                          'sameAs': [AUTHOR['github'], CN, GH, AUTHOR['scholar']],
+                          'subjectOf': [{'@id': route_url(CN, 'about') + '#page'}, {'@id': route_url(GH, 'about') + '#page'}],
                           'knowsAbout': ['Trustworthy AI question answering', 'Clustered metasurfaces', 'Intelligent information systems', 'Embedded development']}
-                page = {'@type': 'ProfilePage' if route == '' else 'CollectionPage' if category else 'WebPage',
+                page = {'@type': 'ProfilePage' if route in ('', 'about') else 'CollectionPage' if category else 'WebPage',
                         '@id': canonical + '#page', 'url': canonical, 'name': title,
                         'description': description, 'inLanguage': 'zh-CN' if language == 'zh' else 'en',
                         'mainEntity': {'@id': person['@id']}, 'isPartOf': {'@id': canonical_base + '#website'}}
@@ -262,11 +275,13 @@ def build():
                     page['primaryImageOfPage'] = {'@id': portrait['@id']}
                     graph.append(portrait)
                 if detail_id:
-                    work = {'@type': 'ScholarlyArticle' if detail_id == 'eecsProjectCard' else 'CreativeWork',
+                    work = {'@type': 'ScholarlyArticle' if detail_id in ('eecsProjectCard', 'vaseProjectCard') else 'CreativeWork',
                             '@id': canonical + '#work', 'name': project_title, 'url': canonical,
                             'description': description, 'inLanguage': page['inLanguage']}
                     if detail_id == 'eecsProjectCard':
-                        work.update({'identifier': 'doi:10.1117/12.3122481', 'sameAs': 'https://doi.org/10.1117/12.3122481'})
+                        work.update({'identifier': 'doi:10.1117/12.3122481', 'sameAs': 'https://doi.org/10.1117/12.3122481', 'author': {'@id': person['@id']}})
+                    if detail_id == 'vaseProjectCard':
+                        work.update({'identifier': 'arXiv:2607.06374', 'sameAs': 'https://arxiv.org/abs/2607.06374', 'author': [{'@id': person['@id']}] + [{'@type':'Person', 'name': name} for name in ['Jiazi Wang', 'Nonghai Zhang', 'Zeyu Zhang', 'Yufeng Chen', 'Yang Zhao', 'Ling Shao', 'Hao Tang']]})
                     graph.append(work)
                     page['mainEntity'] = {'@id': work['@id']}
                     page['about'] = {'@id': person['@id']}
@@ -288,11 +303,30 @@ def build():
                     switch.append(a)
                 nav = tree.xpath('//*[contains(concat(" ",@class," ")," work-category-nav ")]')[0]
                 nav.clear(); nav.set('class', 'work-category-nav'); nav.set('aria-label', '作品分类' if language == 'zh' else 'Work categories')
-                for path, zh, en in [('', '全部', 'All Work'), ('papers', '论文', 'Papers'), ('competitions', '比赛', 'Competitions'), ('projects', '小项目', 'Side Projects')]:
+                for path, zh, en in [('', '全部', 'All Work'), ('papers', '论文', 'Papers'), ('competitions', '比赛', 'Competitions'), ('projects', '小项目', 'Side Projects'), ('about', '关于我', 'About')]:
                     a = element('a', zh if language == 'zh' else en, href=route_url(local_base, path))
                     a.set('class', 'work-category-tab' + (' is-active' if route == path else ''))
                     if route == path: a.set('aria-current', 'page')
                     nav.append(a)
+                if route == 'about':
+                    biography = element('section', aria_label='个人介绍' if language == 'zh' else 'Biography', **{'class':'biography'})
+                    for paragraph in AUTHOR['biography'][language]:
+                        biography.append(element('p', paragraph))
+                    biography.append(element('h2', '代表论文与项目' if language == 'zh' else 'Selected papers and projects'))
+                    works = element('ul')
+                    for path, zh, en in [
+                        ('papers/vasemuseum', 'VaseMuseum · arXiv 预印本，共同第一作者', 'VaseMuseum · arXiv preprint, co-first author'),
+                        ('papers/battery-rul', '锂离子电池剩余寿命预测 · SPIE 2026，独立第一作者', 'Battery remaining-useful-life estimation · SPIE 2026, sole author'),
+                        ('competitions/intelcup-2026', '英特尔杯无人机地面站 · 全国二等奖，前7.83%', 'Intel Cup drone ground station · National Second Prize, top 7.83%'),
+                        ('competitions/nuedc-c', '数字钥匙实验系统 · 湖北赛区一等奖', 'Digital-key system · First Prize, Hubei division')]:
+                        item = element('li'); item.append(element('a', zh if language == 'zh' else en, href=route_url(local_base, path))); works.append(item)
+                    biography.append(works)
+                    biography.append(element('h2', '个人主页与学术资料' if language == 'zh' else 'Personal and academic profiles'))
+                    links = element('div', **{'class':'author-links'})
+                    for href, label in [(AUTHOR['scholar'], 'Google Scholar'), (AUTHOR['github'], 'GitHub'), (CN, '中文主页'), (GH, 'English homepage')]:
+                        links.append(element('a', label, href=href))
+                    biography.append(links)
+                    nav.addnext(biography)
                 for card in tree.xpath('//article[@data-work-category]'):
                     path = DETAILS[card.get('id')]
                     title_link = card.xpath('.//a[contains(concat(" ",@class," ")," title-link ")]')[0]
@@ -317,7 +351,7 @@ def build():
                 body.insert(0, skip)
                 footer = element('footer', **{'class':'site-footer'})
                 footer.append(element('p', '国内入口 / China: qiushi0919.cn · International: GitHub Pages' if language == 'zh' else 'China: qiushi0919.cn · International: GitHub Pages'))
-                for href, label in [(route_url(CN, route), '国内 · cn'), (route_url(GH, route), 'International · GitHub'), (route_url(local_base, 'papers'), '论文 / Papers'), (route_url(local_base, 'competitions'), '竞赛 / Competitions')]:
+                for href, label in [(route_url(CN, route), '国内 · cn'), (route_url(GH, route), 'International · GitHub'), (route_url(local_base, 'about'), '个人介绍' if language == 'zh' else 'About'), (AUTHOR['scholar'], 'Google Scholar'), (route_url(local_base, 'papers'), '论文 / Papers'), (route_url(local_base, 'competitions'), '竞赛 / Competitions')]:
                     footer.append(element('a', label, href=href))
                 if origin == 'cn' and VERIFICATION.get('icp_website'):
                     filing = element('p')
@@ -356,6 +390,7 @@ def build():
     for language in ('en', 'zh'):
         prefix = '' if language == 'en' else 'zh/'
         for route in ROUTES:
+            if route == 'about': continue  # No biography route existed on the legacy site.
             target = route_url(GH + prefix, route)
             canonical = route_url(GH if language == 'en' else CN, route)
             page = f'<!doctype html><html lang="{language}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url={target}"><link rel="canonical" href="{canonical}"><title>Qiushi Xie / 谢秋实 · Homepage</title></head><body><a href="{target}">Qiushi Xie / 谢秋实 · Homepage</a></body></html>\n'
@@ -368,6 +403,7 @@ def build():
     # The old sitemap allows crawlers to discover the old pages' redirects.
     old_sitemap = etree.Element('urlset', nsmap={None:'http://www.sitemaps.org/schemas/sitemap/0.9'})
     for route in ROUTES:
+        if route == 'about': continue
         url = etree.SubElement(old_sitemap, 'url')
         etree.SubElement(url, 'loc').text = route_url(LEGACY_GH, route)
     write(legacy / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n' + etree.tostring(old_sitemap, encoding='unicode', pretty_print=True))

@@ -1,0 +1,20 @@
+{
+  "scholar": "https://scholar.google.com/citations?user=TkPyZ-UAAAAJ",
+  "github": "https://github.com/Qiushi0919",
+  "biography": {
+    "zh": [
+      "我叫谢秋实（Qiushi Xie），是华中科技大学通信工程专业大四本科生，已推免至浙江大学信息与电子工程学院，拟于2027年入学攻读博士学位。",
+      "研究兴趣包括可信 AI 问答、集群超表面、智能信息系统与嵌入式开发。我关注智能系统如何提供有证据支撑、可验证的回答，并将通信与感知、算法和软硬件实现结合起来。",
+      "在唐浩老师指导下，我参与远程本科生科研项目，是古希腊陶器数字智能博物馆 VaseMuseum 论文的共同第一作者；该工作已发布 arXiv 预印本，并投稿至 Nature Machine Intelligence。我的锂离子电池剩余寿命预测论文已于2026年发表于 SPIE 会议论文集，我是独立第一作者。",
+      "竞赛中，我担任英特尔杯多模态无人机地面站项目队长，获得全国二等奖，位列前7.83%；带队完成的数字钥匙实验系统获电赛湖北赛区一等奖。我也维护 Codex Tidy、Boring Notch Focus 等 macOS 个人作品。",
+      "本网站记录科研论文、竞赛项目与作品，并链接论文与代码。中文入口为 qiushi0919.cn，英文入口为 qiushi0919.github.io，欢迎通过邮箱交流。"
+    ],
+    "en": [
+      "I am Qiushi Xie (谢秋实), a final-year undergraduate in Communication Engineering at Huazhong University of Science and Technology (HUST). I have been admitted through the recommendation route to the College of Information Science and Electronic Engineering at Zhejiang University, with direct-entry PhD studies planned to begin in 2027.",
+      "My research interests include trustworthy AI question answering, clustered metasurfaces, intelligent information systems, and embedded development. I am interested in evidence-grounded, verifiable answers in real-world intelligent systems, and in connecting communication and sensing with algorithms and practical hardware and software.",
+      "As a remote undergraduate research assistant advised by Hao Tang, I am a co-first author of VaseMuseum, a digital intelligent museum for ancient Greek pottery. The work is available as an arXiv preprint and has been submitted to Nature Machine Intelligence. My lithium-ion battery remaining-useful-life estimation paper was published in the SPIE conference proceedings in 2026; I am its sole author.",
+      "I led the multimodal drone ground-station project in the Intel Cup, which received a National Second Prize and placed in the top 7.83%. I also led the digital-key system project that received a First Prize in the Hubei division of the National Undergraduate Electronics Design Contest. My personal projects include Codex Tidy, Boring Notch Focus, and a multi-display window-switching tool for macOS.",
+      "This site documents my research papers, competition projects, and personal work, with links to publications, code, and project pages. The Chinese entrance is qiushi0919.cn, and the English entrance is qiushi0919.github.io. Research and project enquiries are welcome by email."
+    ]
+  }
+}

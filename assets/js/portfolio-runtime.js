@@ -108,12 +108,12 @@
           const content = {
             github: ['GitHub', text('GitHub 个人主页', 'GitHub profile'), 'Qiushi0919', 'Trustworthy AI · Metasurfaces · Embedded Systems', text('前往 GitHub', 'Visit GitHub')],
             email: [text('邮箱', 'Email'), text('邮箱联系方式', 'Email contact'), url.pathname, text('科研交流与项目联系', 'Research and project enquiries'), text('写邮件', 'Write an email')],
-            scholar: ['Google Scholar', text('姓名学术检索', 'Academic name search'), '谢秋实 / Qiushi Xie', text('检索谢秋实的论文与相关学术成果', 'Search for papers and academic work by Qiushi Xie'), text('前往学术检索', 'Search Google Scholar')],
+            scholar: ['Google Scholar', text('学术个人主页', 'Academic profile'), '谢秋实 / Qiushi Xie', text('科研论文与预印本', 'Research papers and preprints'), text('前往学术主页', 'Visit Google Scholar')],
             cv: [text('个人简历', 'Curriculum Vitae'), 'PDF', '谢秋实 / Qiushi Xie', text('教育经历、科研论文与竞赛项目', 'Education, research papers and competition projects'), text('打开简历', 'Open CV')],
             website: [text(url.hostname === 'qiushi0919.cn' ? '中文个人网站' : '英文个人网站', url.hostname === 'qiushi0919.cn' ? 'Chinese website' : 'English website'), text('个人主页', 'Personal homepage'), url.hostname, text('科研论文、竞赛项目与个人作品', 'Research papers, competition projects and personal work'), text('前往网站', 'Visit website')]
           }[kind];
           [title.textContent, description.textContent, name.textContent, summary.textContent, visit.textContent] = content;
-          destination.textContent = kind === 'email' ? url.pathname : kind === 'scholar' ? url.hostname : href;
+          destination.textContent = kind === 'email' ? url.pathname : href;
           visit.href = href;
           visit.target = kind === 'email' ? '_self' : '_blank';
           dismiss.textContent = text('关闭', 'Close');

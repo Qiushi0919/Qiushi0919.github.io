@@ -2,6 +2,8 @@
 
 - 国内中文主页：https://qiushi0919.cn/
 - International English homepage: https://qiushi0919.github.io/
+- Google Scholar: https://scholar.google.com/citations?user=TkPyZ-UAAAAJ
+- Personal biography: https://qiushi0919.cn/about/ · https://qiushi0919.github.io/about/
 - Source repository: https://github.com/Qiushi0919/Qiushi0919.github.io
 
 Two public entrances serve the same portfolio. The CN origin defaults to Chinese;
@@ -10,7 +12,7 @@ switch. There is no IP-based redirect.
 
 ## Search-friendly static pages
 
-Each language has a homepage, three category pages, and ten project pages. All
+Each language has a homepage, a biography page, three category pages, and ten project pages. All
 text and navigation links exist in HTML without JavaScript. JavaScript adds
 contact dialogs, project previews, and image carousels; it does not hide the
 portfolio while waiting for images.
@@ -18,7 +20,7 @@ portfolio while waiting for images.
 Preferred Chinese URLs live on `qiushi0919.cn`; preferred English URLs live on
 GitHub Pages. Same-language alternate copies point to those preferred URLs with
 canonical links. Reciprocal `zh-CN`, `en`, and `x-default` hreflang links describe
-the language alternatives. Each origin's sitemap lists its 14 preferred pages.
+the language alternatives. Each origin's sitemap lists its 15 preferred pages.
 Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
@@ -70,7 +72,7 @@ immediately; the removed loading screen is not restored. Off-screen images load
 lazily, and preview videos do not preload.
 
 Profile contact links use labelled SVG icons with hover and keyboard-focus
-tooltips in this order: CV, email, GitHub, Google Scholar name search, personal
+tooltips in this order: CV, email, GitHub, Google Scholar author profile, personal
 WeChat, WeChat official account, QQ, Chinese website, and English website. The original three
 QR dialogs and both website destinations are preserved. Portrait phones keep
 the compact nine-icon row at the page's original scale; do not compensate those
@@ -83,8 +85,7 @@ Add the English tooltip translation when updating labels.
 On phones, CV, email, GitHub, Scholar and both website icons first open a
 labelled, dismissible preview dialog. Its content fits the phone width and
 includes an explicit destination action. GitHub uses the account's public avatar
-and biography; it does not embed the external GitHub website. Scholar remains a
-name search until an actual author profile is available. CV previews the existing
+and biography; it does not embed the external GitHub website. Scholar links to the verified public author profile. CV previews the existing
 first-page image, and email offers the existing mailto link. Original link hrefs
 remain intact as a fallback without JavaScript. Desktop links retain their
 normal behavior. Dialogs lock background scrolling, restore the reading position
@@ -101,7 +102,10 @@ size. The generator copies those contact assets onto both origins.
 ## Build and update
 
 The editable source is `tools/search/source/portfolio.html`, with English text in
-`tools/search/source/translations.json`. Requires Python 3 and `lxml`.
+`tools/search/source/translations.json`. The bilingual biography and formal identity
+links are maintained in `tools/search/source/author-profile.json`. `/about/` uses
+ProfilePage markup and the same stable Person ID on both language versions.
+Paper pages identify the real arXiv/DOI publication records. Requires Python 3 and `lxml`.
 
 ```sh
 python3 tools/search/build_site.py

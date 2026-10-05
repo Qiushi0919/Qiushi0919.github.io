@@ -7,6 +7,12 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/"/>
   </url>
   <url>
+    <loc>https://qiushi0919.github.io/about/</loc>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/about/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/about/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/about/"/>
+  </url>
+  <url>
     <loc>https://qiushi0919.github.io/papers/</loc>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/papers/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/papers/"/>

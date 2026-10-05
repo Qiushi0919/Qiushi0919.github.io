@@ -187,6 +187,9 @@
 .project-copy h2{overflow-wrap:anywhere}
 .site-footer{margin:28px 16px 0;padding-top:18px;border-top:1px solid var(--line);color:#607483;line-height:1.8}
 .site-footer a{margin-right:14px}
+.biography{margin:0 16px;padding:12px 0 8px;max-width:720px;color:#344d60;font-size:15px;line-height:1.85}
+.biography p{margin:0 0 18px}.biography h2{margin:24px 0 10px;color:#213747;font-size:18px}
+.biography ul{padding-left:20px}.biography li{margin:9px 0}.biography .author-links{display:flex;flex-wrap:wrap;gap:10px 20px}
 .skip-link{position:absolute;left:12px;top:-70px;padding:10px;background:#fff;z-index:1100}
 .skip-link:focus{top:12px}
 .feature-overlay{overflow-y:auto;max-height:85vh}
