@@ -59,7 +59,9 @@ This uses the bundled `sips` format converter; it does not redraw the artwork.
 Portrait phones retain the original 980px canvas, scaled to fit the screen, so
 project covers and descriptions keep their compact horizontal card layout. The
 early head script changes the viewport before CSS loads and allows pinch zoom.
-Desktop and landscape browsers keep their normal viewport. Content renders
+Desktop and landscape browsers keep their normal viewport. Portrait phone close
+buttons compensate for that page scale and retain a 48px physical touch target.
+Content renders
 immediately; the removed loading screen is not restored. Off-screen images load
 lazily, and preview videos do not preload.
 

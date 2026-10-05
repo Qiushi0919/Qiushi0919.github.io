@@ -12,6 +12,8 @@
       if (portraitPhone) {
         const portraitCanvasWidth = 980;
         const initialScale = Math.min(0.48, screenWidth / portraitCanvasWidth).toFixed(3);
+        document.documentElement.classList.add('portrait-phone');
+        document.documentElement.style.setProperty('--portrait-ui-scale', initialScale);
         viewport.setAttribute('content', `width=${portraitCanvasWidth},initial-scale=${initialScale},minimum-scale=0.3,maximum-scale=2,user-scalable=yes`);
       }
     })();
@@ -20,7 +22,7 @@
   <link rel="icon" href="/assets/contact/qiushi-favicon.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/assets/contact/apple-touch-icon.png" sizes="180x180">
   <title>个人作品 | 谢秋实 Qiushi Xie</title>
-  <link rel="stylesheet" href="/assets/css/portfolio.css?v=portrait-contacts-20261005"><link rel="canonical" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/"><meta property="og:title" content="个人作品 | 谢秋实 Qiushi Xie"><meta property="og:description" content="谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/projects/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg"><meta name="twitter:card" content="summary"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年入学攻读博士学位。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/"], "knowsAbout": ["Trustworthy AI question answering", "Clustered metasurfaces", "Intelligent information systems", "Embedded development"]}, {"@type": "CollectionPage", "@id": "https://qiushi0919.cn/projects/#page", "url": "https://qiushi0919.cn/projects/", "name": "个人作品 | 谢秋实 Qiushi Xie", "description": "谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}]}</script></head>
+  <link rel="stylesheet" href="/assets/css/portfolio.css?v=interaction-20261005"><link rel="canonical" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/"><meta property="og:title" content="个人作品 | 谢秋实 Qiushi Xie"><meta property="og:description" content="谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/projects/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg"><meta name="twitter:card" content="summary"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年入学攻读博士学位。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/"], "knowsAbout": ["Trustworthy AI question answering", "Clustered metasurfaces", "Intelligent information systems", "Embedded development"]}, {"@type": "CollectionPage", "@id": "https://qiushi0919.cn/projects/#page", "url": "https://qiushi0919.cn/projects/", "name": "个人作品 | 谢秋实 Qiushi Xie", "description": "谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}]}</script></head>
 <body>
   <a href="#main-content" class="skip-link">跳到作品</a><main class="page" id="main-content">
     <div class="site-toolbar" data-no-i18n>
@@ -58,6 +60,7 @@
 
       <button class="side-project-cover" id="codexTidyCoverTrigger" type="button" aria-expanded="false" aria-controls="codexTidyFeatureOverlay" aria-label="展开 Codex Tidy 功能详情">
         <img loading="lazy" decoding="async" src="/assets/side-projects/codex-tidy/cover.webp" alt="Codex Tidy 产品封面：对话、文件、空间，一眼理清">
+      <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy has-signature">
@@ -100,6 +103,7 @@
 
       <button class="side-project-cover" id="sideProjectCoverTrigger" type="button" aria-expanded="false" aria-controls="sideProjectFeatureOverlay" aria-label="展开 Boring Notch Focus 功能详情">
         <img loading="lazy" decoding="async" src="/assets/side-projects/boring-notch/thumbnail.webp" alt="Boring Notch Focus 宣传封面">
+      <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy has-signature">
@@ -142,6 +146,7 @@
 
       <button class="side-project-cover" id="altTabCoverTrigger" type="button" aria-expanded="false" aria-controls="altTabFeatureOverlay" aria-label="展开 AltTab 多显示器窗口切换实际运行详情">
         <img loading="lazy" decoding="async" src="/assets/side-projects/alttab/concept.webp" alt="AltTab 多显示器窗口切换概念图">
+      <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy has-signature">
@@ -184,6 +189,7 @@
 
       <button class="side-project-cover" id="mindMapCoverTrigger" type="button" aria-expanded="false" aria-controls="mindMapFeatureOverlay" aria-label="展开 MindMap 思维导图编辑器功能详情">
         <img loading="lazy" decoding="async" src="/assets/side-projects/mindmap/cover.webp" alt="MindMap 思维导图编辑器产品封面">
+      <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy has-signature">
@@ -235,5 +241,5 @@
 
   <div class="overlay-backdrop" aria-hidden="true"></div>
 
-  <script src="/assets/js/portfolio-runtime.js?v=portrait-contacts-20261005"></script></body>
+  <script src="/assets/js/portfolio-runtime.js?v=interaction-20261005"></script></body>
 </html>
