@@ -199,6 +199,9 @@ def build():
                     head.append(element('meta', name='google-site-verification', content=VERIFICATION['google']))
                 if route == '' and VERIFICATION.get('bing'):
                     head.append(element('meta', name='msvalidate.01', content=VERIFICATION['bing']))
+                if route == '':
+                    for meta_name, meta_value in VERIFICATION.get('platform_meta', {}).get(origin, {}).items():
+                        head.append(element('meta', name=meta_name, content=meta_value))
                 head.append(element('link', rel='stylesheet', href=asset_prefix + 'css/portfolio.css?v=' + VERSION))
                 canonical = route_url(canonical_base, route)
                 head.append(element('link', rel='canonical', href=canonical))

@@ -53,6 +53,8 @@ The ownership verification files under `tools/search/verification/` must remain
 published after verification. They include public Google/Baidu verification files
 and an IndexNow ownership key file. The Bing `msvalidate.01` meta tag must also
 remain on the homepage after verification succeeds.
+Origin-specific 360, Sogou, and Shenma ownership tags are stored under
+`platform_meta.cn`; the generator publishes them only on the CN homepages.
 `tools/search/source/search-verification.json` holds the public Google meta token
 and the CN website ICP number confirmed in Aliyun: 鄂ICP备2026007908号-1.
 The CN footer links that number to the official MIIT query site.
