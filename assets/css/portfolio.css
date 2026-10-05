@@ -104,8 +104,11 @@
     }
     .profile-website{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px 12px}.profile-website a{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.profile-website svg{flex:none}.profile-website a:focus-visible{outline:2px solid var(--blue);outline-offset:4px;border-radius:2px}
 
-    .profile-icon-links{display:grid;grid-template-columns:repeat(8,32px);gap:5px;justify-content:center}
+    .profile-icon-links{display:grid;grid-template-columns:repeat(9,32px);gap:5px;justify-content:center}
     .profile-contact-icon{position:relative;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:4px;border:0;border-radius:5px;background:transparent;color:#111;cursor:pointer;text-decoration:none}
+    .profile-contact-icon .cv-mark{color:currentColor;font:900 20px/1 Georgia,"Times New Roman",serif;letter-spacing:-1px}
+    .qq-symbol{display:block;width:24px;height:24px;overflow:hidden}
+    .qq-symbol .profile-qq-logo{display:block;width:37px;height:37px;max-width:none;transform:translate(-6.5px,-6.5px)}
     .profile-contact-icon svg{display:block;width:23px;height:23px;fill:currentColor}
     .profile-contact-icon:hover{color:var(--blue);background:#f1f5f8;text-decoration:none}
     .profile-contact-icon:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
@@ -113,7 +116,7 @@
     .profile-contact-icon:hover::after,.profile-contact-icon:focus-visible::after{opacity:1;visibility:visible}
     .profile-contact-icon:first-child::after{left:0;transform:none}
     .profile-links .profile-origin-badge{position:absolute;right:-1px;bottom:0;padding:0 2px;border:1px solid #dce3e8;border-radius:2px;background:#fff;color:currentColor;font:700 7px/10px system-ui}
-    @media(max-width:760px){.profile-icon-links{grid-template-columns:repeat(4,44px);gap:5px 12px}.profile-contact-icon{width:44px;height:44px}.profile-contact-icon:nth-child(5)::after{left:0;transform:none}}
+    @media(max-width:760px){.profile-icon-links{grid-template-columns:repeat(3,44px);gap:5px 12px}.profile-contact-icon{width:44px;height:44px}.profile-contact-icon:nth-child(3n+1)::after{left:0;right:auto;transform:none}.profile-contact-icon:nth-child(3n)::after{left:auto;right:0;transform:none}}
   
 .profile-name-latin{display:block;margin-top:7px;font-size:18px;color:#607483;letter-spacing:0}
 .profile-copy h2{margin:0 0 20px;text-align:center;color:#172b3a;font-size:32px;font-weight:400;letter-spacing:-.025em}

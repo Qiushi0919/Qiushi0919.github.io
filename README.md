@@ -61,10 +61,13 @@ project cards stack vertically. Content renders immediately, off-screen images
 load lazily, and preview videos do not preload.
 
 Profile contact links use labelled SVG icons with hover and keyboard-focus
-tooltips: email, GitHub, personal WeChat, WeChat official account, QQ, Chinese
-website, English website, and a Google Scholar name search. The original three
-QR dialogs and both website destinations are preserved. Mobile uses two rows
-of four 44px controls. Add the English tooltip translation when updating labels.
+tooltips in this order: CV, email, GitHub, Google Scholar name search, personal
+WeChat, WeChat official account, QQ, Chinese website, and English website. The original three
+QR dialogs and both website destinations are preserved. Mobile uses three rows
+of three 44px controls. Add the English tooltip translation when updating labels.
+The QQ penguin uses the user's supplied black-and-white artwork, preserved
+unchanged under `tools/search/source/contact/qq-logo.png`; CSS frames it at icon
+size. The generator copies those contact assets onto both origins.
 
 ## Build and update
 

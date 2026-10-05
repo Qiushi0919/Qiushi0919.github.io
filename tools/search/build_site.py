@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'contact-icons-20261005'
+VERSION = 'contact-icons-qq-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -152,6 +152,11 @@ def build():
             target = destination / target_name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes((SOURCE / 'favicon' / source_name).read_bytes())
+        for source_file in (SOURCE / 'contact').glob('*'):
+            if source_file.is_file():
+                target = destination / 'assets/contact' / source_file.name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(source_file.read_bytes())
         for language in ('zh', 'en'):
             lang_prefix = '' if language == default_lang else language + '/'
             local_base = path_prefix + lang_prefix
@@ -294,7 +299,7 @@ def build():
                         e.set('href', EXTERNAL_PROJECTS[e.get('href')])
                     if origin == 'github' and e.get('href') in (CN + 'cv', CN + 'cv/'):
                         e.set('href', GH + 'cv/')
-                    if e.tag == 'img' and e.get('class') != 'profile-photo':
+                    if e.tag == 'img' and e.get('class') not in ('profile-photo', 'profile-qq-logo'):
                         e.set('loading', 'lazy'); e.set('decoding', 'async')
                     if e.tag == 'video': e.set('preload', 'none')
                 main = tree.xpath('//*[contains(concat(" ",@class," ")," page ")]')[0]
