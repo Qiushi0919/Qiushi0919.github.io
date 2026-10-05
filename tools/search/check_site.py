@@ -1,6 +1,7 @@
 """Check the generated pages as a crawler sees them, without JavaScript."""
 from pathlib import Path
 from urllib.parse import urlsplit, unquote
+from urllib.robotparser import RobotFileParser
 import json
 from lxml import html, etree
 
@@ -11,7 +12,14 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
     sitemap = etree.parse(str(directory / 'sitemap.xml'))
     locations = sitemap.xpath('//*[local-name()="loc"]/text()')
     assert len(locations) == 14 and len(set(locations)) == 14
-    assert (directory / 'robots.txt').read_text().startswith('User-agent: *')
+    robots = RobotFileParser()
+    robots.parse((directory / 'robots.txt').read_text().splitlines())
+    assert robots.site_maps() == [f'https://{host}/sitemap.xml']
+    for agent in ('OAI-SearchBot', 'Bingbot', 'UnlistedCrawler'):
+        assert robots.can_fetch(agent, f'https://{host}/')
+        assert robots.can_fetch(agent, f'https://{host}/assets/css/portfolio.css')
+        for path in ('analytics/', 'cost-per-day/api/', 'tools/search/'):
+            assert not robots.can_fetch(agent, f'https://{host}/{path}')
     for p in directory.rglob('index.html'):
         tree = html.fromstring(p.read_text())
         count += 1
