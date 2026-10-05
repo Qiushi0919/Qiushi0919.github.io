@@ -29,6 +29,13 @@ and Person description retain the current HUST undergraduate affiliation and
 state that PhD entry is planned for 2027; they do not claim a completed doctorate.
 After enrollment, remove "Incoming" and update the biography and affiliation.
 
+On the homepages, project cards are wrapped in `div data-nosnippet` so search
+previews describe the author rather than picking one project's software summary.
+The author's biography remains eligible for snippets. Category and individual
+project pages retain unrestricted previews; their text is still independently
+available for search and AI citations. Bing and Google support this selective
+attribute, although the final search title and snippet remain engine-controlled.
+
 ## Website icon
 
 The latest user-supplied portrait artwork is preserved at

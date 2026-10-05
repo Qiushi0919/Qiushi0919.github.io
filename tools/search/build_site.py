@@ -176,6 +176,15 @@ def build():
                         card.getparent().remove(card)
                 if language == 'en':
                     translate_tree(tree)
+                if route == '':
+                    # A name search should summarize the author; project pages
+                    # remain available for unrestricted project snippets.
+                    for card in tree.xpath('//article[@data-work-category]'):
+                        parent = card.getparent()
+                        wrapper = element('div', **{'class': 'homepage-project-context',
+                                                    'data-nosnippet': ''})
+                        parent.insert(parent.index(card), wrapper)
+                        wrapper.append(card)
                 tree.set('lang', 'zh-CN' if language == 'zh' else 'en')
                 tree.set('data-language', language)
                 title = ('谢秋实（Qiushi Xie）— 浙江大学2027级直博生' if language == 'zh'
