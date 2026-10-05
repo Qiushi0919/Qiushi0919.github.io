@@ -60,6 +60,12 @@ The mobile layout uses the actual device width. Below 760px the profile and
 project cards stack vertically. Content renders immediately, off-screen images
 load lazily, and preview videos do not preload.
 
+Profile contact links use labelled SVG icons with hover and keyboard-focus
+tooltips: email, GitHub, personal WeChat, WeChat official account, QQ, Chinese
+website, English website, and a Google Scholar name search. The original three
+QR dialogs and both website destinations are preserved. Mobile uses two rows
+of four 44px controls. Add the English tooltip translation when updating labels.
+
 ## Build and update
 
 The editable source is `tools/search/source/portfolio.html`, with English text in

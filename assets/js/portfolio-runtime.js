@@ -44,6 +44,9 @@
         });
       });
       document.getElementById('contactDialogClose').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('keydown', event => {
+        if (event.key === 'Escape') dialog.close();
+      });
       dialog.addEventListener('cancel', event => {
         event.preventDefault();
         dialog.close();
