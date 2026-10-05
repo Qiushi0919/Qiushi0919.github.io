@@ -23,6 +23,12 @@ Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
 
+The homepage title identifies the 2027 direct-entry PhD cohort at Zhejiang
+University. Its English title says "Incoming PhD Student". The visible biography
+and Person description retain the current HUST undergraduate affiliation and
+state that PhD entry is planned for 2027; they do not claim a completed doctorate.
+After enrollment, remove "Incoming" and update the biography and affiliation.
+
 The mobile layout uses the actual device width. Below 760px the profile and
 project cards stack vertically. Content renders immediately, off-screen images
 load lazily, and preview videos do not preload.
@@ -44,10 +50,23 @@ to the CN web root. **Do not copy GitHub's root HTML directly to CN:** their
 default languages and asset prefixes differ.
 
 The ownership verification files under `tools/search/verification/` must remain
-published after verification. They are public files issued by Google/Baidu.
+published after verification. They include public Google/Baidu verification files
+and an IndexNow ownership key file. The Bing `msvalidate.01` meta tag must also
+remain on the homepage after verification succeeds.
 `tools/search/source/search-verification.json` holds the public Google meta token
 and the CN website ICP number confirmed in Aliyun: 鄂ICP备2026007908号-1.
 The CN footer links that number to the official MIIT query site.
+
+After a successful release has been checked on the public URLs, notify IndexNow
+once for each updated origin:
+
+```sh
+python3 tools/search/notify_indexnow.py --origin cn
+python3 tools/search/notify_indexnow.py --origin github
+```
+
+The command verifies the hosted public key before submitting the 14 preferred
+URLs. HTTP 200 or 202 confirms receipt, not crawling, indexing, or ranking.
 
 ## Hosting
 

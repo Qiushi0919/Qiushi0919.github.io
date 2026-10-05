@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'root-homepage-20261005'
+VERSION = 'phd-profile-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -172,11 +172,11 @@ def build():
                     translate_tree(tree)
                 tree.set('lang', 'zh-CN' if language == 'zh' else 'en')
                 tree.set('data-language', language)
-                title = ('谢秋实 Qiushi Xie | 华中科技大学 · 科研与竞赛' if language == 'zh'
-                         else 'Qiushi Xie | HUST · Research & Projects')
-                description = ('谢秋实，华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院。科研论文、竞赛项目与个人作品；研究兴趣包括可信 AI 问答、集群超表面、智能信息系统与嵌入式开发。'
+                title = ('谢秋实（Qiushi Xie）— 浙江大学2027级直博生' if language == 'zh'
+                         else 'Qiushi Xie (谢秋实) — Incoming PhD Student, ZJU (2027)')
+                description = ('谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年入学攻读博士学位。个人主页记录科研论文、竞赛项目与作品，研究兴趣包括可信 AI 问答、集群超表面、智能信息系统与嵌入式开发。'
                                if language == 'zh' else
-                               'Qiushi Xie (谢秋实), a Communication Engineering undergraduate at HUST, recommended for admission to Zhejiang University. Research in trustworthy AI, clustered metasurfaces, intelligent information systems, and embedded development.')
+                               'Qiushi Xie (谢秋实), a HUST undergraduate and incoming PhD student at Zhejiang University (2027 entry). Research in trustworthy AI, clustered metasurfaces, intelligent information systems, and embedded development.')
                 heading = tree.xpath('//*[@class="works-head"]/h2')[0]
                 if category:
                     label = category[0 if language == 'zh' else 1]
@@ -197,6 +197,8 @@ def build():
                 head.xpath('./meta[@name="description"]')[0].set('content', description)
                 if route == '' and VERIFICATION.get('google'):
                     head.append(element('meta', name='google-site-verification', content=VERIFICATION['google']))
+                if route == '' and VERIFICATION.get('bing'):
+                    head.append(element('meta', name='msvalidate.01', content=VERIFICATION['bing']))
                 head.append(element('link', rel='stylesheet', href=asset_prefix + 'css/portfolio.css?v=' + VERSION))
                 canonical = route_url(canonical_base, route)
                 head.append(element('link', rel='canonical', href=canonical))
@@ -209,6 +211,7 @@ def build():
                 head.append(element('meta', name='twitter:card', content='summary'))
                 person = {'@type': 'Person', '@id': canonical_base + '#person', 'name': '谢秋实',
                           'alternateName': 'Qiushi Xie', 'url': canonical_base,
+                          'description': ''.join(tree.xpath('//*[contains(concat(" ",@class," ")," profile-copy ")]/p')[0].itertext()).strip(),
                           'image': canonical_base + 'assets/contact/profile-photo.jpg',
                           'affiliation': {'@type': 'CollegeOrUniversity', 'name': 'Huazhong University of Science and Technology'},
                           'sameAs': ['https://github.com/Qiushi0919', CN, GH],
