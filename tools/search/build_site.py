@@ -146,6 +146,12 @@ def build():
         path_prefix = '/'
         write(destination / 'assets/css/portfolio.css', css)
         write(destination / 'assets/js/portfolio-runtime.js', runtime)
+        for source_name, target_name in [('favicon.ico', 'favicon.ico'),
+                                          ('qiushi-favicon.png', 'assets/contact/qiushi-favicon.png'),
+                                          ('apple-touch-icon.png', 'assets/contact/apple-touch-icon.png')]:
+            target = destination / target_name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((SOURCE / 'favicon' / source_name).read_bytes())
         for language in ('zh', 'en'):
             lang_prefix = '' if language == default_lang else language + '/'
             local_base = path_prefix + lang_prefix

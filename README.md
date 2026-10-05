@@ -29,6 +29,16 @@ and Person description retain the current HUST undergraduate affiliation and
 state that PhD entry is planned for 2027; they do not claim a completed doctorate.
 After enrollment, remove "Incoming" and update the biography and affiliation.
 
+## Website icon
+
+The user-supplied square artwork is preserved at
+`tools/search/source/favicon/original.png`. Its full composition is used in the
+192px PNG, 180px Apple touch icon, and ICO containing 16/32/48/96px sizes.
+The generator publishes the same icons on both origins, including the root
+`/favicon.ico`. The icon URLs are stable and crawlable; search engines may update
+their displayed icons after recrawling. The old globe file is retained for any
+legacy page that still references it.
+
 The mobile layout uses the actual device width. Below 760px the profile and
 project cards stack vertically. Content renders immediately, off-screen images
 load lazily, and preview videos do not preload.
