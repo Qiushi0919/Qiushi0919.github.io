@@ -31,13 +31,18 @@ After enrollment, remove "Incoming" and update the biography and affiliation.
 
 ## Website icon
 
-The user-supplied square artwork is preserved at
-`tools/search/source/favicon/original.png`. Its full composition is used in the
+The latest user-supplied portrait artwork is preserved at
+`tools/search/source/favicon/original.png`. Its full composition is centered in a
+square, with narrow blue margins when needed to retain the original proportions, in the
 192px PNG, 180px Apple touch icon, and ICO containing 16/32/48/96px sizes.
 The generator publishes the same icons on both origins, including the root
 `/favicon.ico`. The icon URLs are stable and crawlable; search engines may update
 their displayed icons after recrawling. The old globe file is retained for any
 legacy page that still references it.
+
+To replace the artwork, update `original.png`, then run
+`python3 tools/search/make_favicons.py` on macOS before building the site.
+This uses the bundled `sips` format converter; it does not redraw the artwork.
 
 The mobile layout uses the actual device width. Below 760px the profile and
 project cards stack vertically. Content renders immediately, off-screen images
