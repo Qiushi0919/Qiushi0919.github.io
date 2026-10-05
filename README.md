@@ -36,6 +36,11 @@ project pages retain unrestricted previews; their text is still independently
 available for search and AI citations. Bing and Google support this selective
 attribute, although the final search title and snippet remain engine-controlled.
 
+The homepages allow `max-image-preview:large` and identify the existing portrait
+as their primary image in structured data. These settings make an image preview
+eligible; Bing and Google choose whether and where to display it. The Intel Cup
+award is displayed as "National Second Prize · Top 7.83%" without the rank.
+
 ## Website icon
 
 The latest user-supplied portrait artwork is preserved at

@@ -210,6 +210,8 @@ def build():
                     tree.xpath('//*[@id="profileName"]')[0].tag = 'h2'
                 head.find('title').text = title
                 head.xpath('./meta[@name="description"]')[0].set('content', description)
+                if route == '':
+                    head.append(element('meta', name='robots', content='max-image-preview:large'))
                 if route == '' and VERIFICATION.get('google'):
                     head.append(element('meta', name='google-site-verification', content=VERIFICATION['google']))
                 if route == '' and VERIFICATION.get('bing'):
@@ -239,6 +241,12 @@ def build():
                         'description': description, 'inLanguage': 'zh-CN' if language == 'zh' else 'en',
                         'mainEntity': {'@id': person['@id']}, 'isPartOf': {'@id': canonical_base + '#website'}}
                 graph = [person, page, {'@type': 'WebSite', '@id': canonical_base + '#website', 'url': canonical_base, 'name': 'Qiushi Xie / 谢秋实'}]
+                if route == '':
+                    portrait = {'@type': 'ImageObject', '@id': canonical_base + '#portrait',
+                                'contentUrl': person['image'], 'url': person['image'],
+                                'caption': '谢秋实 / Qiushi Xie'}
+                    page['primaryImageOfPage'] = {'@id': portrait['@id']}
+                    graph.append(portrait)
                 if detail_id:
                     work = {'@type': 'ScholarlyArticle' if detail_id == 'eecsProjectCard' else 'CreativeWork',
                             '@id': canonical + '#work', 'name': project_title, 'url': canonical,
