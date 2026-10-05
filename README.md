@@ -56,15 +56,18 @@ To replace the artwork, update `original.png`, then run
 `python3 tools/search/make_favicons.py` on macOS before building the site.
 This uses the bundled `sips` format converter; it does not redraw the artwork.
 
-The mobile layout uses the actual device width. Below 760px the profile and
-project cards stack vertically. Content renders immediately, off-screen images
-load lazily, and preview videos do not preload.
+Portrait phones retain the original 980px canvas, scaled to fit the screen, so
+project covers and descriptions keep their compact horizontal card layout. The
+early head script changes the viewport before CSS loads and allows pinch zoom.
+Desktop and landscape browsers keep their normal viewport. Content renders
+immediately; the removed loading screen is not restored. Off-screen images load
+lazily, and preview videos do not preload.
 
 Profile contact links use labelled SVG icons with hover and keyboard-focus
 tooltips in this order: CV, email, GitHub, Google Scholar name search, personal
 WeChat, WeChat official account, QQ, Chinese website, and English website. The original three
-QR dialogs and both website destinations are preserved. Mobile uses three rows
-of three 44px controls. Add the English tooltip translation when updating labels.
+QR dialogs and both website destinations are preserved. Other narrow embedded contexts use three rows of three 44px controls; the phone
+portrait canvas retains the desktop icon row as part of the scaled page. Add the English tooltip translation when updating labels.
 The QQ penguin uses the user's supplied black-and-white artwork, preserved
 unchanged under `tools/search/source/contact/qq-logo.png`; CSS frames it at icon
 size. The generator copies those contact assets onto both origins.

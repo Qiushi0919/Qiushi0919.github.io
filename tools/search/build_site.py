@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'contact-icons-qq-20261005'
+VERSION = 'portrait-contacts-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -83,6 +83,11 @@ def element(tag, text=None, **attrs):
 def build():
     raw = (SOURCE / 'portfolio.html').read_text()
     template = html.document_fromstring(raw)
+    # Preserve the original phone portrait canvas before CSS is loaded. The
+    # loader class belongs to the removed loading screen, so keep it separate.
+    viewport_script = next(s.text for s in template.xpath('//head/script')
+                           if 'portraitCanvasWidth' in (s.text or ''))
+    viewport_script = viewport_script.replace("document.documentElement.classList.add('portfolio-loading');", '')
     css = template.find('head/style').text.replace('url("assets/', 'url("../')
     # The browser never hides content while images load.
     css = re.sub(r'html\.portfolio-loading[^}]*}', '', css)
@@ -167,6 +172,10 @@ def build():
                 body = tree.find('body')
                 for s in tree.xpath('//script'):
                     s.getparent().remove(s)
+                phone_viewport = element('script')
+                phone_viewport.text = viewport_script
+                viewport_meta = head.xpath('./meta[@name="viewport"]')[0]
+                head.insert(list(head).index(viewport_meta) + 1, phone_viewport)
                 for style in head.findall('style'):
                     head.remove(style)
                 loader = tree.xpath('//*[@id="portfolioLoader"]')[0]

@@ -16,6 +16,9 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         tree = html.fromstring(p.read_text())
         count += 1
         assert len(tree.xpath('//h1')) == 1, str(p)
+        phone_canvas = tree.xpath('//head/script[not(@type) and not(@src)]')
+        assert len(phone_canvas) == 1 and 'const portraitCanvasWidth = 980' in phone_canvas[0].text, str(p)
+        assert "classList.add('portfolio-loading')" not in phone_canvas[0].text, str(p)
         assert len(tree.xpath('//link[@rel="canonical"]')) == 1
         canonical = tree.xpath('//link[@rel="canonical"]/@href')[0]
         expected_host = 'qiushi0919.cn' if tree.get('lang') == 'zh-CN' else 'qiushi0919.github.io'
