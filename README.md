@@ -70,6 +70,11 @@ tooltips in this order: CV, email, GitHub, Google Scholar name search, personal
 WeChat, WeChat official account, QQ, Chinese website, and English website. The original three
 QR dialogs and both website destinations are preserved. Other narrow embedded contexts use three rows of three 44px controls; the phone
 portrait canvas retains the desktop icon row as part of the scaled page. Add the English tooltip translation when updating labels.
+
+Portfolio controls keep the normal arrow cursor. Contact icons show a shadow on
+hover/focus and cover previews light their magnifier-plus badge. Multi-image
+paper previews use flex panels with absolutely contained images and a 10px
+inner margin, avoiding percentage-height grid overflow in mobile browsers.
 The QQ penguin uses the user's supplied black-and-white artwork, preserved
 unchanged under `tools/search/source/contact/qq-logo.png`; CSS frames it at icon
 size. The generator copies those contact assets onto both origins.

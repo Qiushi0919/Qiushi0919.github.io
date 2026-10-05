@@ -143,6 +143,9 @@
     :is(.cover-trigger,.vase-cover-trigger,.nuedc-cover-trigger,.eecs-cover-trigger,.embedded-cover-trigger,.lowcom-cover-trigger,.side-project-cover) *{pointer-events:none;cursor:inherit}
     .cover-zoom-hint{position:absolute;right:7px;top:7px;z-index:5;display:grid;place-items:center;width:27px;height:27px;border:1px solid #cbd8e1;border-radius:50%;background:rgba(255,255,255,.94);color:#31546d;box-shadow:0 1px 5px rgba(22,42,58,.16)}
     .cover-zoom-hint svg{display:block;width:68%;height:68%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+    .vase-slide,.eecs-slide{inset:auto;top:10px;left:10px;width:calc(100% - 20px);height:calc(100% - 20px);display:flex;flex-direction:column;gap:6px;min-width:0;min-height:0}
+    .cover-image-panel{position:relative;display:block;flex:1 1 0;min-width:0;min-height:0;overflow:hidden}
+    .vase-slide .cover-image-panel img,.eecs-slide .cover-image-panel img{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center}
     .cover-zoom-hint{transition:color .16s ease,border-color .16s ease,box-shadow .16s ease}
     :is(.cover-trigger,.vase-cover-trigger,.nuedc-cover-trigger,.eecs-cover-trigger,.embedded-cover-trigger,.lowcom-cover-trigger,.side-project-cover):is(:hover,:focus-visible) .cover-zoom-hint{color:#1772d0;border-color:#1772d0;background:#fff;box-shadow:0 0 0 3px rgba(23,114,208,.14),0 2px 8px rgba(23,114,208,.2)}
     body :is(a,button,.overlay-backdrop),body :is(a,button) *{cursor:default}
@@ -220,16 +223,16 @@
       </div>
       <button class="vase-cover-trigger" id="vaseCoverTrigger" type="button" aria-expanded="false" aria-controls="vaseFeatureOverlay" aria-label="展开 VaseMuseum 论文关键流程与实验结果">
         <span class="vase-slide">
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/architecture-clean.webp" alt="VaseMuseum 系统架构" />
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程" />
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/architecture-clean.webp" alt="VaseMuseum 系统架构" /></span>
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程" /></span>
         </span>
         <span class="vase-slide">
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/interface-clean.webp" alt="虚拟博物馆界面" />
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/reliability-clean.webp" alt="VaseAgent 可靠性框架" />
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/interface-clean.webp" alt="虚拟博物馆界面" /></span>
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/reliability-clean.webp" alt="VaseAgent 可靠性框架" /></span>
         </span>
         <span class="vase-slide">
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/results-clean.webp" alt="主要实验结果" />
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/evaluation-clean.webp" alt="消融、扩展性与多维评估" />
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/results-clean.webp" alt="主要实验结果" /></span>
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/evaluation-clean.webp" alt="消融、扩展性与多维评估" /></span>
         </span>
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M10 7v6M7 10h6"/></svg></span>
       </button>
@@ -269,11 +272,11 @@
       </div>
 
       <button class="eecs-cover-trigger" id="eecsCoverTrigger" type="button" aria-expanded="false" aria-controls="eecsFeatureOverlay" aria-label="展开 EECS 2026 电池剩余寿命预测论文方法与实验结果">
-        <span class="eecs-slide" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/framework.webp" alt="" /></span>
-        <span class="eecs-slide" aria-hidden="true"><img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/decomposition.webp" alt="" /></span>
+        <span class="eecs-slide" aria-hidden="true"><span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/framework.webp" alt="" /></span></span>
+        <span class="eecs-slide" aria-hidden="true"><span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/decomposition.webp" alt="" /></span></span>
         <span class="eecs-slide double" aria-hidden="true">
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/nasa-results.webp" alt="" />
-          <img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/calce-results.webp" alt="" />
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/nasa-results.webp" alt="" /></span>
+          <span class="cover-image-panel"><img loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/calce-results.webp" alt="" /></span>
         </span>
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M10 7v6M7 10h6"/></svg></span>
       </button>
