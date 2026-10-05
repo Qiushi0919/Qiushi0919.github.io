@@ -107,8 +107,14 @@ links are maintained in `tools/search/source/author-profile.json`. Its `biograph
 contains authored Chinese and English paragraphs with inline emphasis and the
 advisor's official profile link. Homepages place the name, full biography,
 contact icons and visitor count on the left, with the portrait on the right.
+Portrait phones instead show the portrait on the left, with the name, concise
+identity, contact icons and visitor count on the right; the full biography spans
+the width below. `mobile_summary` in the author profile supplies those concise
+identity lines. This uses CSS grid placement of the same biography and contact
+elements, retaining the desktop arrangement and the existing phone work cards.
 The English introductory paragraphs use 12px text with 1.55 line spacing to
-reduce their height. Contact glyphs and their layout slots are 30% larger. Category and
+reduce their height. Contact icons retain their original 23px SVG, 20px CV mark,
+and 32px layout slots, including the compact nine-icon phone row. Category and
 project pages start directly with their work, and `/about/` shows the full
 biography and selected-work links. The category navigation sits in the top
 toolbar beside the language switch on every page. On portrait phones, navigation
@@ -116,6 +122,8 @@ text compensates for the preserved 980px canvas to render at 9px on screen,
 with a compact 20px navigation row comparable to the profile icon row. The
 whole navigation, including language links, spans 78% of the viewport width,
 with spacing distributed between items. Narrow layouts wrap when necessary.
+The English phone home tab reads "All Works" in full. Phone category labels are
+centered within their buttons so the active underline aligns with the text.
 `description` supplies
 search/social and Person descriptions,
 so the welcome greeting never replaces the author's identity in search metadata.

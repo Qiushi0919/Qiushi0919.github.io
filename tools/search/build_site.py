@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'profile-intro-refined-20261005'
+VERSION = 'mobile-profile-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -111,6 +111,8 @@ def build():
 .site-toolbar .work-category-nav{margin:0;max-width:none;justify-content:flex-end}
 .site-toolbar .language-switch{flex-shrink:0}
 .nav-label-compact{display:none}
+.profile-mobile-summary{display:none}
+.profile-biography{display:contents}
 .project-copy h2{overflow-wrap:anywhere}
 .site-footer{margin:28px 16px 0;padding-top:18px;border-top:1px solid var(--line);color:#607483;line-height:1.8}
 .site-footer a{margin-right:14px}
@@ -142,21 +144,31 @@ def build():
  .site-footer{margin-inline:8px;font-size:13px}
 }
 html[lang="en"] .profile-copy p{font-size:12px;line-height:1.55;margin-bottom:10px}
-.profile-icon-links{grid-template-columns:repeat(9,41.6px);gap:6.5px;min-height:52px}
-.profile-contact-icon{width:41.6px;height:41.6px;padding:5.2px}
-.profile-contact-icon svg{width:29.9px;height:29.9px}
-.profile-contact-icon .cv-mark{font-size:26px}
-.profile-contact-icon .qq-symbol{transform:scale(1.3);transform-origin:center}
-html.portrait-phone .profile-icon-links{grid-template-columns:repeat(9,41.6px);gap:6.5px}
-html.portrait-phone .profile-contact-icon{width:41.6px;height:52px;padding:5.2px}
-html.portrait-phone .site-toolbar{width:78vw;max-width:100%;margin-left:auto;margin-right:0;padding-inline:0;flex-wrap:wrap;gap:calc(6px / var(--portrait-ui-scale));padding-bottom:calc(8px / var(--portrait-ui-scale));margin-bottom:calc(14px / var(--portrait-ui-scale))}
-html.portrait-phone .site-toolbar .work-category-nav{flex:1;min-width:0;max-width:100%;justify-content:space-between;gap:calc(3px / var(--portrait-ui-scale))}
-html.portrait-phone .site-toolbar .work-category-tab{min-width:calc(28px / var(--portrait-ui-scale));min-height:calc(20px / var(--portrait-ui-scale));padding:calc(4px / var(--portrait-ui-scale)) calc(3px / var(--portrait-ui-scale));font-size:calc(9px / var(--portrait-ui-scale));border-radius:calc(5px / var(--portrait-ui-scale))}
+.profile-icon-links{grid-template-columns:repeat(9,32px);gap:5px;min-height:40px}
+.profile-contact-icon{width:32px;height:32px;padding:4px}
+.profile-contact-icon svg{width:23px;height:23px}
+.profile-contact-icon .cv-mark{font-size:20px}
+html.portrait-phone .profile-icon-links{grid-template-columns:repeat(9,32px);gap:5px}
+html.portrait-phone .profile-contact-icon{width:32px;height:40px;padding:4px}
+html.portrait-phone .site-toolbar{width:78vw;max-width:100%;margin-left:auto;margin-right:0;padding-inline:0;flex-wrap:nowrap;gap:calc(4px / var(--portrait-ui-scale));padding-bottom:calc(8px / var(--portrait-ui-scale));margin-bottom:calc(14px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .work-category-nav{flex:1;flex-wrap:nowrap;min-width:0;max-width:100%;justify-content:space-between;gap:calc(1px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .work-category-tab{justify-content:center;text-align:center;gap:0;min-width:calc(28px / var(--portrait-ui-scale));min-height:calc(20px / var(--portrait-ui-scale));padding:calc(4px / var(--portrait-ui-scale)) calc(2px / var(--portrait-ui-scale));font-size:calc(9px / var(--portrait-ui-scale));border-radius:calc(5px / var(--portrait-ui-scale))}
 html.portrait-phone .site-toolbar .work-category-tab.is-active::after{width:calc(12px / var(--portrait-ui-scale));height:calc(1px / var(--portrait-ui-scale));bottom:calc(-1px / var(--portrait-ui-scale))}
-html.portrait-phone .site-toolbar .language-switch{gap:calc(3px / var(--portrait-ui-scale));font-size:calc(9px / var(--portrait-ui-scale))}
-html.portrait-phone .site-toolbar .language-switch a{display:inline-flex;align-items:center;justify-content:center;min-width:calc(24px / var(--portrait-ui-scale));min-height:calc(20px / var(--portrait-ui-scale));padding:calc(3px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .language-switch{gap:calc(2px / var(--portrait-ui-scale));font-size:calc(9px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .language-switch a{display:inline-flex;align-items:center;justify-content:center;min-width:calc(20px / var(--portrait-ui-scale));min-height:calc(20px / var(--portrait-ui-scale));padding:calc(3px / var(--portrait-ui-scale)) calc(1px / var(--portrait-ui-scale))}
 html.portrait-phone .nav-label-wide{display:none}
 html.portrait-phone .nav-label-compact{display:inline}
+html.portrait-phone .profile-section{grid-template-columns:180px minmax(0,1fr);column-gap:28px;row-gap:4px;align-items:start}
+html.portrait-phone .profile-copy{display:contents}
+html.portrait-phone .profile-copy :is(h1,h2){grid-column:2;grid-row:1;text-align:left;margin:0;font-size:32px}
+html.portrait-phone .profile-mobile-summary{display:block;grid-column:2;grid-row:2;margin-top:8px}
+html.portrait-phone .profile-mobile-summary p{font-size:14px;line-height:1.65;margin:0}
+html.portrait-phone .profile-mobile-summary p:last-child{margin-top:12px}
+html.portrait-phone .profile-icon-links{grid-column:2;grid-row:3;justify-content:start;margin:8px 0 0}
+html.portrait-phone .profile-views{grid-column:2;grid-row:4;text-align:left;margin:0}
+html.portrait-phone .profile-photo{grid-column:1;grid-row:1 / 5;width:180px;justify-self:start;align-self:start}
+html.portrait-phone .profile-biography{display:block;grid-column:1 / -1;grid-row:5;padding-top:32px}
+html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0 0 16px}
 '''
     scripts = []
     for s in template.xpath('//script[not(@src)]'):
@@ -227,6 +239,14 @@ html.portrait-phone .nav-label-compact{display:inline}
                 if route == '':
                     for index, paragraph in enumerate(author_paragraphs(language), 1):
                         profile_copy.insert(index, paragraph)
+                    biography = element('div', **{'class': 'profile-biography'})
+                    for paragraph in profile_copy.findall('p'):
+                        biography.append(paragraph)
+                    profile_copy.insert(1, biography)
+                    summary = element('div', **{'class': 'profile-mobile-summary'})
+                    for line in AUTHOR['mobile_summary'][language]:
+                        summary.append(element('p', line))
+                    profile_copy.insert(1, summary)
                 if route == '':
                     # A name search should summarize the author; project pages
                     # remain available for unrestricted project snippets.
@@ -341,8 +361,12 @@ html.portrait-phone .nav-label-compact{display:inline}
                         a.text = None
                         a.set('aria-label', en)
                         a.append(element('span', en, aria_hidden='true', **{'class':'nav-label-wide'}))
-                        short_label = {'':'All', 'competitions':'Contests', 'projects':'Projects'}[path]
+                        short_label = {'':'All Works', 'competitions':'Contests', 'projects':'Projects'}[path]
                         a.append(element('span', short_label, aria_hidden='true', **{'class':'nav-label-compact'}))
+                    else:
+                        label = a.text
+                        a.text = None
+                        a.append(element('span', label, **{'class':'nav-label'}))
                     active = route == path or (path and route.startswith(path + '/'))
                     a.set('class', 'work-category-tab' + (' is-active' if active else ''))
                     if route == path: a.set('aria-current', 'page')
