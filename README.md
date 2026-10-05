@@ -109,6 +109,17 @@ size. The generator copies those contact assets onto both origins.
 
 ## Build and update
 
+The current website portrait is maintained at
+`tools/search/source/contact/profile-photo.jpg` and copied into both origins by
+the build. Portrait URLs include a content-hash version so a photo change is
+visible without a stale browser cache. Project-specific sharing images are
+unaffected. The exact previous photo from before the 2026-10-05 waterfront photo
+update is preserved locally in `docs/profile-photo-20261005/previous-photo.jpg`,
+with its checksum and restoration instructions in that folder. To switch back,
+copy that original over the maintained portrait source, rebuild, verify, and
+publish both origins. Preserve this original photo; do not replace it when
+making another photo update.
+
 The editable source is `tools/search/source/portfolio.html`, with English text in
 `tools/search/source/translations.json`. The bilingual biography and formal identity
 links are maintained in `tools/search/source/author-profile.json`. Its `biography`

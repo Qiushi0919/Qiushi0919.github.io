@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'detail-sharing-20261005'
+VERSION = 'profile-photo-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -45,6 +45,12 @@ TRANSLATIONS = json.loads((SOURCE / 'translations.json').read_text())
 AUTHOR = json.loads((SOURCE / 'author-profile.json').read_text())
 PROJECT_PAGES = json.loads((SOURCE / 'project-pages.json').read_text())
 VERIFICATION = json.loads((SOURCE / 'search-verification.json').read_text()) if (SOURCE / 'search-verification.json').exists() else {}
+PORTRAIT_PATH = 'assets/contact/profile-photo.jpg'
+PORTRAIT_VERSION = hashlib.sha256((SOURCE / 'contact/profile-photo.jpg').read_bytes()).hexdigest()[:12]
+
+
+def portrait_url(base=''):
+    return base + PORTRAIT_PATH + '?v=' + PORTRAIT_VERSION
 
 
 def translated(value):
@@ -306,8 +312,8 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                 head.append(element('link', rel='canonical', href=canonical))
                 for lang, target in [('zh-CN', route_url(CN, route)), ('en', route_url(GH, route)), ('x-default', route_url(GH, route))]:
                     head.append(element('link', rel='alternate', hreflang=lang, href=target))
-                share_image = canonical_base + (PROJECT_PAGES[route]['image'] if detail_id
-                                                else 'assets/contact/profile-photo.jpg')
+                share_image = (canonical_base + PROJECT_PAGES[route]['image'] if detail_id
+                               else portrait_url(canonical_base))
                 share_alt = PROJECT_PAGES[route]['image_alt'][language] if detail_id else '谢秋实 / Qiushi Xie'
                 for prop, value in [('og:title', title), ('og:description', description), ('og:type', 'website'),
                                     ('og:url', canonical), ('og:locale', 'zh_CN' if language == 'zh' else 'en_US'),
@@ -319,7 +325,7 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                 person = {'@type': 'Person', '@id': CN + '#person', 'name': '谢秋实',
                           'alternateName': 'Qiushi Xie', 'url': canonical_base,
                           'description': AUTHOR['description'][language],
-                          'image': canonical_base + 'assets/contact/profile-photo.jpg',
+                          'image': portrait_url(canonical_base),
                           'affiliation': {'@type': 'CollegeOrUniversity', 'name': 'Huazhong University of Science and Technology'},
                           'sameAs': [AUTHOR['github'], CN, GH, AUTHOR['scholar']],
                           'subjectOf': [{'@id': route_url(CN, 'about') + '#page'}, {'@id': route_url(GH, 'about') + '#page'}],
@@ -413,6 +419,8 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                     title_link = card.xpath('.//a[contains(concat(" ",@class," ")," title-link ")]')[0]
                     title_link.set('href', route_url(local_base, path))
                     title_link.attrib.pop('target', None)
+                for photo in tree.xpath('//img[@class="profile-photo"]'):
+                    photo.set('src', portrait_url())
                 for e in tree.iter():
                     if not isinstance(e.tag, str): continue
                     for attr in ('src', 'href', 'poster', 'data-src', 'data-contact-src'):
