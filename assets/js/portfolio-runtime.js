@@ -106,7 +106,7 @@
           const icon = trigger.querySelector('svg,.cv-mark');
           if (icon) mark.append(icon.cloneNode(true));
           const content = {
-            github: ['GitHub', text('GitHub 个人主页', 'GitHub profile'), 'Qiushi0919', 'Trustworthy AI · Metasurfaces · Embedded Systems', text('前往 GitHub', 'Visit GitHub')],
+            github: ['GitHub', text('GitHub 个人主页', 'GitHub profile'), 'Qiushi0919', 'Electromagnetic Wave Manipulation · Trustworthy AI · Wireless Communication Systems', text('前往 GitHub', 'Visit GitHub')],
             email: [text('邮箱', 'Email'), text('邮箱联系方式', 'Email contact'), url.pathname, text('科研交流与项目联系', 'Research and project enquiries'), text('写邮件', 'Write an email')],
             scholar: ['Google Scholar', text('学术个人主页', 'Academic profile'), '谢秋实 / Qiushi Xie', text('科研论文与预印本', 'Research papers and preprints'), text('前往学术主页', 'Visit Google Scholar')],
             cv: [text('个人简历', 'Curriculum Vitae'), 'PDF', '谢秋实 / Qiushi Xie', text('教育经历、科研论文与竞赛项目', 'Education, research papers and competition projects'), text('打开简历', 'Open CV')],

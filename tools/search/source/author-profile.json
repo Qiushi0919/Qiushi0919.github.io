@@ -3,18 +3,41 @@
   "github": "https://github.com/Qiushi0919",
   "biography": {
     "zh": [
-      "我叫谢秋实（Qiushi Xie），是华中科技大学通信工程专业大四本科生，已推免至浙江大学信息与电子工程学院，拟于2027年入学攻读博士学位。",
-      "研究兴趣包括可信 AI 问答、集群超表面、智能信息系统与嵌入式开发。我关注智能系统如何提供有证据支撑、可验证的回答，并将通信与感知、算法和软硬件实现结合起来。",
-      "在唐浩老师指导下，我参与远程本科生科研项目，是古希腊陶器数字智能博物馆 VaseMuseum 论文的共同第一作者；该工作已发布 arXiv 预印本，并投稿至 Nature Machine Intelligence。我的锂离子电池剩余寿命预测论文已于2026年发表于 SPIE 会议论文集，我是独立第一作者。",
-      "竞赛中，我担任英特尔杯多模态无人机地面站项目队长，获得全国二等奖，位列前7.83%；带队完成的数字钥匙实验系统获电赛湖北赛区一等奖。我也维护 Codex Tidy、Boring Notch Focus 等 macOS 个人作品。",
-      "本网站记录科研论文、竞赛项目与作品，并链接论文与代码。中文入口为 qiushi0919.cn，英文入口为 qiushi0919.github.io，欢迎通过邮箱交流。"
+      "<strong>你好，欢迎来到我的主页！👋</strong>",
+      "我是<strong>谢秋实</strong>，目前就读于<strong>华中科技大学（中国 🇨🇳）</strong>通信工程专业，已推免至<strong>浙江大学（中国 🇨🇳）</strong>信息与电子工程学院，拟于 <strong>2027 年</strong>在<strong><a href=\"https://person.zju.edu.cn/jackokie\" target=\"_blank\" rel=\"noopener noreferrer\">赵纪伟研究员</a></strong>指导下攻读博士学位。我的科研与工程实践主要围绕<strong>电磁调控、可信人工智能与无线通信系统</strong>展开，关注智能算法与软硬件系统的结合。",
+      "本科期间，我曾在<strong>浙江大学、北京大学和华中科技大学（中国 🇨🇳）</strong>的多个课题组参与科研实习，也参与了与<strong>北京交通大学（中国 🇨🇳）</strong>、<strong>西安电子科技大学（中国 🇨🇳）</strong>、<strong>中国科学院大学（中国 🇨🇳）</strong>及<strong>拉筹伯大学（澳大利亚 🇦🇺）</strong>研究人员合作的科研项目。我的研究经历涉及<strong>超表面、多模态人工智能与智能信息系统</strong>等方向。",
+      "在科研之外，我也积极参与电子设计、嵌入式系统与智能硬件相关的竞赛和项目开发，并在多项竞赛中担任队长。本科期间，我曾获<strong>国家奖学金</strong>及<strong>十余项学科竞赛奖励</strong>，包括 <strong>2 项全国二等奖、2 项省级一等奖</strong>。",
+      "这里收录了我的科研论文、竞赛项目与个人作品。欢迎交流研究想法，也欢迎围绕相关方向开展合作！"
     ],
     "en": [
-      "I am Qiushi Xie (谢秋实), a final-year undergraduate in Communication Engineering at Huazhong University of Science and Technology (HUST). I have been admitted through the recommendation route to the College of Information Science and Electronic Engineering at Zhejiang University, with direct-entry PhD studies planned to begin in 2027.",
-      "My research interests include trustworthy AI question answering, clustered metasurfaces, intelligent information systems, and embedded development. I am interested in evidence-grounded, verifiable answers in real-world intelligent systems, and in connecting communication and sensing with algorithms and practical hardware and software.",
-      "As a remote undergraduate research assistant advised by Hao Tang, I am a co-first author of VaseMuseum, a digital intelligent museum for ancient Greek pottery. The work is available as an arXiv preprint and has been submitted to Nature Machine Intelligence. My lithium-ion battery remaining-useful-life estimation paper was published in the SPIE conference proceedings in 2026; I am its sole author.",
-      "I led the multimodal drone ground-station project in the Intel Cup, which received a National Second Prize and placed in the top 7.83%. I also led the digital-key system project that received a First Prize in the Hubei division of the National Undergraduate Electronics Design Contest. My personal projects include Codex Tidy, Boring Notch Focus, and a multi-display window-switching tool for macOS.",
-      "This site documents my research papers, competition projects, and personal work, with links to publications, code, and project pages. The Chinese entrance is qiushi0919.cn, and the English entrance is qiushi0919.github.io. Research and project enquiries are welcome by email."
+      "<strong>Hi, and welcome to my website! 👋</strong>",
+      "I am <strong>Qiushi Xie (谢秋实)</strong>, an undergraduate student in Communication Engineering at <strong>Huazhong University of Science and Technology (HUST), China 🇨🇳</strong>. I have been admitted to the direct-entry Ph.D. program at the College of Information Science and Electronic Engineering, <strong>Zhejiang University (ZJU), China 🇨🇳</strong>, and expect to begin my doctoral studies in 2027 under the supervision of <strong><a href=\"https://person.zju.edu.cn/jackokie\" target=\"_blank\" rel=\"noopener noreferrer\">Dr. Jiwei Zhao</a></strong>. My research and engineering interests broadly span <strong>electromagnetic wave manipulation, trustworthy AI, and wireless communication systems</strong>, with a particular interest in integrating intelligent algorithms with hardware and software systems.",
+      "During my undergraduate studies, I have undertaken research internships with groups at <strong>Zhejiang University, Peking University, and HUST, China 🇨🇳</strong>. I have also contributed to collaborative research projects involving researchers from <strong>Beijing Jiaotong University, China 🇨🇳</strong>, <strong>Xidian University, China 🇨🇳</strong>, the <strong>University of Chinese Academy of Sciences, China 🇨🇳</strong>, and <strong>La Trobe University, Australia 🇦🇺</strong>. My research experience covers <strong>metasurfaces, multimodal AI, and intelligent information systems</strong>.",
+      "Alongside research, I actively participate in engineering competitions and hands-on projects in electronic design, embedded systems, and intelligent hardware, and have served as team leader in several competitions. I have received the <strong>National Scholarship</strong> and <strong>more than ten awards in student competitions</strong>, including <strong>two national second prizes and two provincial first prizes</strong>.",
+      "This website brings together my research papers, competition projects, and personal work. Feel free to get in touch to exchange ideas or explore potential collaborations!"
+    ]
+  },
+  "description": {
+    "zh": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。",
+    "en": "Qiushi Xie (谢秋实), a Communication Engineering undergraduate at HUST and incoming direct-entry Ph.D. student at Zhejiang University in 2027, supervised by Dr. Jiwei Zhao. Research interests: electromagnetic wave manipulation, trustworthy AI, and wireless communication systems."
+  },
+  "research_interests": [
+    "Electromagnetic wave manipulation",
+    "Trustworthy AI",
+    "Wireless communication systems",
+    "Metasurfaces",
+    "Multimodal AI",
+    "Intelligent information systems"
+  ],
+  "github_bio": "Electromagnetic Wave Manipulation · Trustworthy AI · Wireless Communication Systems",
+  "headline": {
+    "zh": [
+      "华中科技大学 · 通信工程本科生<br>浙江大学 · 2027级直博生（拟入学）",
+      "电磁调控 · 可信人工智能 · 无线通信系统"
+    ],
+    "en": [
+      "Communication Engineering Undergraduate, HUST<br>Incoming Ph.D. Student, ZJU · 2027",
+      "Electromagnetic Wave Manipulation · Trustworthy AI · Wireless Communication Systems"
     ]
   }
 }

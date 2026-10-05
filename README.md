@@ -103,7 +103,23 @@ size. The generator copies those contact assets onto both origins.
 
 The editable source is `tools/search/source/portfolio.html`, with English text in
 `tools/search/source/translations.json`. The bilingual biography and formal identity
-links are maintained in `tools/search/source/author-profile.json`. `/about/` uses
+links are maintained in `tools/search/source/author-profile.json`. Its `biography`
+contains authored Chinese and English paragraphs with inline emphasis and the
+advisor's official profile link. Homepages place a compact portrait on the left
+and the name, `headline`, contact icons and visitor count on the right. The full
+biography follows at the body's full text width. Category and
+project pages start directly with their work, and `/about/` shows the full
+biography and selected-work links. The category navigation sits in the top
+toolbar beside the language switch on every page. On portrait phones, navigation
+text compensates for the preserved 980px canvas to render at 9px on screen,
+with a compact 20px navigation row comparable to the profile icon row. The
+whole navigation, including language links, spans 78% of the viewport width,
+with spacing distributed between items. Narrow layouts wrap when necessary.
+`description` supplies
+search/social and Person descriptions,
+so the welcome greeting never replaces the author's identity in search metadata.
+The GitHub account's one-line bio and mobile preview use the same research areas.
+`/about/` uses
 ProfilePage markup and the same stable Person ID on both language versions.
 Paper pages identify the real arXiv/DOI publication records. Requires Python 3 and `lxml`.
 

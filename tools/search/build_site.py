@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'identity-about-20261005'
+VERSION = 'profile-intro-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -81,6 +81,13 @@ def element(tag, text=None, **attrs):
     return e
 
 
+def author_paragraphs(language, section='biography'):
+    # Authored bilingual prose keeps its emphasis and advisor link without
+    # relying on text-fragment translation across nested markup.
+    return [html.fragment_fromstring('<p>' + paragraph + '</p>')
+            for paragraph in AUTHOR[section][language]]
+
+
 def build():
     raw = (SOURCE / 'portfolio.html').read_text()
     template = html.document_fromstring(raw)
@@ -100,6 +107,10 @@ def build():
 .language-switch a.is-active{color:#314e64;font-weight:700;border-bottom-color:#536b7c}
 .work-category-nav{flex-wrap:wrap;width:auto;overflow:visible;max-width:none;gap:4px}
 .work-category-tab{white-space:nowrap}
+.site-toolbar{gap:18px;padding-bottom:14px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.site-toolbar .work-category-nav{margin:0;max-width:none;justify-content:flex-end}
+.site-toolbar .language-switch{flex-shrink:0}
+.nav-label-compact{display:none}
 .project-copy h2{overflow-wrap:anywhere}
 .site-footer{margin:28px 16px 0;padding-top:18px;border-top:1px solid var(--line);color:#607483;line-height:1.8}
 .site-footer a{margin-right:14px}
@@ -130,6 +141,29 @@ def build():
  .feature-grid,.research-grid,.nuedc-grid,.eecs-grid,.embedded-grid,.side-project-demo-grid,.codex-tidy-demo-grid,.alttab-demo-grid,.mindmap-demo-grid{grid-template-columns:1fr}
  .site-footer{margin-inline:8px;font-size:13px}
 }
+.profile-section{grid-template-columns:160px minmax(0,1fr);gap:28px;padding:2px 16px 24px;border-bottom:0}
+.profile-photo{grid-column:1;grid-row:1;width:160px}
+.profile-copy{grid-column:2;grid-row:1}
+.profile-copy :is(h1,h2){text-align:left;margin-bottom:16px}
+.profile-icon-links{justify-content:start}
+.profile-views{text-align:left;margin-top:5px}
+.home-biography{max-width:none;padding:4px 0 24px;border-bottom:1px solid var(--line)}
+.home-biography p:last-child{margin-bottom:0}
+@media(max-width:760px){
+ .profile-section{grid-template-columns:132px minmax(0,1fr);gap:18px}
+ .profile-photo{width:132px}
+ .profile-icon-links{grid-template-columns:repeat(auto-fit,26px);max-width:250px;gap:2px}
+ .profile-contact-icon{width:26px}
+ .home-biography{margin-inline:8px}
+}
+html.portrait-phone .site-toolbar{width:78vw;max-width:100%;margin-left:auto;margin-right:0;padding-inline:0;flex-wrap:wrap;gap:calc(6px / var(--portrait-ui-scale));padding-bottom:calc(8px / var(--portrait-ui-scale));margin-bottom:calc(14px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .work-category-nav{flex:1;min-width:0;max-width:100%;justify-content:space-between;gap:calc(3px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .work-category-tab{min-width:calc(28px / var(--portrait-ui-scale));min-height:calc(20px / var(--portrait-ui-scale));padding:calc(4px / var(--portrait-ui-scale)) calc(3px / var(--portrait-ui-scale));font-size:calc(9px / var(--portrait-ui-scale));border-radius:calc(5px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .work-category-tab.is-active::after{width:calc(12px / var(--portrait-ui-scale));height:calc(1px / var(--portrait-ui-scale));bottom:calc(-1px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .language-switch{gap:calc(3px / var(--portrait-ui-scale));font-size:calc(9px / var(--portrait-ui-scale))}
+html.portrait-phone .site-toolbar .language-switch a{display:inline-flex;align-items:center;justify-content:center;min-width:calc(24px / var(--portrait-ui-scale));min-height:calc(20px / var(--portrait-ui-scale));padding:calc(3px / var(--portrait-ui-scale))}
+html.portrait-phone .nav-label-wide{display:none}
+html.portrait-phone .nav-label-compact{display:inline}
 '''
     scripts = []
     for s in template.xpath('//script[not(@src)]'):
@@ -194,6 +228,21 @@ def build():
                         card.getparent().remove(card)
                 if language == 'en':
                     translate_tree(tree)
+                profile_copy = tree.xpath('//*[contains(concat(" ",@class," ")," profile-copy ")]')[0]
+                for paragraph in profile_copy.findall('p'):
+                    profile_copy.remove(paragraph)
+                if route == '':
+                    for index, paragraph in enumerate(author_paragraphs(language, 'headline'), 1):
+                        profile_copy.insert(index, paragraph)
+                home_biography = tree.xpath('//section[contains(concat(" ",@class," ")," home-biography ")]')[0]
+                if route == '':
+                    home_biography.clear()
+                    home_biography.set('class', 'biography home-biography')
+                    home_biography.set('aria-label', '个人介绍' if language == 'zh' else 'Biography')
+                    for paragraph in author_paragraphs(language):
+                        home_biography.append(paragraph)
+                else:
+                    home_biography.getparent().remove(home_biography)
                 if route == '':
                     # A name search should summarize the author; project pages
                     # remain available for unrestricted project snippets.
@@ -207,19 +256,18 @@ def build():
                 tree.set('data-language', language)
                 title = ('谢秋实（Qiushi Xie）— 浙江大学2027级直博生' if language == 'zh'
                          else 'Qiushi Xie (谢秋实) — Incoming PhD Student, ZJU (2027)')
-                description = ('谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年入学攻读博士学位。个人主页记录科研论文、竞赛项目与作品，研究兴趣包括可信 AI 问答、集群超表面、智能信息系统与嵌入式开发。'
-                               if language == 'zh' else
-                               'Qiushi Xie (谢秋实), a HUST undergraduate and incoming PhD student at Zhejiang University (2027 entry). Research in trustworthy AI, clustered metasurfaces, intelligent information systems, and embedded development.')
+                description = AUTHOR['description'][language]
                 heading = tree.xpath('//*[@class="works-head"]/h2')[0]
                 if route == 'about':
                     heading.tag = 'h1'
                     heading.text = '关于谢秋实' if language == 'zh' else 'About Qiushi Xie'
                     title = '谢秋实（Qiushi Xie）｜个人介绍' if language == 'zh' else 'About Qiushi Xie (谢秋实)'
-                    description = AUTHOR['biography'][language][0] + ('研究方向：可信 AI 问答、集群超表面、智能信息系统与嵌入式开发。' if language == 'zh' else ' Research interests: trustworthy AI, clustered metasurfaces, intelligent information systems, and embedded development.')
+                    description = AUTHOR['description'][language]
                     heading.getparent().find('p').clear()
                     heading.getparent().find('p').text = '教育背景、研究兴趣与代表项目' if language == 'zh' else 'Education, research interests, and selected work'
                     tree.xpath('//*[@id="profileName"]')[0].tag = 'h2'
                 if category:
+                    heading.tag = 'h1'
                     label = category[0 if language == 'zh' else 1]
                     heading.text = label
                     title = label + (' | 谢秋实 Qiushi Xie' if language == 'zh' else ' | Qiushi Xie')
@@ -257,12 +305,12 @@ def build():
                 head.append(element('meta', name='twitter:card', content='summary'))
                 person = {'@type': 'Person', '@id': CN + '#person', 'name': '谢秋实',
                           'alternateName': 'Qiushi Xie', 'url': canonical_base,
-                          'description': ''.join(tree.xpath('//*[contains(concat(" ",@class," ")," profile-copy ")]/p')[0].itertext()).strip(),
+                          'description': AUTHOR['description'][language],
                           'image': canonical_base + 'assets/contact/profile-photo.jpg',
                           'affiliation': {'@type': 'CollegeOrUniversity', 'name': 'Huazhong University of Science and Technology'},
                           'sameAs': [AUTHOR['github'], CN, GH, AUTHOR['scholar']],
                           'subjectOf': [{'@id': route_url(CN, 'about') + '#page'}, {'@id': route_url(GH, 'about') + '#page'}],
-                          'knowsAbout': ['Trustworthy AI question answering', 'Clustered metasurfaces', 'Intelligent information systems', 'Embedded development']}
+                          'knowsAbout': AUTHOR['research_interests']}
                 page = {'@type': 'ProfilePage' if route in ('', 'about') else 'CollectionPage' if category else 'WebPage',
                         '@id': canonical + '#page', 'url': canonical, 'name': title,
                         'description': description, 'inLanguage': 'zh-CN' if language == 'zh' else 'en',
@@ -305,13 +353,20 @@ def build():
                 nav.clear(); nav.set('class', 'work-category-nav'); nav.set('aria-label', '作品分类' if language == 'zh' else 'Work categories')
                 for path, zh, en in [('', '全部', 'All Work'), ('papers', '论文', 'Papers'), ('competitions', '比赛', 'Competitions'), ('projects', '小项目', 'Side Projects'), ('about', '关于我', 'About')]:
                     a = element('a', zh if language == 'zh' else en, href=route_url(local_base, path))
-                    a.set('class', 'work-category-tab' + (' is-active' if route == path else ''))
+                    if language == 'en' and path in ('', 'competitions', 'projects'):
+                        a.text = None
+                        a.set('aria-label', en)
+                        a.append(element('span', en, aria_hidden='true', **{'class':'nav-label-wide'}))
+                        short_label = {'':'All', 'competitions':'Contests', 'projects':'Projects'}[path]
+                        a.append(element('span', short_label, aria_hidden='true', **{'class':'nav-label-compact'}))
+                    active = route == path or (path and route.startswith(path + '/'))
+                    a.set('class', 'work-category-tab' + (' is-active' if active else ''))
                     if route == path: a.set('aria-current', 'page')
                     nav.append(a)
                 if route == 'about':
                     biography = element('section', aria_label='个人介绍' if language == 'zh' else 'Biography', **{'class':'biography'})
-                    for paragraph in AUTHOR['biography'][language]:
-                        biography.append(element('p', paragraph))
+                    for paragraph in author_paragraphs(language):
+                        biography.append(paragraph)
                     biography.append(element('h2', '代表论文与项目' if language == 'zh' else 'Selected papers and projects'))
                     works = element('ul')
                     for path, zh, en in [
@@ -326,7 +381,10 @@ def build():
                     for href, label in [(AUTHOR['scholar'], 'Google Scholar'), (AUTHOR['github'], 'GitHub'), (CN, '中文主页'), (GH, 'English homepage')]:
                         links.append(element('a', label, href=href))
                     biography.append(links)
-                    nav.addnext(biography)
+                    heading.getparent().addnext(biography)
+                if route:
+                    profile = tree.xpath('//section[@class="profile-section"]')[0]
+                    profile.getparent().remove(profile)
                 for card in tree.xpath('//article[@data-work-category]'):
                     path = DETAILS[card.get('id')]
                     title_link = card.xpath('.//a[contains(concat(" ",@class," ")," title-link ")]')[0]

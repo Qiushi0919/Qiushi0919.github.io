@@ -42,6 +42,11 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert person['@id'] == 'https://qiushi0919.cn/#person'
         assert 'https://scholar.google.com/citations?user=TkPyZ-UAAAAJ' in person['sameAs']
         assert not tree.xpath('//a[starts-with(@href,"https://scholar.google.com/scholar?")]')
+        assert len(tree.xpath('//div[@class="site-toolbar"]/nav[@class="work-category-nav"]')) == 1
+        if urlsplit(canonical).path == '/':
+            assert len(tree.xpath('//section[@class="profile-section"]')) == 1
+        else:
+            assert not tree.xpath('//section[@class="profile-section"]'), str(p)
         if urlsplit(canonical).path == '/about/':
             assert schema['@graph'][1]['@type'] == 'ProfilePage'
             assert len(tree.xpath('//section[@class="biography"]/p')) == 5
