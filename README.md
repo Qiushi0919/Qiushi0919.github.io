@@ -65,6 +65,11 @@ and an IndexNow ownership key file. The Bing `msvalidate.01` meta tag must also
 remain on the homepage after verification succeeds.
 Origin-specific 360, Sogou, and Shenma ownership tags are stored under
 `platform_meta.cn`; the generator publishes them only on the CN homepages.
+Shenma also uses `/shenma-site-verification.txt`. Its verification checker does
+not follow the HTTP-to-HTTPS redirect, so Nginx serves only this public token file
+directly over HTTP; all other HTTP routes continue to redirect to HTTPS. When
+intentionally changing Nginx, pass the reviewed previous configuration to
+`prepare_cn_release.py --expected-nginx` as well as the previous page manifest.
 `tools/search/source/search-verification.json` holds the public Google meta token
 and the CN website ICP number confirmed in Aliyun: 鄂ICP备2026007908号-1.
 The CN footer links that number to the official MIIT query site.
