@@ -61,9 +61,10 @@ project covers and descriptions keep their compact horizontal card layout. The
 early head script changes the viewport before CSS loads and allows pinch zoom.
 Desktop and landscape browsers keep their normal viewport. Portrait phone close
 buttons compensate for that page scale and retain a 48px physical touch target.
-Their visible circle is 36px and the cross is 22px on phones; the transparent
-margin around the circle remains clickable. Desktop close controls retain their
-existing appearance. The smaller mark also applies in narrow and touch layouts.
+On phones, the previous 22px close mark is scaled to one half (11px);
+the circle, background, border and focus outline are removed. The transparent
+area remains clickable. Desktop close controls retain their existing appearance.
+The smaller mark also applies in narrow and touch layouts.
 Content renders
 immediately; the removed loading screen is not restored. Off-screen images load
 lazily, and preview videos do not preload.
@@ -71,8 +72,23 @@ lazily, and preview videos do not preload.
 Profile contact links use labelled SVG icons with hover and keyboard-focus
 tooltips in this order: CV, email, GitHub, Google Scholar name search, personal
 WeChat, WeChat official account, QQ, Chinese website, and English website. The original three
-QR dialogs and both website destinations are preserved. Other narrow embedded contexts use three rows of three 44px controls; the phone
-portrait canvas retains the desktop icon row as part of the scaled page. Add the English tooltip translation when updating labels.
+QR dialogs and both website destinations are preserved. Portrait phones keep
+the compact nine-icon row at the page's original scale; do not compensate those
+glyphs for the 980px canvas or expand them into a three-row grid. Contact preview
+dialogs use 16px headings, 14px names and 40px identity images on the physical
+phone screen, while their action buttons retain a 44px touch target. Project
+cards retain their original horizontal layout.
+Add the English tooltip translation when updating labels.
+
+On phones, CV, email, GitHub, Scholar and both website icons first open a
+labelled, dismissible preview dialog. Its content fits the phone width and
+includes an explicit destination action. GitHub uses the account's public avatar
+and biography; it does not embed the external GitHub website. Scholar remains a
+name search until an actual author profile is available. CV previews the existing
+first-page image, and email offers the existing mailto link. Original link hrefs
+remain intact as a fallback without JavaScript. Desktop links retain their
+normal behavior. Dialogs lock background scrolling, restore the reading position
+and trigger focus on close, and support Escape and backdrop dismissal.
 
 Portfolio controls keep the normal arrow cursor. Contact icons show a shadow on
 hover/focus and cover previews light their magnifier-plus badge. Multi-image

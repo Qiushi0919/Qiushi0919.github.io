@@ -151,17 +151,56 @@
     body :is(a,button,.overlay-backdrop),body :is(a,button) *{cursor:default}
     .contact-dialog-close,.close{display:grid;place-items:center;flex:0 0 auto;width:48px;height:48px;padding:0;font-size:28px;line-height:1;touch-action:manipulation}
     @media(max-width:760px),(pointer:coarse){
-      .contact-dialog-close,.close{position:relative;border:0;background:transparent;font-size:0}
-      :is(.contact-dialog-close,.close)::before{content:"×";position:absolute;left:50%;top:50%;display:grid;place-items:center;width:36px;height:36px;box-sizing:border-box;border:1px solid #c9dcea;border-radius:50%;background:#fff;font-size:22px;line-height:1;transform:translate(-50%,-50%);pointer-events:none}
+      .contact-dialog-close,.close{position:relative;border:0;background:transparent;font-size:0;outline:none;box-shadow:none}
+      :is(.contact-dialog-close,.close)::before{content:"×";position:absolute;left:50%;top:50%;display:grid;place-items:center;width:36px;height:36px;border:0;background:transparent;font-size:22px;line-height:1;transform:translate(-50%,-50%) scale(.5);pointer-events:none}
     }
-    html.portrait-phone :is(.contact-dialog-close,.close){width:calc(48px / var(--portrait-ui-scale));height:calc(48px / var(--portrait-ui-scale));position:relative;border:0;background:transparent;font-size:0}
-    html.portrait-phone :is(.contact-dialog-close,.close)::before{content:"×";position:absolute;left:50%;top:50%;display:grid;place-items:center;width:calc(36px / var(--portrait-ui-scale));height:calc(36px / var(--portrait-ui-scale));box-sizing:border-box;border:calc(1px / var(--portrait-ui-scale)) solid #c9dcea;border-radius:50%;background:#fff;font-size:calc(22px / var(--portrait-ui-scale));line-height:1;transform:translate(-50%,-50%);pointer-events:none}
+    html.portrait-phone :is(.contact-dialog-close,.close){width:calc(48px / var(--portrait-ui-scale));height:calc(48px / var(--portrait-ui-scale));position:relative;border:0;background:transparent;font-size:0;outline:none;box-shadow:none}
+    html.portrait-phone :is(.contact-dialog-close,.close)::before{content:"×";position:absolute;left:50%;top:50%;display:grid;place-items:center;width:calc(36px / var(--portrait-ui-scale));height:calc(36px / var(--portrait-ui-scale));border:0;background:transparent;font-size:calc(22px / var(--portrait-ui-scale));line-height:1;transform:translate(-50%,-50%) scale(.5);pointer-events:none}
     html.portrait-phone .cover-zoom-hint{width:calc(18px / var(--portrait-ui-scale));height:calc(18px / var(--portrait-ui-scale))}
     .profile-contact-icon::after{content:attr(data-label);position:absolute;left:50%;top:calc(100% + 6px);z-index:45;width:max-content;max-width:calc(100vw - 32px);padding:5px 8px;border:1px solid #cfd5da;border-radius:2px;background:#fff;color:#303b43;box-shadow:0 3px 9px rgba(22,42,58,.16);font:400 12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%)}
     .profile-contact-icon:hover::after,.profile-contact-icon:focus-visible::after{opacity:1;visibility:visible}
     .profile-contact-icon:first-child::after{left:0;transform:none}
     .profile-links .profile-origin-badge{position:absolute;right:-1px;bottom:0;padding:0 2px;border:1px solid #dce3e8;border-radius:2px;background:#fff;color:currentColor;font:700 7px/10px system-ui}
     @media(max-width:760px){.profile-icon-links{grid-template-columns:repeat(3,44px);gap:5px 12px}.profile-contact-icon{width:44px;height:44px}.profile-contact-icon:nth-child(3n+1)::after{left:0;right:auto;transform:none}.profile-contact-icon:nth-child(3n)::after{left:auto;right:0;transform:none}}
+    :root{--contact-ui-scale:1}
+    html.portrait-phone{--contact-ui-scale:var(--portrait-ui-scale)}
+    html.contact-modal-open,html.contact-modal-open body{overflow:hidden}
+    .contact-dialog{overflow:auto;overscroll-behavior:contain}
+    .contact-link-preview[hidden],.contact-qr[hidden],.contact-preview-avatar[hidden],.contact-preview-mark[hidden],.contact-cv-preview[hidden]{display:none}
+    .contact-preview-identity{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .contact-preview-avatar,.contact-preview-mark{display:grid;place-items:center;flex:none;width:64px;height:64px;border-radius:12px;object-fit:cover;background:#f4f7fa;color:#203647}
+    .contact-preview-mark svg{width:32px;height:32px;fill:currentColor}
+    .contact-preview-mark .cv-mark{font:900 24px/1 Georgia,serif}
+    .contact-preview-name{display:block;font-size:18px;color:#213747;overflow-wrap:anywhere}
+    .contact-preview-summary{margin:6px 0 0;color:#607483;font-size:14px;line-height:1.6}
+    .contact-preview-url{display:block;margin:0 0 18px;padding:10px 12px;border-radius:7px;background:#f5f8fb;color:#607483;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+    .contact-cv-preview{margin:0 0 18px;max-height:40vh;overflow:auto;overscroll-behavior:contain;border:1px solid #e2e7eb}
+    .contact-cv-preview img{display:block;width:100%;height:auto}
+    .contact-preview-actions{display:flex;justify-content:flex-end;gap:12px}
+    .contact-preview-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border:1px solid #d5dde2;border-radius:8px;background:#fff;color:#344d60;font:inherit;font-size:14px}
+    .contact-preview-action.primary{border-color:var(--blue);background:var(--blue);color:#fff}
+    .contact-preview-action:focus-visible{outline:2px solid #344d60;outline-offset:3px}
+    html.mobile-contact-ui .profile-contact-icon::after{display:none}
+    html.mobile-contact-ui .profile-contact-icon:focus-visible{outline:none}
+    html.portrait-phone .profile-icon-links{grid-template-columns:repeat(9,32px);gap:5px}
+    html.portrait-phone .profile-contact-icon{width:32px;height:40px;padding:4px;border-radius:5px}
+    html.mobile-contact-ui .contact-dialog{width:min(calc(430px / var(--contact-ui-scale)),calc(100vw - calc(32px / var(--contact-ui-scale))));max-height:calc(100dvh - calc(32px / var(--contact-ui-scale)));border-radius:calc(14px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-dialog-card{padding:calc(18px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-dialog-head{gap:calc(12px / var(--contact-ui-scale));margin-bottom:calc(14px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-dialog-head h2{font-size:calc(16px / var(--contact-ui-scale));line-height:1.3}
+    html.mobile-contact-ui .contact-dialog-head p{margin-top:calc(4px / var(--contact-ui-scale));font-size:calc(11px / var(--contact-ui-scale));line-height:1.5}
+    html.mobile-contact-ui .contact-qr img{max-height:calc(100dvh - calc(170px / var(--contact-ui-scale)))}
+    html.mobile-contact-ui .contact-qr figcaption{margin-top:calc(10px / var(--contact-ui-scale));font-size:calc(13px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-identity{gap:calc(10px / var(--contact-ui-scale));margin-bottom:calc(14px / var(--contact-ui-scale))}
+    html.mobile-contact-ui :is(.contact-preview-avatar,.contact-preview-mark){width:calc(40px / var(--contact-ui-scale));height:calc(40px / var(--contact-ui-scale));border-radius:calc(8px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-mark svg{width:calc(22px / var(--contact-ui-scale));height:calc(22px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-mark .cv-mark{font-size:calc(18px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-name{font-size:calc(14px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-summary{margin-top:calc(4px / var(--contact-ui-scale));font-size:calc(12px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-url{margin-bottom:calc(14px / var(--contact-ui-scale));padding:calc(8px / var(--contact-ui-scale)) calc(10px / var(--contact-ui-scale));border-radius:calc(7px / var(--contact-ui-scale));font-size:calc(11px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-actions{gap:calc(12px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-preview-action{min-height:calc(44px / var(--contact-ui-scale));padding:calc(10px / var(--contact-ui-scale)) calc(16px / var(--contact-ui-scale));border-radius:calc(8px / var(--contact-ui-scale));font-size:calc(13px / var(--contact-ui-scale))}
+    html.mobile-contact-ui .contact-cv-preview{margin-bottom:calc(18px / var(--contact-ui-scale))}
   </style>
 </head>
 <body>
@@ -701,12 +740,25 @@
     <div class="contact-dialog-card">
       <header class="contact-dialog-head">
         <div><h2 id="contactDialogTitle">联系方式</h2><p id="contactDialogDescription">扫描二维码联系</p></div>
-        <button class="contact-dialog-close" id="contactDialogClose" type="button" aria-label="关闭二维码">×</button>
+        <button class="contact-dialog-close" id="contactDialogClose" type="button" aria-label="关闭窗口">×</button>
       </header>
       <figure class="contact-qr">
         <img id="contactQrImage" alt="" />
         <figcaption id="contactQrCaption">联系二维码</figcaption>
       </figure>
+      <section class="contact-link-preview" id="contactLinkPreview" hidden>
+        <div class="contact-preview-identity">
+          <img class="contact-preview-avatar" id="contactPreviewAvatar" alt="" width="64" height="64" hidden />
+          <span class="contact-preview-mark" id="contactPreviewMark" aria-hidden="true"></span>
+          <div><strong class="contact-preview-name" id="contactPreviewName"></strong><p class="contact-preview-summary" id="contactPreviewSummary"></p></div>
+        </div>
+        <span class="contact-preview-url" id="contactPreviewUrl"></span>
+        <figure class="contact-cv-preview" id="contactCvPreview" hidden><img id="contactCvImage" alt="个人简历预览" /></figure>
+        <div class="contact-preview-actions">
+          <button class="contact-preview-action" id="contactPreviewDismiss" type="button">关闭</button>
+          <a class="contact-preview-action primary" id="contactPreviewVisit" rel="noopener noreferrer">继续前往</a>
+        </div>
+      </section>
     </div>
   </dialog>
 
@@ -882,17 +934,113 @@
       const title = document.getElementById('contactDialogTitle');
       const description = document.getElementById('contactDialogDescription');
       const caption = document.getElementById('contactQrCaption');
+      const qr = image.closest('figure');
+      const preview = document.getElementById('contactLinkPreview');
+      const avatar = document.getElementById('contactPreviewAvatar');
+      const mark = document.getElementById('contactPreviewMark');
+      const name = document.getElementById('contactPreviewName');
+      const summary = document.getElementById('contactPreviewSummary');
+      const destination = document.getElementById('contactPreviewUrl');
+      const cv = document.getElementById('contactCvPreview');
+      const cvImage = document.getElementById('contactCvImage');
+      const visit = document.getElementById('contactPreviewVisit');
+      const dismiss = document.getElementById('contactPreviewDismiss');
+      const close = document.getElementById('contactDialogClose');
+      const english = document.documentElement.dataset.language === 'en';
+      const text = (zh, en) => english ? en : zh;
+      let activeTrigger = null;
+      let savedScroll = {x:0,y:0};
+      const isPhone = () => document.documentElement.classList.contains('portrait-phone') ||
+        (Math.min(window.screen.width, window.screen.height) <= 600 &&
+         (matchMedia('(pointer:coarse)').matches || matchMedia('(hover:none)').matches));
+      const syncPhone = () => {
+        const phone = isPhone();
+        document.documentElement.classList.toggle('mobile-contact-ui', phone);
+        document.querySelectorAll('a.profile-contact-icon').forEach(link => {
+          if (phone) {
+            link.setAttribute('aria-haspopup', 'dialog');
+            link.setAttribute('aria-controls', 'contactDialog');
+          } else {
+            link.removeAttribute('aria-haspopup');
+            link.removeAttribute('aria-controls');
+          }
+        });
+      };
+      syncPhone();
+      window.addEventListener('resize', syncPhone, {passive:true});
+      const open = trigger => {
+        if (dialog.open) return;
+        document.querySelector('.project-card.is-open .close')?.click();
+        activeTrigger = trigger;
+        savedScroll = {x:window.scrollX,y:window.scrollY};
+        document.documentElement.classList.add('contact-modal-open');
+        dialog.showModal();
+        close.focus({preventScroll:true});
+      };
       document.querySelectorAll('[data-contact-src]').forEach(trigger => {
         trigger.addEventListener('click', () => {
+          qr.hidden = false;
+          preview.hidden = true;
           title.textContent = trigger.dataset.contactTitle;
           description.textContent = trigger.dataset.contactDescription;
           caption.textContent = trigger.dataset.contactTitle;
           image.src = trigger.dataset.contactSrc;
-          image.alt = `${trigger.dataset.contactTitle}二维码`;
-          dialog.showModal();
+          image.alt = `${trigger.dataset.contactTitle} ${text('二维码', 'QR code')}`;
+          image.loading = 'eager';
+          open(trigger);
         });
       });
-      document.getElementById('contactDialogClose').addEventListener('click', () => dialog.close());
+      document.querySelectorAll('a.profile-contact-icon').forEach(trigger => {
+        trigger.addEventListener('click', event => {
+          if (!isPhone() || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          const href = trigger.href;
+          const url = new URL(href);
+          const kind = url.protocol === 'mailto:' ? 'email' : url.hostname === 'github.com' ? 'github' :
+            url.hostname === 'scholar.google.com' ? 'scholar' : url.pathname.replace(/\/$/, '') === '/cv' ? 'cv' : 'website';
+          qr.hidden = true;
+          preview.hidden = false;
+          cv.hidden = kind !== 'cv';
+          avatar.hidden = true;
+          mark.hidden = false;
+          mark.replaceChildren();
+          const icon = trigger.querySelector('svg,.cv-mark');
+          if (icon) mark.append(icon.cloneNode(true));
+          const content = {
+            github: ['GitHub', text('GitHub 个人主页', 'GitHub profile'), 'Qiushi0919', 'Trustworthy AI · Metasurfaces · Embedded Systems', text('前往 GitHub', 'Visit GitHub')],
+            email: [text('邮箱', 'Email'), text('邮箱联系方式', 'Email contact'), url.pathname, text('科研交流与项目联系', 'Research and project enquiries'), text('写邮件', 'Write an email')],
+            scholar: ['Google Scholar', text('姓名学术检索', 'Academic name search'), '谢秋实 / Qiushi Xie', text('检索谢秋实的论文与相关学术成果', 'Search for papers and academic work by Qiushi Xie'), text('前往学术检索', 'Search Google Scholar')],
+            cv: [text('个人简历', 'Curriculum Vitae'), 'PDF', '谢秋实 / Qiushi Xie', text('教育经历、科研论文与竞赛项目', 'Education, research papers and competition projects'), text('打开简历', 'Open CV')],
+            website: [text(url.hostname === 'qiushi0919.cn' ? '中文个人网站' : '英文个人网站', url.hostname === 'qiushi0919.cn' ? 'Chinese website' : 'English website'), text('个人主页', 'Personal homepage'), url.hostname, text('科研论文、竞赛项目与个人作品', 'Research papers, competition projects and personal work'), text('前往网站', 'Visit website')]
+          }[kind];
+          [title.textContent, description.textContent, name.textContent, summary.textContent, visit.textContent] = content;
+          destination.textContent = kind === 'email' ? url.pathname : kind === 'scholar' ? url.hostname : href;
+          visit.href = href;
+          visit.target = kind === 'email' ? '_self' : '_blank';
+          dismiss.textContent = text('关闭', 'Close');
+          if (kind === 'github' || kind === 'website') {
+            avatar.src = kind === 'github' ? '/assets/contact/github-avatar.jpg' : '/assets/contact/qiushi-favicon.png';
+            avatar.alt = kind === 'github' ? 'Qiushi0919' : text('个人网站图标', 'Website icon');
+            avatar.loading = 'eager';
+            avatar.hidden = false;
+            mark.hidden = true;
+          }
+          if (kind === 'cv') {
+            cvImage.src = new URL('/cv/qiushi-xie-cv.webp', href).href;
+            cvImage.loading = 'eager';
+          }
+          open(trigger);
+        });
+      });
+      avatar.addEventListener('error', () => {avatar.hidden = true;mark.hidden = false;});
+      close.addEventListener('click', () => dialog.close());
+      dismiss.addEventListener('click', () => dialog.close());
+      visit.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('close', () => {
+        document.documentElement.classList.remove('contact-modal-open');
+        window.scrollTo(savedScroll.x, savedScroll.y);
+        activeTrigger?.focus({preventScroll:true});
+      });
       dialog.addEventListener('keydown', event => {
         if (event.key === 'Escape') dialog.close();
       });
@@ -901,7 +1049,9 @@
         dialog.close();
       });
       dialog.addEventListener('click', event => {
-        if (event.target === dialog) dialog.close();
+        if (event.target !== dialog) return;
+        const bounds = dialog.getBoundingClientRect();
+        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
       });
     })();
   </script>

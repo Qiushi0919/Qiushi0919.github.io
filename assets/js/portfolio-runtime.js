@@ -33,17 +33,113 @@
       const title = document.getElementById('contactDialogTitle');
       const description = document.getElementById('contactDialogDescription');
       const caption = document.getElementById('contactQrCaption');
+      const qr = image.closest('figure');
+      const preview = document.getElementById('contactLinkPreview');
+      const avatar = document.getElementById('contactPreviewAvatar');
+      const mark = document.getElementById('contactPreviewMark');
+      const name = document.getElementById('contactPreviewName');
+      const summary = document.getElementById('contactPreviewSummary');
+      const destination = document.getElementById('contactPreviewUrl');
+      const cv = document.getElementById('contactCvPreview');
+      const cvImage = document.getElementById('contactCvImage');
+      const visit = document.getElementById('contactPreviewVisit');
+      const dismiss = document.getElementById('contactPreviewDismiss');
+      const close = document.getElementById('contactDialogClose');
+      const english = document.documentElement.dataset.language === 'en';
+      const text = (zh, en) => english ? en : zh;
+      let activeTrigger = null;
+      let savedScroll = {x:0,y:0};
+      const isPhone = () => document.documentElement.classList.contains('portrait-phone') ||
+        (Math.min(window.screen.width, window.screen.height) <= 600 &&
+         (matchMedia('(pointer:coarse)').matches || matchMedia('(hover:none)').matches));
+      const syncPhone = () => {
+        const phone = isPhone();
+        document.documentElement.classList.toggle('mobile-contact-ui', phone);
+        document.querySelectorAll('a.profile-contact-icon').forEach(link => {
+          if (phone) {
+            link.setAttribute('aria-haspopup', 'dialog');
+            link.setAttribute('aria-controls', 'contactDialog');
+          } else {
+            link.removeAttribute('aria-haspopup');
+            link.removeAttribute('aria-controls');
+          }
+        });
+      };
+      syncPhone();
+      window.addEventListener('resize', syncPhone, {passive:true});
+      const open = trigger => {
+        if (dialog.open) return;
+        document.querySelector('.project-card.is-open .close')?.click();
+        activeTrigger = trigger;
+        savedScroll = {x:window.scrollX,y:window.scrollY};
+        document.documentElement.classList.add('contact-modal-open');
+        dialog.showModal();
+        close.focus({preventScroll:true});
+      };
       document.querySelectorAll('[data-contact-src]').forEach(trigger => {
         trigger.addEventListener('click', () => {
+          qr.hidden = false;
+          preview.hidden = true;
           title.textContent = trigger.dataset.contactTitle;
           description.textContent = trigger.dataset.contactDescription;
           caption.textContent = trigger.dataset.contactTitle;
           image.src = trigger.dataset.contactSrc;
-          image.alt = `${trigger.dataset.contactTitle}二维码`;
-          dialog.showModal();
+          image.alt = `${trigger.dataset.contactTitle} ${text('二维码', 'QR code')}`;
+          image.loading = 'eager';
+          open(trigger);
         });
       });
-      document.getElementById('contactDialogClose').addEventListener('click', () => dialog.close());
+      document.querySelectorAll('a.profile-contact-icon').forEach(trigger => {
+        trigger.addEventListener('click', event => {
+          if (!isPhone() || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          const href = trigger.href;
+          const url = new URL(href);
+          const kind = url.protocol === 'mailto:' ? 'email' : url.hostname === 'github.com' ? 'github' :
+            url.hostname === 'scholar.google.com' ? 'scholar' : url.pathname.replace(/\/$/, '') === '/cv' ? 'cv' : 'website';
+          qr.hidden = true;
+          preview.hidden = false;
+          cv.hidden = kind !== 'cv';
+          avatar.hidden = true;
+          mark.hidden = false;
+          mark.replaceChildren();
+          const icon = trigger.querySelector('svg,.cv-mark');
+          if (icon) mark.append(icon.cloneNode(true));
+          const content = {
+            github: ['GitHub', text('GitHub 个人主页', 'GitHub profile'), 'Qiushi0919', 'Trustworthy AI · Metasurfaces · Embedded Systems', text('前往 GitHub', 'Visit GitHub')],
+            email: [text('邮箱', 'Email'), text('邮箱联系方式', 'Email contact'), url.pathname, text('科研交流与项目联系', 'Research and project enquiries'), text('写邮件', 'Write an email')],
+            scholar: ['Google Scholar', text('姓名学术检索', 'Academic name search'), '谢秋实 / Qiushi Xie', text('检索谢秋实的论文与相关学术成果', 'Search for papers and academic work by Qiushi Xie'), text('前往学术检索', 'Search Google Scholar')],
+            cv: [text('个人简历', 'Curriculum Vitae'), 'PDF', '谢秋实 / Qiushi Xie', text('教育经历、科研论文与竞赛项目', 'Education, research papers and competition projects'), text('打开简历', 'Open CV')],
+            website: [text(url.hostname === 'qiushi0919.cn' ? '中文个人网站' : '英文个人网站', url.hostname === 'qiushi0919.cn' ? 'Chinese website' : 'English website'), text('个人主页', 'Personal homepage'), url.hostname, text('科研论文、竞赛项目与个人作品', 'Research papers, competition projects and personal work'), text('前往网站', 'Visit website')]
+          }[kind];
+          [title.textContent, description.textContent, name.textContent, summary.textContent, visit.textContent] = content;
+          destination.textContent = kind === 'email' ? url.pathname : kind === 'scholar' ? url.hostname : href;
+          visit.href = href;
+          visit.target = kind === 'email' ? '_self' : '_blank';
+          dismiss.textContent = text('关闭', 'Close');
+          if (kind === 'github' || kind === 'website') {
+            avatar.src = kind === 'github' ? '/assets/contact/github-avatar.jpg' : '/assets/contact/qiushi-favicon.png';
+            avatar.alt = kind === 'github' ? 'Qiushi0919' : text('个人网站图标', 'Website icon');
+            avatar.loading = 'eager';
+            avatar.hidden = false;
+            mark.hidden = true;
+          }
+          if (kind === 'cv') {
+            cvImage.src = new URL('/cv/qiushi-xie-cv.webp', href).href;
+            cvImage.loading = 'eager';
+          }
+          open(trigger);
+        });
+      });
+      avatar.addEventListener('error', () => {avatar.hidden = true;mark.hidden = false;});
+      close.addEventListener('click', () => dialog.close());
+      dismiss.addEventListener('click', () => dialog.close());
+      visit.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('close', () => {
+        document.documentElement.classList.remove('contact-modal-open');
+        window.scrollTo(savedScroll.x, savedScroll.y);
+        activeTrigger?.focus({preventScroll:true});
+      });
       dialog.addEventListener('keydown', event => {
         if (event.key === 'Escape') dialog.close();
       });
@@ -52,7 +148,9 @@
         dialog.close();
       });
       dialog.addEventListener('click', event => {
-        if (event.target === dialog) dialog.close();
+        if (event.target !== dialog) return;
+        const bounds = dialog.getBoundingClientRect();
+        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
       });
     })();
   
