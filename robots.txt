@@ -1,3 +1,10 @@
+User-agent: OAI-SearchBot
+Disallow: /analytics/
+Disallow: /cost-per-day/api/
+Disallow: /tools/
+Disallow: /Qiushi-Portfolio/tools/
+Allow: /
+
 User-agent: *
 Disallow: /analytics/
 Disallow: /cost-per-day/api/

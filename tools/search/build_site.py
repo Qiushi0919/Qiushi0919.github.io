@@ -333,7 +333,9 @@ def build():
             for p in verification.iterdir():
                 if p.is_file(): write(destination / p.name, p.read_text())
         legacy_tools = 'Disallow: /Qiushi-Portfolio/tools/\n' if origin == 'github' else ''
-        write(destination / 'robots.txt', f'User-agent: *\nDisallow: {path_prefix}analytics/\nDisallow: {path_prefix}cost-per-day/api/\nDisallow: {path_prefix}tools/\n{legacy_tools}Sitemap: {base}sitemap.xml\n')
+        blocked_paths = f'Disallow: {path_prefix}analytics/\nDisallow: {path_prefix}cost-per-day/api/\nDisallow: {path_prefix}tools/\n{legacy_tools}'
+        # Specific bot groups do not inherit wildcard restrictions.
+        write(destination / 'robots.txt', f'User-agent: OAI-SearchBot\n{blocked_paths}Allow: /\n\nUser-agent: *\n{blocked_paths}Sitemap: {base}sitemap.xml\n')
         sitemap = etree.Element('urlset', nsmap={None:'http://www.sitemaps.org/schemas/sitemap/0.9', 'xhtml':'http://www.w3.org/1999/xhtml'})
         for route in ROUTES:
             url = etree.SubElement(sitemap, 'url')

@@ -138,10 +138,25 @@ CN uses Nginx with static directory pages, actual 404 responses, and 301 redirec
 from the former root homepage aliases. Existing navigation, cost tracker, and
 other service routes retain their own configuration.
 
-The CN `robots.txt` advertises its sitemap. GitHub project-level `robots.txt`
-cannot control the host-wide `/robots.txt`; submit the GitHub sitemap directly
-in Search Console. Sitemaps and submission help discovery but do not guarantee
-indexing or search ranking.
+Both origin-root `robots.txt` files explicitly allow OAI-SearchBot to fetch
+public pages and advertise their own sitemaps. The bot's group repeats the
+analytics, cost-tracker API, and tools exclusions because a specific group does
+not inherit wildcard rules. GitHub also excludes the legacy portfolio tools
+directory. The generator preserves these rules on subsequent releases.
+GPTBot's existing policy is unchanged; OpenAI Search and model-training crawler
+settings are independent. Allowing Search makes pages eligible for discovery,
+without guaranteeing indexing, ranking, or a citation in a ChatGPT answer.
+See [OpenAI's crawler documentation](https://developers.openai.com/api/docs/bots).
+
+CN serves directly from its Nginx origin, with no OAI-SearchBot user-agent or
+source-IP denial in the reviewed Nginx and host firewall configuration. If a CDN,
+WAF, or bot challenge is introduced later, review OpenAI's current published
+search IP ranges at `https://openai.com/searchbot.json` and allow verified Search
+requests through it. Do not bypass security solely on a spoofable user-agent.
+GitHub Pages serves the English site's root rules. A project-level `robots.txt`
+only applies when published at the host root. Submit each origin's sitemap in
+Search Console. OpenAI says robots updates may take about 24 hours to be applied;
+that timing does not promise search indexing.
 
 ## CV assets
 
