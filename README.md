@@ -61,6 +61,9 @@ project covers and descriptions keep their compact horizontal card layout. The
 early head script changes the viewport before CSS loads and allows pinch zoom.
 Desktop and landscape browsers keep their normal viewport. Portrait phone close
 buttons compensate for that page scale and retain a 48px physical touch target.
+Their visible circle is 36px and the cross is 22px on phones; the transparent
+margin around the circle remains clickable. Desktop close controls retain their
+existing appearance. The smaller mark also applies in narrow and touch layouts.
 Content renders
 immediately; the removed loading screen is not restored. Off-screen images load
 lazily, and preview videos do not preload.
