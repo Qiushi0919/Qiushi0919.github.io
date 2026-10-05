@@ -25,6 +25,14 @@ Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
 
+Independent detail-page introductions and share images are maintained in
+`tools/search/source/project-pages.json`. Each detail heading has its own bilingual
+one-sentence introduction. Open Graph, Twitter cards and the page/work structured
+data use an existing project overview, result, system or application image;
+the Person image and homepage/About share images retain the author portrait.
+The project image URLs reference already published assets, without new artwork
+or cropping. Image descriptions follow the [Open Graph protocol](https://ogp.me/).
+
 The homepage title identifies the 2027 direct-entry PhD cohort at Zhejiang
 University. Its English title says "Incoming PhD Student". The visible biography
 and Person description retain the current HUST undergraduate affiliation and

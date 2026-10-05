@@ -1,0 +1,112 @@
+{
+  "papers/vasemuseum": {
+    "intro": {
+      "zh": "面向数字博物馆可靠问答的多模态智能体框架。",
+      "en": "A multimodal agent framework for reliable question answering in digital museums."
+    },
+    "image": "assets/portfolio-cover/vase-paper-preview/architecture-clean.webp",
+    "image_alt": {
+      "zh": "VaseMuseum 的虚拟博物馆、视觉语言推理、知识检索与可靠性控制流程",
+      "en": "VaseMuseum workflow: virtual museum, vision-language reasoning, knowledge retrieval, and reliability control"
+    }
+  },
+  "papers/battery-rul": {
+    "intro": {
+      "zh": "结合 ALA 优化的 VMD 分解与 BiTCN-AM 模型，预测锂离子电池的剩余使用寿命。",
+      "en": "Lithium-ion battery remaining-useful-life prediction with ALA-tuned VMD and BiTCN-AM."
+    },
+    "image": "assets/portfolio-cover/eecs-2026/nasa-results.webp",
+    "image_alt": {
+      "zh": "NASA B0005 电池的实际容量与各模型预测结果对比",
+      "en": "True capacity and model prediction comparisons for the NASA B0005 battery"
+    }
+  },
+  "competitions/intelcup-2026": {
+    "intro": {
+      "zh": "基于 Intel DK-2500，融合手势、视线交互与自主巡检的多模态无人机地面站。",
+      "en": "An Intel DK-2500 UAV ground station combining gesture and gaze interaction with autonomous patrol."
+    },
+    "image": "assets/portfolio-cover/portfolio-cover-poster.jpg",
+    "image_alt": {
+      "zh": "无人机巡检实物系统与地面站任务规划、目标识别界面",
+      "en": "UAV patrol hardware and ground-station interfaces for mission planning and target recognition"
+    }
+  },
+  "competitions/nuedc-c": {
+    "intro": {
+      "zh": "融合 UWB 测距、PDoA 测角与卡尔曼滤波的无线数字钥匙实验系统。",
+      "en": "A wireless digital-key system combining UWB ranging, PDoA angle estimation, and Kalman filtering."
+    },
+    "image": "assets/portfolio-cover/nuedc-c/system-overview.webp",
+    "image_alt": {
+      "zh": "数字钥匙实验系统的完整实物装置",
+      "en": "Complete hardware prototype of the wireless digital-key system"
+    }
+  },
+  "competitions/lowcom": {
+    "intro": {
+      "zh": "通过动态可重构超表面与波束追踪，增强低空无人机通信信号。",
+      "en": "Low-altitude UAV communication enhancement through reconfigurable metasurfaces and beam tracking."
+    },
+    "image": "assets/portfolio-cover/low-altitude-communication/project-cover.webp",
+    "image_alt": {
+      "zh": "凌云睿通低空通信信号增强项目封面",
+      "en": "Lingyun Ruitong low-altitude communication enhancement project cover"
+    }
+  },
+  "competitions/embedded-2025": {
+    "intro": {
+      "zh": "在 RA MCU 上实现本地烟雾预测与自适应 AI 预警，并通过双板卡对照验证。",
+      "en": "Local smoke prediction and adaptive AI alerts on an RA MCU, validated with a dual-board comparison."
+    },
+    "image": "assets/portfolio-cover/embedded-2025/finals-dual-board.webp",
+    "image_alt": {
+      "zh": "全国总决赛 AI 预测与传统阈值方案的双板卡对照展示",
+      "en": "National-finals dual-board demonstration comparing AI prediction with a fixed-threshold baseline"
+    }
+  },
+  "projects/codex-tidy": {
+    "intro": {
+      "zh": "用于检查 Codex 对话、文件位置与存储空间，并保守清理缓存的 macOS 工具。",
+      "en": "A macOS utility for inspecting Codex conversations, file locations, and storage with conservative cache cleanup."
+    },
+    "image": "assets/side-projects/codex-tidy/cover.webp",
+    "image_alt": {
+      "zh": "Codex Tidy 的对话、文件与空间管理产品封面",
+      "en": "Codex Tidy product cover for conversation, file, and storage management"
+    }
+  },
+  "projects/boring-notch-focus": {
+    "intro": {
+      "zh": "将 MacBook 刘海区域扩展为音乐控制器、文件暂存区与番茄钟。",
+      "en": "A MacBook notch utility for music control, temporary file storage, and Pomodoro sessions."
+    },
+    "image": "assets/side-projects/boring-notch/thumbnail.webp",
+    "image_alt": {
+      "zh": "Boring Notch Focus 的音乐、文件与番茄钟功能封面",
+      "en": "Boring Notch Focus cover showing music, files, and Pomodoro features"
+    }
+  },
+  "projects/alttab": {
+    "intro": {
+      "zh": "为 AltTab 增加多显示器同步窗口切换与应用图标回退功能。",
+      "en": "An AltTab fork with synchronized multi-display window switching and application-icon fallback."
+    },
+    "image": "assets/side-projects/alttab/concept.webp",
+    "image_alt": {
+      "zh": "AltTab 在多显示器上同步显示窗口切换界面的概念图",
+      "en": "AltTab concept showing synchronized window-switching interfaces across multiple displays"
+    }
+  },
+  "projects/mindmap": {
+    "intro": {
+      "zh": "支持多层级节点、批注、待办与双语界面的 Python / PyQt5 思维导图编辑器。",
+      "en": "A Python/PyQt5 mind-map editor with multilevel nodes, annotations, to-dos, and a bilingual interface."
+    },
+    "image": "assets/side-projects/mindmap/cover.webp",
+    "image_alt": {
+      "zh": "MindMap 思维导图编辑器产品封面",
+      "en": "MindMap mind-map editor product cover"
+    }
+  }
+}

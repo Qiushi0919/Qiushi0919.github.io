@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'mobile-profile-20261005'
+VERSION = 'detail-sharing-20261005'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -43,6 +43,7 @@ EXTERNAL_PROJECTS = {
 ROUTES = ['', 'about', *CATEGORIES, *DETAILS.values()]
 TRANSLATIONS = json.loads((SOURCE / 'translations.json').read_text())
 AUTHOR = json.loads((SOURCE / 'author-profile.json').read_text())
+PROJECT_PAGES = json.loads((SOURCE / 'project-pages.json').read_text())
 VERIFICATION = json.loads((SOURCE / 'search-verification.json').read_text()) if (SOURCE / 'search-verification.json').exists() else {}
 
 
@@ -285,6 +286,9 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                     summary = c.xpath('.//*[contains(concat(" ",@class," ")," summary ") or contains(concat(" ",@class," ")," vase-summary ")]')
                     if summary:
                         description = ''.join(summary[0].itertext()).strip()
+                    intro = heading.getparent().find('p')
+                    intro.clear()
+                    intro.text = PROJECT_PAGES[route]['intro'][language]
                     tree.xpath('//*[@id="profileName"]')[0].tag = 'h2'
                 head.find('title').text = title
                 head.xpath('./meta[@name="description"]')[0].set('content', description)
@@ -302,11 +306,16 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                 head.append(element('link', rel='canonical', href=canonical))
                 for lang, target in [('zh-CN', route_url(CN, route)), ('en', route_url(GH, route)), ('x-default', route_url(GH, route))]:
                     head.append(element('link', rel='alternate', hreflang=lang, href=target))
+                share_image = canonical_base + (PROJECT_PAGES[route]['image'] if detail_id
+                                                else 'assets/contact/profile-photo.jpg')
+                share_alt = PROJECT_PAGES[route]['image_alt'][language] if detail_id else '谢秋实 / Qiushi Xie'
                 for prop, value in [('og:title', title), ('og:description', description), ('og:type', 'website'),
                                     ('og:url', canonical), ('og:locale', 'zh_CN' if language == 'zh' else 'en_US'),
-                                    ('og:image', canonical_base + 'assets/contact/profile-photo.jpg')]:
+                                    ('og:image', share_image), ('og:image:alt', share_alt)]:
                     head.append(element('meta', property=prop, content=value))
-                head.append(element('meta', name='twitter:card', content='summary'))
+                head.append(element('meta', name='twitter:card', content='summary_large_image' if detail_id else 'summary'))
+                head.append(element('meta', name='twitter:image', content=share_image))
+                head.append(element('meta', name='twitter:image:alt', content=share_alt))
                 person = {'@type': 'Person', '@id': CN + '#person', 'name': '谢秋实',
                           'alternateName': 'Qiushi Xie', 'url': canonical_base,
                           'description': AUTHOR['description'][language],
@@ -337,6 +346,12 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                     graph.append(work)
                     page['mainEntity'] = {'@id': work['@id']}
                     page['about'] = {'@id': person['@id']}
+                    preview = {'@type': 'ImageObject', '@id': canonical + '#preview',
+                               'contentUrl': share_image, 'url': share_image,
+                               'caption': share_alt}
+                    graph.append(preview)
+                    page['primaryImageOfPage'] = {'@id': preview['@id']}
+                    work['image'] = share_image
                 schema = element('script', type='application/ld+json')
                 schema.text = json.dumps({'@context': 'https://schema.org', '@graph': graph}, ensure_ascii=False).replace('<', '\\u003c')
                 head.append(schema)

@@ -52,6 +52,18 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert len(tree.xpath('//section[@class="biography"]/p')) == 5
             assert not tree.xpath('//article[@data-work-category]')
             assert len(tree.xpath('//section[@class="biography"]//li/a')) == 4
+        if len(urlsplit(canonical).path.strip('/').split('/')) == 2:
+            intro = tree.xpath('//*[@class="works-head"]/p')[0].text_content().strip()
+            assert intro and 'Research papers, competition projects' not in intro, str(p)
+            assert '科研论文、竞赛项目与独立小项目' not in intro, str(p)
+            image = tree.xpath('//meta[@property="og:image"]/@content')[0]
+            assert not image.endswith('/assets/contact/profile-photo.jpg'), str(p)
+            assert tree.xpath('//meta[@property="og:image:alt"]/@content')[0]
+            assert tree.xpath('//meta[@name="twitter:image"]/@content') == [image]
+            primary = schema['@graph'][1]['primaryImageOfPage']['@id']
+            assert next(item for item in schema['@graph'] if item.get('@id') == primary)['contentUrl'] == image
+            work = next(item for item in schema['@graph'] if item.get('@id') == canonical + '#work')
+            assert work['image'] == image
         ids = tree.xpath('//*[@id]/@id'); assert len(ids) == len(set(ids)), str(p)
         for link in tree.xpath('//a/@href'):
             if not link.startswith('/') or link.startswith('//') or link.startswith(prefix + '/assets/'):
