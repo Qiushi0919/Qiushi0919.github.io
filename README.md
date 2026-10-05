@@ -138,15 +138,33 @@ CN uses Nginx with static directory pages, actual 404 responses, and 301 redirec
 from the former root homepage aliases. Existing navigation, cost tracker, and
 other service routes retain their own configuration.
 
-Both origin-root `robots.txt` files explicitly allow OAI-SearchBot to fetch
-public pages and advertise their own sitemaps. The bot's group repeats the
-analytics, cost-tracker API, and tools exclusions because a specific group does
-not inherit wildcard rules. GitHub also excludes the legacy portfolio tools
-directory. The generator preserves these rules on subsequent releases.
-GPTBot's existing policy is unchanged; OpenAI Search and model-training crawler
-settings are independent. Allowing Search makes pages eligible for discovery,
-without guaranteeing indexing, ranking, or a citation in a ChatGPT answer.
-See [OpenAI's crawler documentation](https://developers.openai.com/api/docs/bots).
+Both origin-root `robots.txt` files explicitly allow all crawlers to fetch
+public pages through `User-agent: *` and `Allow: /`, and advertise their own
+sitemaps. This universal rule covers Grok, Doubao, DeepSeek, Qwen, Kimi, Yuanbao,
+and other providers regardless of their crawler name or search supplier. It
+also covers Googlebot, Bingbot, Bytespider, Baiduspider, and Sogou's crawlers;
+do not invent model-specific bot names or claim that a provider has indexed
+the site just because its requests are permitted.
+
+A named group explicitly includes the documented OAI-SearchBot, ChatGPT-User,
+Claude-SearchBot, Claude-User, Google-Extended, PerplexityBot, and Perplexity-User
+tokens. Both the named and wildcard groups repeat the analytics, cost-tracker
+API, and tools exclusions because a specific group does not inherit wildcard
+rules. GitHub also excludes the legacy portfolio tools directory. The generator
+preserves these rules on subsequent releases.
+
+The broad allowance includes training crawlers such as GPTBot and ClaudeBot,
+which were already allowed by the previous wildcard rule. Search and training
+permissions can be separated where the provider exposes separate controls.
+Google-Extended controls both Gemini training and certain grounding uses; it
+is a robots control token rather than a separate HTTP user agent. It does not
+control inclusion or ranking in Google Search. This release does not introduce
+any new training restriction. Crawling permission does not guarantee indexing
+or a citation in any model's answer.
+References: [OpenAI](https://developers.openai.com/api/docs/bots),
+[Claude](https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler),
+[Google](https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers#google-extended),
+[Perplexity](https://docs.perplexity.ai/docs/resources/perplexity-crawlers).
 
 CN serves directly from its Nginx origin, with no OAI-SearchBot user-agent or
 source-IP denial in the reviewed Nginx and host firewall configuration. If a CDN,

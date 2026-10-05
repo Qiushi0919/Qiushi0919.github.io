@@ -335,7 +335,11 @@ def build():
         legacy_tools = 'Disallow: /Qiushi-Portfolio/tools/\n' if origin == 'github' else ''
         blocked_paths = f'Disallow: {path_prefix}analytics/\nDisallow: {path_prefix}cost-per-day/api/\nDisallow: {path_prefix}tools/\n{legacy_tools}'
         # Specific bot groups do not inherit wildcard restrictions.
-        write(destination / 'robots.txt', f'User-agent: OAI-SearchBot\n{blocked_paths}Allow: /\n\nUser-agent: *\n{blocked_paths}Sitemap: {base}sitemap.xml\n')
+        ai_agents = ('OAI-SearchBot', 'ChatGPT-User', 'Claude-SearchBot', 'Claude-User',
+                     'Google-Extended', 'PerplexityBot', 'Perplexity-User')
+        named_agents = ''.join(f'User-agent: {agent}\n' for agent in ai_agents)
+        # The wildcard also covers providers without a published crawler token.
+        write(destination / 'robots.txt', f'{named_agents}{blocked_paths}Allow: /\n\nUser-agent: *\n{blocked_paths}Allow: /\nSitemap: {base}sitemap.xml\n')
         sitemap = etree.Element('urlset', nsmap={None:'http://www.sitemaps.org/schemas/sitemap/0.9', 'xhtml':'http://www.w3.org/1999/xhtml'})
         for route in ROUTES:
             url = etree.SubElement(sitemap, 'url')
