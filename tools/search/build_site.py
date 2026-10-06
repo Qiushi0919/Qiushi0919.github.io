@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'preview-gallery-smooth-v2-20261006'
+VERSION = 'preview-sequential-loading-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -224,11 +224,19 @@ def format_project_list(card, is_detail, language):
 def build():
     raw = (SOURCE / 'portfolio.html').read_text()
     template = html.document_fromstring(raw)
-    # Preserve the original phone portrait canvas before CSS is loaded. The
-    # loader class belongs to the removed loading screen, so keep it separate.
+    # Preserve the phone canvas and bound the restored startup loader even if
+    # the external runtime is delayed or unavailable.
     viewport_script = next(s.text for s in template.xpath('//head/script')
                            if 'portraitCanvasWidth' in (s.text or ''))
-    viewport_script = viewport_script.replace("document.documentElement.classList.add('portfolio-loading');", '')
+    viewport_script = viewport_script.replace("document.documentElement.classList.add('portfolio-loading');", """document.documentElement.classList.add('portfolio-loading');
+      window.portfolioLoadStartedAt = performance.now();
+      window.setTimeout(() => {
+        document.documentElement.classList.remove('portfolio-loading');
+        document.documentElement.classList.add('portfolio-ready');
+        document.getElementById('portfolioLoader')?.setAttribute('aria-hidden', 'true');
+        document.querySelector('.work-loading-region')?.setAttribute('aria-busy', 'false');
+        window.dispatchEvent(new Event('portfolio:ready'));
+      }, 5000);""")
     viewport_script = viewport_script.replace(
         'const screenWidth = Math.min(window.innerWidth, window.screen.width, window.screen.height);',
         "const previewQuery = new URLSearchParams(location.search);\n      const previewPhone = window.parent !== window && previewQuery.get('preview-device') === 'phone';\n      const previewWidth = Number(previewQuery.get('preview-width')) || 390;\n      const screenWidth = previewPhone ? Math.max(320,Math.min(600,previewWidth)) : Math.min(window.innerWidth, window.screen.width, window.screen.height);")
@@ -408,6 +416,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
     css += (SOURCE / 'competition-presentation.css').read_text()
     css += (SOURCE / 'preview-playback.css').read_text()
     css += (SOURCE / 'gallery-readability.css').read_text()
+    css += (SOURCE / 'startup-loading.css').read_text()
     typography = (SOURCE / 'site-typography.css').read_text()
     css += typography
     scripts = [(SOURCE / 'gallery-scroll.js').read_text()]
@@ -432,9 +441,10 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             code = code.replace("if (!anyOpen() || (event.key !== 'Escape' && event.key !== ' ')) return;",
                 "if (!anyOpen() || (event.key !== 'Escape' && event.key !== ' ')) return;\n      if (event.key === ' ' && event.target.closest('button,a,input,summary,video,select,textarea')) return;")
         scripts.append(code)
-    scripts.append("requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });")
+    scripts.append((SOURCE / 'preview-load-queue.js').read_text())
     scripts.append((SOURCE / 'preview-frame-player.js').read_text())
     scripts.append((SOURCE / 'preview-playback.js').read_text())
+    scripts.append((SOURCE / 'startup-loading.js').read_text())
     scripts.append((SOURCE / 'work-view.js').read_text())
     scripts.append((SOURCE / 'device-preview/frame-context.js').read_text())
     runtime = '\n'.join(scripts)
@@ -513,10 +523,6 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 head.insert(list(head).index(viewport_meta) + 1, phone_viewport)
                 for style in head.findall('style'):
                     head.remove(style)
-                loader = tree.xpath('//*[@id="portfolioLoader"]')[0]
-                loader.getparent().remove(loader)
-                for ns in tree.xpath('//noscript'):
-                    ns.getparent().remove(ns)
                 category = CATEGORIES.get(route)
                 detail_id = next((key for key, value in DETAILS.items() if value == route), None)
                 for card in tree.xpath('//article[@data-work-category]'):
@@ -775,6 +781,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     sequence = json.loads((SOURCE / 'preview-frames' / name / 'sequence.json').read_text())
                     canvas = element('canvas', **{'id':preview_id,'data-preview-auto':'',
                         'data-preview-sequence':f'/assets/preview-frames/{name}/sequence.json?v={VERSION}',
+                        'data-preview-load-order':str({'eecsCoverTrigger':0,'coverTrigger':1,'nuedcCoverTrigger':2}[button.get('id')]),
                         'aria-label':video.get('aria-label'),'role':'img',
                         'width':str(sequence['width']),'height':str(sequence['height'])})
                     if name == 'battery-method':
@@ -794,6 +801,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     control.append(element('span', '▶', **{'class':'preview-play-icon','aria-hidden':'true'}))
                     control.append(element('span', '播放' if language == 'zh' else 'Play', **{'class':'preview-play-label'}))
                     wrapper.append(control)
+                    indicator = element('span', role='status', aria_label='正在加载动画' if language == 'zh' else 'Loading animation',
+                                        aria_hidden='true', **{'class':'preview-loading-indicator'})
+                    indicator.append(element('span', **{'class':'preview-loading-spinner','aria-hidden':'true'}))
+                    indicator.append(element('span', '正在加载' if language == 'zh' else 'Loading'))
+                    wrapper.append(indicator)
                     # Clicking the original thumbnail still opens its full gallery.
                     # A separate control avoids nested buttons and accidental opens.
                     overlay_id = button.get('aria-controls')
@@ -811,15 +823,18 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         featured_canvas.set('id', preview_id + '-expanded')
                         featured_canvas.set('data-preview-popup', '')
                         featured_control = featured.find('button')
-                        featured_control.set('aria-controls', preview_id + '-expanded')
+                        featured.remove(featured_control)
+                        transport = element('div', **{'class':'preview-transport'})
+                        transport.append(element('button', '▶', type='button', aria_label='播放动画' if language == 'zh' else 'Play animation',
+                                                 **{'data-preview-toggle':'','aria-controls':preview_id + '-expanded'}))
+                        transport.append(element('input', type='range', min='0', max=str(sequence['duration']), value='0', step='0.01',
+                                                 aria_label='播放进度' if language == 'zh' else 'Playback position', disabled='',
+                                                 **{'data-preview-seek':''}))
+                        transport.append(element('span', '0:00 / 0:00', **{'data-preview-time':''}))
+                        featured.append(transport)
                         for zoom_hint in featured.xpath('.//*[contains(concat(" ",@class," ")," cover-zoom-hint ")]'):
                             zoom_hint.getparent().remove(zoom_hint)
                         overlay[0][0].addnext(featured)
-                        original = element('details', **{'class':'preview-original'})
-                        original.append(element('summary', '播放原视频' if language == 'zh' else 'Play original video'))
-                        original.append(element('video', **{'src':video.get('data-src'),'poster':poster_src,
-                            'controls':'','playsinline':'','preload':'none','aria-label':video.get('aria-label')}))
-                        featured.addnext(original)
                     if button.get('id') == 'eecsCoverTrigger':
                         wrapper.remove(control)
                         wrapper.set('class', wrapper.get('class') + ' no-preview-control')
@@ -865,6 +880,20 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     for card in list(main):
                         if (card.tag == 'article' and card.get('data-work-category')) or card.get('class') == 'homepage-project-context':
                             collection.append(card)
+                loader = tree.xpath('//*[@id="portfolioLoader"]')[0]
+                visible_cards = tree.xpath('//article[@data-work-category]')
+                if visible_cards:
+                    collections = tree.xpath('//section[@class="work-collection"]')
+                    parent = collections[0] if collections else main
+                    region = element('div', **{'class':'work-loading-region','aria-busy':'true'})
+                    works_head = tree.xpath('//*[@class="works-head"]')[0]
+                    parent.insert(parent.index(works_head) + 1, region)
+                    for child in list(parent):
+                        if (child.tag == 'article' and child.get('data-work-category')) or child.get('class') == 'homepage-project-context':
+                            region.append(child)
+                    region.append(loader)
+                else:
+                    loader.getparent().remove(loader)
                 skip = element('a', '跳到作品' if language == 'zh' else 'Skip to content', href='#main-content', **{'class':'skip-link'})
                 body.insert(0, skip)
                 footer = element('footer', **{'class':'site-footer'})

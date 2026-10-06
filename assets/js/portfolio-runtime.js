@@ -362,7 +362,100 @@
       });
     })();
   
-requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });
+/* One network queue for all animated thumbnails and their expanded copies.
+   Retain compressed blobs; players keep only a few decoded sprite sheets. */
+(() => {
+  const deferred = () => {
+    let resolve, reject;
+    const promise = new Promise((yes, no) => { resolve=yes; reject=no; });
+    promise.catch(() => {}); // Background previews may not have a consumer yet.
+    return {promise, resolve, reject};
+  };
+  const valid = data => data.duration > 0 && data.duration < 300 && data.fps > 0 && data.fps <= 30 &&
+    data.width > 0 && data.width <= 1280 && data.height > 0 && data.height <= 1280 &&
+    (data.replayStart === undefined || (Number.isFinite(data.replayStart) && data.replayStart >= 0 && data.replayStart < data.duration)) &&
+    (data.loopIntroExtra === undefined || (Number.isFinite(data.loopIntroExtra) && data.loopIntroExtra >= 0 && data.loopIntroExtra <= 10)) &&
+    data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
+    data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
+    data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16);
+  class PreviewLoadQueue {
+    constructor() { this.items=new Map(); this.busy=false; this.started=false; }
+    register(url, priority) {
+      const key=url.href;
+      if (!this.items.has(key)) this.items.set(key, {url, priority:Number.isFinite(priority)?priority:100,
+        position:this.items.size, state:'waiting', blobs:new Map(), listeners:new Set(),
+        manifest:deferred(), complete:deferred()});
+      const item=this.items.get(key);
+      if (this.started) this.pump();
+      return item;
+    }
+    ordered() { return [...this.items.values()].sort((a,b)=>a.priority-b.priority || a.position-b.position); }
+    notify(item, state) {
+      item.state=state;
+      for (const listener of item.listeners) listener(item);
+    }
+    subscribe(item, listener) { item.listeners.add(listener); listener(item); }
+    request(item) {
+      if (item.state === 'error') {
+        item.manifest=deferred(); item.complete=deferred();
+        this.notify(item,'waiting'); // Explicit retry reuses successful blobs.
+      }
+      this.started=true;
+      this.pump();
+      return item;
+    }
+    start() {
+      const first=this.ordered()[0];
+      if (!first) return Promise.resolve();
+      this.request(first);
+      return first.complete.promise;
+    }
+    async fetch(url, type) {
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),20000);
+      try {
+        const response=await fetch(url,{cache:'force-cache',signal:controller.signal});
+        if (!response.ok) throw new Error('Preview download unavailable');
+        return await response[type]();
+      } finally { clearTimeout(timeout); }
+    }
+    async pump() {
+      if (!this.started || this.busy) return;
+      this.busy=true;
+      try {
+        let item;
+        while ((item=this.ordered().find(record=>record.state === 'waiting'))) {
+          this.notify(item,'loading');
+          try {
+            if (!item.data) {
+              const data=await this.fetch(item.url,'json');
+              if (!valid(data)) throw new Error('Invalid preview manifest');
+              item.data=data;
+            }
+            item.manifest.resolve(item.data);
+            this.notify(item,'loading');
+            for (let index=0;index<item.data.sheets.length;index++) {
+              if (!item.blobs.has(index)) {
+                const url=new URL(item.data.sheets[index],item.url);
+                url.search=item.url.search;
+                item.blobs.set(index,await this.fetch(url,'blob'));
+                this.notify(item,'loading');
+              }
+            }
+            this.notify(item,'ready');
+            item.complete.resolve(item.data);
+          } catch (error) {
+            this.notify(item,'error');
+            item.manifest.reject(error); item.complete.reject(error);
+            // A failed upper preview must not block the remaining projects.
+          }
+        }
+      } finally { this.busy=false; }
+    }
+  }
+  window.PortfolioPreviewLoads=new PreviewLoadQueue();
+})();
+
 /* Raster frames only: thumbnail playback never creates an HTML video player. */
 (() => {
   class PreviewFramePlayer {
@@ -382,25 +475,21 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       this.drawn = false;
       this.loop = canvas.dataset.previewLoop === 'true';
       this.round = 0;
+      this.resource = window.PortfolioPreviewLoads.register(this.url, Number(canvas.dataset.previewLoadOrder));
+      window.PortfolioPreviewLoads.subscribe(this.resource, item => {
+        canvas.dataset.previewBuffer = item.state;
+        canvas.dataset.previewLoadedSheets = String(item.blobs.size);
+        canvas.dataset.previewTotalSheets = String(item.data?.sheets.length || 0);
+        callbacks.buffering?.(item.state, item.data);
+      });
     }
     async manifest() {
       if (this.data) return this.data;
-      if (!this.loading) this.loading = fetch(this.url).then(response => {
-        if (!response.ok) throw new Error('Preview manifest unavailable');
-        return response.json();
-      }).then(data => {
-        if (!(data.duration > 0 && data.duration < 300 && data.fps > 0 && data.fps <= 30 &&
-              data.width > 0 && data.width <= 1280 && data.height > 0 && data.height <= 1280 &&
-              (data.replayStart === undefined || (Number.isFinite(data.replayStart) && data.replayStart >= 0 && data.replayStart < data.duration)) &&
-              (data.loopIntroExtra === undefined || (Number.isFinite(data.loopIntroExtra) && data.loopIntroExtra >= 0 && data.loopIntroExtra <= 10)) &&
-              data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
-              data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
-              data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16))) {
-          throw new Error('Invalid preview manifest');
-        }
+      if (!this.loading) this.loading = window.PortfolioPreviewLoads.request(this.resource).manifest.promise.then(data => {
         this.canvas.width = data.width;
         this.canvas.height = data.height;
         this.data = data;
+        this.callbacks.time?.(this.elapsed, this.duration());
         return data;
       }).catch(error => { this.loading = null; throw error; });
       return this.loading;
@@ -409,20 +498,20 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       if (this.images.has(index)) return Promise.resolve(this.images.get(index));
       if (this.pending.has(index)) return this.pending.get(index);
       const epoch = this.epoch;
-      const url = new URL(this.data.sheets[index], this.url);
-      url.search = this.url.search;
+      const url = URL.createObjectURL(this.resource.blobs.get(index));
       const image = new Image();
       image.decoding = 'async';
       const pending = new Promise((resolve, reject) => {
         image.onload = () => resolve(image);
         image.onerror = () => reject(new Error('Preview frame unavailable'));
-        image.src = url.href;
+        image.src = url;
       }).then(async image => {
         if (typeof image.decode === 'function') await image.decode();
         // A paused/closed gallery must not retain decoded offscreen atlases.
         if (this.running && epoch === this.epoch) this.images.set(index, image);
         return image;
       }).finally(() => {
+        URL.revokeObjectURL(url);
         if (this.pending.get(index) === pending) this.pending.delete(index);
       });
       this.pending.set(index, pending);
@@ -433,7 +522,8 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       this.running = true;
       const epoch = ++this.epoch;
       this.last = null;
-      this.manifest().then(data => {
+      window.PortfolioPreviewLoads.request(this.resource);
+      Promise.all([this.manifest(), this.resource.complete.promise]).then(([data]) => {
         if (this.running && epoch === this.epoch) {
           if (skipCover) this.elapsed = data.replayStart || 0;
           this.tick();
@@ -482,6 +572,7 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
           this.canvas.dataset.previewFrame = String(frame);
           this.canvas.dataset.previewTime = frameTime.toFixed(3);
           this.canvas.dataset.previewCycleTime = this.elapsed.toFixed(3);
+          this.callbacks.time?.(this.elapsed, this.duration());
           if (!this.drawn) { this.drawn = true; this.callbacks.playing(); }
           // At 30fps one atlas lasts only about half a second. Decode two
           // upcoming atlases in advance, including frame zero near a loop.
@@ -511,14 +602,35 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
         if (this.running && epoch === this.epoch) this.fail(error);
       });
     }
-    pause() {
+    duration() { return this.data ? this.data.duration + (this.loop && this.round ? this.data.loopIntroExtra || 0 : 0) : 0; }
+    async seek(seconds) {
+      if (!this.data || this.resource.state !== 'ready') return;
+      this.elapsed = Math.max(0,Math.min(this.duration()-.001,Number(seconds)||0));
+      this.last = null;
+      const epoch=this.epoch;
+      const serial=this.seekSerial=(this.seekSerial||0)+1;
+      const frameTime=Math.max(0,this.elapsed-(this.loop && this.round ? this.data.loopIntroExtra || 0 : 0));
+      const frame=Math.min(this.data.frames.length-1,Math.floor(frameTime*this.data.fps));
+      const tile=this.data.frames[frame];
+      this.callbacks.time?.(this.elapsed,this.duration());
+      const image=await this.sheet(Math.floor(tile/this.data.tilesPerSheet));
+      if (this.epoch !== epoch || this.seekSerial !== serial) return;
+      const offset=tile%this.data.tilesPerSheet,data=this.data;
+      this.context.drawImage(image,(offset%data.columns)*data.width,Math.floor(offset/data.columns)*data.height,
+        data.width,data.height,0,0,data.width,data.height);
+      this.tile=tile;
+      this.canvas.dataset.previewFrame=String(frame);
+      this.canvas.dataset.previewTime=frameTime.toFixed(3);
+      this.canvas.dataset.previewCycleTime=this.elapsed.toFixed(3);
+      if (!this.drawn) { this.drawn=true;this.callbacks.playing(); }
+    }
+    pause({release=true}={}) {
       this.running = false;
       ++this.epoch;
       cancelAnimationFrame(this.raf);
       this.raf = 0;
       this.last = null;
-      this.images.clear();
-      this.pending.clear();
+      if (release) { this.images.clear();this.pending.clear(); }
     }
     reset() {
       this.pause();
@@ -530,6 +642,7 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       delete this.canvas.dataset.previewFrame;
       delete this.canvas.dataset.previewLoops;
       delete this.canvas.dataset.previewCycleTime;
+      this.callbacks.time?.(0,this.duration());
     }
     fail(error) {
       this.reset();
@@ -548,6 +661,8 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
   const entries = [...document.querySelectorAll('.preview-media canvas[data-preview-auto]')].map(canvas => {
     const media = canvas.closest('.preview-media');
     return {canvas, media, control:media.querySelector('[data-preview-play]'),
+      toggle:media.querySelector('[data-preview-toggle]'), seek:media.querySelector('[data-preview-seek]'),
+      time:media.querySelector('[data-preview-time]'), userPaused:false,
       popup:canvas.closest('.feature-overlay'), started:false, hasPlayed:false,
       finished:false, needsManual:false, manual:false};
   });
@@ -581,21 +696,27 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
     const height = Math.max(0,Math.min(rect.bottom,box.bottom)-Math.max(rect.top,box.top));
     return rect.width && rect.height ? width*height/(rect.width*rect.height) : 0;
   };
-  const blocked = entry => document.hidden || (entry.popup
+  const blocked = entry => document.hidden || root.classList.contains('portfolio-loading') || (entry.popup
     ? entry.popup.getAttribute('aria-hidden') !== 'false'
     : document.body.classList.contains('overlay-active') || root.classList.contains('contact-modal-open'));
   const label = entry => {
-    if (!entry.control) return;
     const loading = entry.media.dataset.previewState === 'loading';
     const replay = entry.hasPlayed;
     const value = loading ? (english?'Loading':'加载中') : replay ? (english?'Replay':'重播') : (english?'Play':'播放');
-    entry.control.setAttribute('aria-disabled', String(loading));
-    entry.control.setAttribute('aria-busy', String(loading));
-    entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
-    entry.control.title = value;
-    entry.control.querySelector('.preview-play-label').textContent = value;
-    entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
-    entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
+    if (entry.control) {
+      entry.control.setAttribute('aria-disabled', String(loading));
+      entry.control.setAttribute('aria-busy', String(loading));
+      entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
+      entry.control.title = value;
+      entry.control.querySelector('.preview-play-label').textContent = value;
+      entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
+      entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
+    }
+    if (entry.toggle) {
+      const playing=entry.player.running && entry.media.dataset.previewState === 'playing';
+      entry.toggle.textContent=playing?'❚❚':'▶';
+      entry.toggle.setAttribute('aria-label',playing?(english?'Pause animation':'暂停动画'):(english?'Play animation':'播放动画'));
+    }
   };
   const still = entry => {
     entry.player.reset();
@@ -608,6 +729,7 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       entry.manual = true;
       entry.finished = false;
       entry.needsManual = false;
+      entry.userPaused = false;
       delete entry.canvas.dataset.previewFinished;
       still(entry);
     }
@@ -617,12 +739,14 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       label(entry);
     }
     entry.player.play({skipCover:manual});
+    label(entry);
   };
   const sync = () => {
     frame = 0;
     for (const entry of entries) {
       const player = entry.player;
       if (blocked(entry) || (motion.matches && !entry.manual)) { player.pause(); continue; }
+      if (entry.userPaused) continue;
       if (entry.finished || entry.needsManual) continue;
       const box = viewport(entry.popup);
       const rect = entry.canvas.getBoundingClientRect();
@@ -639,6 +763,23 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
   for (const entry of entries) {
     const canvas = entry.canvas;
     entry.player = new window.PortfolioFramePlayer(canvas, canvas.dataset.previewSequence, {
+      buffering(state,data) {
+        entry.media.dataset.previewBuffer = state;
+        const indicator = entry.media.querySelector('.preview-loading-indicator');
+        indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
+        if (entry.seek) entry.seek.disabled = state !== 'ready';
+        if (entry.toggle) entry.toggle.disabled = state === 'waiting' || state === 'loading';
+        if (data && entry.seek) entry.seek.max=String(data.duration);
+        if (entry.player) label(entry);
+      },
+      time(seconds,duration) {
+        if (!entry.seek) return;
+        entry.seek.max=String(duration);
+        if (!entry.seeking) entry.seek.value=String(seconds);
+        const format=value=>`${Math.floor(value/60)}:${String(Math.floor(value%60)).padStart(2,'0')}`;
+        entry.time.textContent=`${format(seconds)} / ${format(duration)}`;
+        entry.seek.setAttribute('aria-valuetext',entry.time.textContent);
+      },
       playing() {
         if (blocked(entry) || entry.finished) { entry.player.pause(); return; }
         entry.hasPlayed = true;
@@ -667,6 +808,35 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
     entry.control?.addEventListener('keydown', event => {
       if (event.key === ' ') event.stopPropagation();
     });
+    entry.toggle?.addEventListener('click',event=>{
+      event.stopPropagation();
+      if (blocked(entry)) return;
+      if (entry.player.running && entry.media.dataset.previewState === 'playing') {
+        entry.userPaused=true;entry.player.pause({release:false});
+      } else {
+        entry.userPaused=false;entry.manual=true;
+        play(entry,entry.finished || !entry.player.drawn || entry.needsManual);
+      }
+      label(entry);
+    });
+    const beginSeek=()=>{
+      if (!entry.seeking) entry.resumeAfterSeek=entry.player.running;
+      entry.seeking=true;entry.userPaused=true;entry.manual=true;entry.started=true;entry.finished=false;entry.needsManual=false;
+      delete canvas.dataset.previewFinished;
+      entry.player.pause({release:false});label(entry);
+    };
+    entry.seek?.addEventListener('pointerdown',beginSeek);
+    entry.seek?.addEventListener('input',()=>{
+      beginSeek();
+      entry.player.seek(entry.seek.value).catch(error=>entry.player.fail(error));
+    });
+    const finishSeek=()=>{
+      entry.seeking=false;
+      if (entry.resumeAfterSeek) { entry.userPaused=false;play(entry); }
+      label(entry);
+    };
+    entry.seek?.addEventListener('change',finishSeek);
+    entry.seek?.addEventListener('pointercancel',finishSeek);
   }
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(schedule,{threshold:[0,.15,1]});
@@ -681,11 +851,65 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
   window.visualViewport?.addEventListener('resize',schedule,{passive:true});
   window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
   document.addEventListener('visibilitychange',schedule);
+  window.addEventListener('portfolio:ready',schedule);
   motion.addEventListener('change',schedule);
   const mutation = new MutationObserver(schedule);
   mutation.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true});
   mutation.observe(root,{attributes:true,attributeFilter:['class']});
   schedule();
+})();
+
+/* Give the first animation a bounded startup window; later downloads continue
+   in order while their thumbnails keep the static cover and loading indicator. */
+(() => {
+  const root=document.documentElement;
+  const loader=document.getElementById('portfolioLoader');
+  if (!loader) {
+    root.classList.remove('portfolio-loading');root.classList.add('portfolio-ready');
+    window.dispatchEvent(new Event('portfolio:ready'));
+    return;
+  }
+  const region=loader.closest('.work-loading-region');
+  region?.setAttribute('aria-busy','true');
+  const english=root.dataset.language === 'en';
+  const timer=document.getElementById('loaderTimer');
+  const track=document.getElementById('loaderTrack');
+  const progress=document.getElementById('loaderProgress');
+  const started=window.portfolioLoadStartedAt || performance.now();
+  const maximumWaitMs=5000;
+  loader.querySelector('.loader-title').textContent=english?'Loading portfolio':'正在加载作品集';
+  loader.querySelector('.loader-subtitle').textContent=english?'Preparing the first animation':'正在准备首个动画';
+  loader.setAttribute('aria-label',english?'Loading portfolio':'正在加载作品集');
+  track.setAttribute('aria-label',english?'First animation loading progress':'首个动画加载进度');
+  const first=window.PortfolioPreviewLoads.ordered()[0];
+  const update=() => {
+    const elapsed=Math.min(maximumWaitMs,performance.now()-started);
+    const remaining=Math.max(0,(maximumWaitMs-elapsed)/1000).toFixed(1);
+    timer.textContent=english?`Up to 5 seconds · ${remaining}s remaining`:`最多等待 5 秒 · 剩余 ${remaining}s`;
+    const fraction=first?.state === 'ready'?1:first?.data?first.blobs.size/first.data.sheets.length:0;
+    const value=Math.round(fraction*100);
+    progress.style.width=`${value}%`;track.setAttribute('aria-valuenow',String(value));
+  };
+  const reveal=() => {
+    clearInterval(interval);
+    root.classList.remove('portfolio-loading');root.classList.add('portfolio-ready');
+    loader.setAttribute('aria-hidden','true');
+    region?.setAttribute('aria-busy','false');
+    window.dispatchEvent(new Event('portfolio:ready'));
+    if (!matchMedia('(prefers-reduced-motion:reduce)').matches) root.classList.add('carousels-running');
+  };
+  update();
+  const interval=setInterval(update,100);
+  const firstReady=window.PortfolioPreviewLoads.start().catch(()=>{});
+  const images=[...new Set([document.querySelector('.profile-photo'),document.querySelector('.preview-poster')].filter(Boolean))];
+  const imagesReady=Promise.all(images.map(image=>new Promise(resolve=>{
+    if (image.complete) { resolve();return; }
+    image.loading='eager';
+    image.addEventListener('load',resolve,{once:true});image.addEventListener('error',resolve,{once:true});
+  })));
+  const deadline=new Promise(resolve=>setTimeout(resolve,Math.max(0,maximumWaitMs-(performance.now()-started))));
+  const minimum=new Promise(resolve=>setTimeout(resolve,Math.max(0,240-(performance.now()-started))));
+  Promise.all([Promise.race([Promise.all([firstReady,imagesReady]),deadline]),minimum]).then(reveal);
 })();
 
 (() => {

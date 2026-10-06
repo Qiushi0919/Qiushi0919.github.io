@@ -1,12 +1,14 @@
 /* Playback state transitions, independent of a browser or specific layout. */
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const source=fs.readFileSync(require('node:path').join(__dirname,'../source/preview-playback.js'),'utf8');
-function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false,defer=false,noControl=false}={}){
+function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false,defer=false,noControl=false,transport=false}={}){
  const events={},docEvents={},handlers={},clicks={},attrs={},frames=new Map(),mutations=[];let next=0;
  const rootClasses=new Set(),bodyClasses=new Set();
  const icon={textContent:''},label={textContent:''};
  const control={dataset:{},setAttribute:(k,v)=>attrs[k]=v,querySelector:s=>s.includes('icon')?icon:label,addEventListener:(e,f)=>clicks[e]=f};
- const media={dataset:{previewState:'poster'},querySelector:()=>noControl?null:control};
+ const transportEvents={},toggleEvents={};
+ const range={value:'0',setAttribute(){},addEventListener:(e,f)=>transportEvents[e]=f},toggle={setAttribute(){},addEventListener:(e,f)=>toggleEvents[e]=f},time={};
+ const media={dataset:{previewState:'poster'},querySelector:s=>s==='[data-preview-play]'&&!noControl?control:transport?({'[data-preview-toggle]':toggle,'[data-preview-seek]':range,'[data-preview-time]':time}[s]||null):null};
  const overlay={hidden:!open,getAttribute:()=>overlay.hidden?'true':'false',
   getBoundingClientRect:()=>({top:20,bottom:580,left:0,right:400}),
   querySelector:()=>({getBoundingClientRect:()=>({top:20,bottom:60})})};
@@ -17,7 +19,8 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   constructor(c,url,callbacks){player=this;this.canvas=c;this.callbacks=callbacks;this.running=false;this.currentTime=0;this.plays=0;this.deny=deny}
   pause(){this.running=false}
   reset(){this.pause();this.currentTime=0}
-  play(options){this.skipCover=options?.skipCover;this.plays++;if(this.deny){this.callbacks.error();return}this.running=true;if(!defer)this.callbacks.playing()}
+  play(options){this.skipCover=options?.skipCover;this.plays++;if(this.deny){this.callbacks.error();return}this.running=true;if(!defer){this.drawn=true;this.callbacks.playing()}}
+  async seek(value){this.currentTime=Number(value);this.callbacks.time(this.currentTime,12);this.drawn=true;this.callbacks.playing()}
  }
  const nav={getBoundingClientRect:()=>({top:0,bottom:50}),style:{position:'sticky',top:'0px'}};
  const bar={getBoundingClientRect:()=>({top:50,bottom:90}),style:{position:'sticky',top:'50px'}};
@@ -32,7 +35,9 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   MutationObserver:class{constructor(f){mutations.push(f)}observe(){}},Number});
  const flush=()=>{while(frames.size){const fs=[...frames.values()];frames.clear();fs.forEach(f=>f())}};
  flush();
- return {canvas,player,media,control,attrs,label,rootClasses,bodyClasses,motion,document,overlay,
+ return {canvas,player,media,control,attrs,label,rootClasses,bodyClasses,motion,document,overlay,toggle,time,
+  toggle(){toggleEvents.click({stopPropagation(){}});flush()},
+  seek(value){transportEvents.pointerdown();range.value=String(value);transportEvents.input();transportEvents.change();flush()},
   move(t,b){rect={...rect,top:t,bottom:b,height:b-t};docEvents.scroll();flush()},
   view(){events['portfolio:workviewchange']();flush()},
   ended(){player.callbacks.ended();flush()},
@@ -66,5 +71,8 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  const slow=scenario({defer:true});slow.click();assert.equal(slow.media.dataset.previewState,'loading');assert.equal(slow.label.textContent,'加载中');assert.equal(slow.attrs['aria-busy'],'true');assert.equal(slow.player.skipCover,true);const starts=slow.player.plays;slow.click();slow.click();assert.equal(slow.player.plays,starts);slow.player.callbacks.playing();assert.equal(slow.media.dataset.previewState,'playing');assert.equal(slow.attrs['aria-busy'],'false');n++;
  const automaticOnly=scenario({top:100,bottom:400,noControl:true});assert.equal(automaticOnly.player.running,true);automaticOnly.ended();automaticOnly.move(100,400);assert.equal(automaticOnly.media.dataset.previewState,'poster');assert.equal(automaticOnly.player.plays,1);n++;
  const clipped=scenario({popup:true,open:true,top:100,bottom:590});assert.equal(clipped.player.plays,0);clipped.move(100,570);assert.equal(clipped.player.plays,1);n++;
+ const controls=scenario({popup:true,open:true,top:100,bottom:400,transport:true,noControl:true});controls.toggle();assert.equal(controls.player.running,false);controls.seek(6);await Promise.resolve();assert.equal(controls.player.currentTime,6);assert.equal(controls.player.running,false);controls.changed();assert.equal(controls.player.running,false);controls.toggle();assert.equal(controls.player.running,true);assert.equal(controls.player.currentTime,6);n++;
+ controls.seek(9);await Promise.resolve();assert.equal(controls.player.currentTime,9);assert.equal(controls.player.running,true);assert.equal(controls.time.textContent,'0:09 / 0:12');n++;
+ const boot=scenario({top:100,bottom:400});boot.rootClasses.add('portfolio-loading');boot.changed();assert.equal(boot.player.running,false);boot.rootClasses.delete('portfolio-loading');boot.changed();assert.equal(boot.player.running,true);n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and frame loading failure'}));
 })();

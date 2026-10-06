@@ -653,3 +653,31 @@ Every gallery image has intrinsic width/height in `source/gallery-media-sizes.js
 Opening a gallery makes only its images eager; other galleries remain lazy.
 This reserves natural-ratio space before image decoding and avoids collapsed rows.
 Final loading patch: `docs/gallery-loading-final-20261006/`.
+
+## Sequential animation loading (2026-10-06)
+
+User-confirmed current preferences are recorded in `docs/maintenance-preferences.md`.
+`source/preview-load-queue.js` downloads one manifest/sprite at a time in the
+explicit EECS → Intel Cup → C-topic order (absent projects are skipped).
+Each complete compressed sequence is buffered before playback, then the queue
+continues with the next project. Thumbnail and gallery copies share those blobs;
+replay and EECS loops do not fetch again. Decoded image retention remains bounded
+to the player's existing lookahead and is released offscreen.
+
+The restored startup loader covers only the list below Selected Work; navigation,
+portrait and biography remain visible and usable. It waits for the first sequence and key images,
+with a hard five-second limit and a head-script fail-open timer if the runtime
+does not arrive. Unfinished previews retain their cover with a semi-transparent
+loading spinner at the top; it vanishes once that sequence is fully buffered.
+Playback still requires the existing full-visibility gate. Network errors advance
+the queue and allow explicit retries without discarding already fetched blobs.
+
+Expanded galleries add custom play/pause, a seekable range and elapsed/duration
+display to the same Canvas player and shared blob cache. Seeking while paused
+keeps that position; seeking while playing resumes. Automatic competition completion
+still returns to the cover; EECS still loops. The redundant original MP4 player
+has been removed from these galleries.
+
+Run `tests/preview-load-queue.cjs`, `tests/preview-frame-player.cjs`,
+`tests/preview-playback.cjs`, `tests/startup-loading.cjs`, `build_site.py` and
+`check_site.py`. Release: `docs/preview-sequential-loading-20261006/`.

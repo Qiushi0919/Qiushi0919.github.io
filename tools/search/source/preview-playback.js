@@ -7,6 +7,8 @@
   const entries = [...document.querySelectorAll('.preview-media canvas[data-preview-auto]')].map(canvas => {
     const media = canvas.closest('.preview-media');
     return {canvas, media, control:media.querySelector('[data-preview-play]'),
+      toggle:media.querySelector('[data-preview-toggle]'), seek:media.querySelector('[data-preview-seek]'),
+      time:media.querySelector('[data-preview-time]'), userPaused:false,
       popup:canvas.closest('.feature-overlay'), started:false, hasPlayed:false,
       finished:false, needsManual:false, manual:false};
   });
@@ -40,21 +42,27 @@
     const height = Math.max(0,Math.min(rect.bottom,box.bottom)-Math.max(rect.top,box.top));
     return rect.width && rect.height ? width*height/(rect.width*rect.height) : 0;
   };
-  const blocked = entry => document.hidden || (entry.popup
+  const blocked = entry => document.hidden || root.classList.contains('portfolio-loading') || (entry.popup
     ? entry.popup.getAttribute('aria-hidden') !== 'false'
     : document.body.classList.contains('overlay-active') || root.classList.contains('contact-modal-open'));
   const label = entry => {
-    if (!entry.control) return;
     const loading = entry.media.dataset.previewState === 'loading';
     const replay = entry.hasPlayed;
     const value = loading ? (english?'Loading':'加载中') : replay ? (english?'Replay':'重播') : (english?'Play':'播放');
-    entry.control.setAttribute('aria-disabled', String(loading));
-    entry.control.setAttribute('aria-busy', String(loading));
-    entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
-    entry.control.title = value;
-    entry.control.querySelector('.preview-play-label').textContent = value;
-    entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
-    entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
+    if (entry.control) {
+      entry.control.setAttribute('aria-disabled', String(loading));
+      entry.control.setAttribute('aria-busy', String(loading));
+      entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
+      entry.control.title = value;
+      entry.control.querySelector('.preview-play-label').textContent = value;
+      entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
+      entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
+    }
+    if (entry.toggle) {
+      const playing=entry.player.running && entry.media.dataset.previewState === 'playing';
+      entry.toggle.textContent=playing?'❚❚':'▶';
+      entry.toggle.setAttribute('aria-label',playing?(english?'Pause animation':'暂停动画'):(english?'Play animation':'播放动画'));
+    }
   };
   const still = entry => {
     entry.player.reset();
@@ -67,6 +75,7 @@
       entry.manual = true;
       entry.finished = false;
       entry.needsManual = false;
+      entry.userPaused = false;
       delete entry.canvas.dataset.previewFinished;
       still(entry);
     }
@@ -76,12 +85,14 @@
       label(entry);
     }
     entry.player.play({skipCover:manual});
+    label(entry);
   };
   const sync = () => {
     frame = 0;
     for (const entry of entries) {
       const player = entry.player;
       if (blocked(entry) || (motion.matches && !entry.manual)) { player.pause(); continue; }
+      if (entry.userPaused) continue;
       if (entry.finished || entry.needsManual) continue;
       const box = viewport(entry.popup);
       const rect = entry.canvas.getBoundingClientRect();
@@ -98,6 +109,23 @@
   for (const entry of entries) {
     const canvas = entry.canvas;
     entry.player = new window.PortfolioFramePlayer(canvas, canvas.dataset.previewSequence, {
+      buffering(state,data) {
+        entry.media.dataset.previewBuffer = state;
+        const indicator = entry.media.querySelector('.preview-loading-indicator');
+        indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
+        if (entry.seek) entry.seek.disabled = state !== 'ready';
+        if (entry.toggle) entry.toggle.disabled = state === 'waiting' || state === 'loading';
+        if (data && entry.seek) entry.seek.max=String(data.duration);
+        if (entry.player) label(entry);
+      },
+      time(seconds,duration) {
+        if (!entry.seek) return;
+        entry.seek.max=String(duration);
+        if (!entry.seeking) entry.seek.value=String(seconds);
+        const format=value=>`${Math.floor(value/60)}:${String(Math.floor(value%60)).padStart(2,'0')}`;
+        entry.time.textContent=`${format(seconds)} / ${format(duration)}`;
+        entry.seek.setAttribute('aria-valuetext',entry.time.textContent);
+      },
       playing() {
         if (blocked(entry) || entry.finished) { entry.player.pause(); return; }
         entry.hasPlayed = true;
@@ -126,6 +154,35 @@
     entry.control?.addEventListener('keydown', event => {
       if (event.key === ' ') event.stopPropagation();
     });
+    entry.toggle?.addEventListener('click',event=>{
+      event.stopPropagation();
+      if (blocked(entry)) return;
+      if (entry.player.running && entry.media.dataset.previewState === 'playing') {
+        entry.userPaused=true;entry.player.pause({release:false});
+      } else {
+        entry.userPaused=false;entry.manual=true;
+        play(entry,entry.finished || !entry.player.drawn || entry.needsManual);
+      }
+      label(entry);
+    });
+    const beginSeek=()=>{
+      if (!entry.seeking) entry.resumeAfterSeek=entry.player.running;
+      entry.seeking=true;entry.userPaused=true;entry.manual=true;entry.started=true;entry.finished=false;entry.needsManual=false;
+      delete canvas.dataset.previewFinished;
+      entry.player.pause({release:false});label(entry);
+    };
+    entry.seek?.addEventListener('pointerdown',beginSeek);
+    entry.seek?.addEventListener('input',()=>{
+      beginSeek();
+      entry.player.seek(entry.seek.value).catch(error=>entry.player.fail(error));
+    });
+    const finishSeek=()=>{
+      entry.seeking=false;
+      if (entry.resumeAfterSeek) { entry.userPaused=false;play(entry); }
+      label(entry);
+    };
+    entry.seek?.addEventListener('change',finishSeek);
+    entry.seek?.addEventListener('pointercancel',finishSeek);
   }
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(schedule,{threshold:[0,.15,1]});
@@ -140,6 +197,7 @@
   window.visualViewport?.addEventListener('resize',schedule,{passive:true});
   window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
   document.addEventListener('visibilitychange',schedule);
+  window.addEventListener('portfolio:ready',schedule);
   motion.addEventListener('change',schedule);
   const mutation = new MutationObserver(schedule);
   mutation.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true});

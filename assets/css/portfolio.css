@@ -441,6 +441,24 @@ html.work-mobile .work-collection[data-work-view="large"] .preview-open>.preview
  html:not(.portrait-phone) .feature-overlay{width:84vw;right:8vw;max-height:76vh;max-height:76dvh}
 }
 @media print{.preview-play-control{display:none!important}.preview-poster{visibility:visible!important}}
+.preview-loading-indicator{--loading-unit:1px;position:absolute;z-index:4;top:calc(5 * var(--loading-unit));left:50%;transform:translateX(-50%);display:none;align-items:center;gap:calc(5 * var(--loading-unit));padding:calc(4 * var(--loading-unit)) calc(7 * var(--loading-unit));border:0;border-radius:calc(12 * var(--loading-unit));background:rgba(255,255,255,.68);color:rgba(28,47,61,.8);font:calc(10 * var(--loading-unit))/1.2 var(--site-font);pointer-events:none;white-space:nowrap}
+html.portrait-phone .preview-loading-indicator{--loading-unit:calc(1px / var(--portrait-ui-scale))}
+.preview-media:is([data-preview-buffer="waiting"],[data-preview-buffer="loading"])>.preview-loading-indicator{display:inline-flex}
+.preview-loading-spinner{display:block;width:calc(13 * var(--loading-unit));height:calc(13 * var(--loading-unit));border:calc(1.5 * var(--loading-unit)) solid rgba(56,88,108,.2);border-top-color:rgba(56,88,108,.8);border-radius:50%;animation:preview-loading-spin .8s linear infinite}
+@keyframes preview-loading-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.preview-loading-spinner{animation:none}}
+@media print{.preview-loading-indicator{display:none!important}}
+.gallery-preview-media{padding-bottom:0!important}
+html.portrait-phone .gallery-preview-media{padding-bottom:0!important}
+.preview-transport{--transport-unit:1px;display:flex;align-items:center;gap:calc(8 * var(--transport-unit));min-height:calc(34 * var(--transport-unit));padding:calc(4 * var(--transport-unit)) calc(7 * var(--transport-unit));background:rgba(31,44,54,.88);color:#fff;font:calc(11 * var(--transport-unit))/1.2 var(--site-font)}
+html.portrait-phone .preview-transport{--transport-unit:calc(1px / var(--portrait-ui-scale))}
+.preview-transport button{display:grid;place-items:center;flex:none;width:calc(28 * var(--transport-unit));height:calc(26 * var(--transport-unit));padding:0;border:0;border-radius:calc(3 * var(--transport-unit));background:transparent;color:inherit;font:calc(13 * var(--transport-unit))/1 Arial,sans-serif;cursor:pointer}
+.preview-transport button:hover{background:rgba(255,255,255,.12)}
+.preview-transport button:disabled{opacity:.5;cursor:wait}
+.preview-transport input[type="range"]{min-width:0;flex:1;width:100%;height:calc(22 * var(--transport-unit));margin:0;accent-color:#80c1ef;cursor:pointer}
+.preview-transport input:disabled{opacity:.4;cursor:wait}
+.preview-transport [data-preview-time]{flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+.preview-transport :is(button,input):focus-visible{outline:calc(2 * var(--transport-unit)) solid #80c1ef;outline-offset:calc(2 * var(--transport-unit))}
 /* A phone's 980px overview canvas must not keep desktop gallery columns or
    fixed picture heights. Natural ratios preserve diagrams and entire photos. */
 .feature-overlay{--gallery-unit:1px}
@@ -471,6 +489,17 @@ html.portrait-phone .feature-overlay .codex-tidy-demo:not(:first-child){width:mi
  html:not(.portrait-phone) .feature-overlay .overlay-head h3 span,html:not(.portrait-phone) .feature-overlay figcaption{font-size:11px;line-height:1.4}
  html:not(.portrait-phone) .feature-overlay .codex-tidy-demo:not(:first-child){width:min(100%,220px);justify-self:center}
 }
+.work-loading-region{position:relative}
+.work-loading-region>.portfolio-loader{position:absolute;inset:0;z-index:8;display:block;background:rgba(255,255,255,.94)}
+.portfolio-loader{--loader-unit:1px;font-family:var(--site-font)}
+html.portrait-phone .portfolio-loader{--loader-unit:calc(1px / var(--portrait-ui-scale))}
+.portfolio-loader .loader-inner{position:sticky;top:calc(100 * var(--loader-unit));width:min(80vw,calc(260 * var(--loader-unit)));margin:calc(75 * var(--loader-unit)) auto 0}
+.portfolio-loader .loader-title{font-size:calc(16 * var(--loader-unit))}
+.portfolio-loader .loader-subtitle{font-size:calc(11 * var(--loader-unit));letter-spacing:0;text-transform:none}
+.portfolio-loader .loader-timer{font-size:calc(12 * var(--loader-unit));margin-top:calc(10 * var(--loader-unit))}
+.portfolio-loader .loader-track{height:calc(2 * var(--loader-unit));margin-top:calc(12 * var(--loader-unit))}
+@media(prefers-color-scheme:dark){.work-loading-region>.portfolio-loader{background:rgba(17,17,17,.94)}.loader-title{color:#e2e7eb}.loader-subtitle,.loader-timer{color:#a1aeb7}.loader-track{background:#343b40}}
+@media print{.portfolio-loader{display:none!important}}
 /* Latin glyphs use Times New Roman; CJK glyphs fall through to Microsoft YaHei.
    System fallbacks cover devices that do not have these fonts installed. */
 :root{--site-font:"Times New Roman",Times,"Microsoft YaHei","微软雅黑","Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",serif}

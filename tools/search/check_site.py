@@ -55,7 +55,12 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert len(tree.xpath('//h1')) == 1, str(p)
         phone_canvas = tree.xpath('//head/script[not(@type) and not(@src)]')
         assert len(phone_canvas) == 1 and 'const portraitCanvasWidth = 980' in phone_canvas[0].text, str(p)
-        assert "classList.add('portfolio-loading')" not in phone_canvas[0].text, str(p)
+        assert "classList.add('portfolio-loading')" in phone_canvas[0].text and '}, 5000)' in phone_canvas[0].text, str(p)
+        assert len(tree.xpath('//*[@id="portfolioLoader"]')) == (1 if tree.xpath('//article[@data-work-category]') else 0), str(p)
+        assert not tree.xpath('//section[@class="profile-section"]//*[@id="portfolioLoader"]'), str(p)
+        for card in tree.xpath('//article[@data-work-category]'):
+            assert card.xpath('ancestor::div[@class="work-loading-region"]'), str(p)
+        assert tree.xpath('//noscript/style'), str(p)
         assert len(tree.xpath('//link[@rel="canonical"]')) == 1
         canonical = tree.xpath('//link[@rel="canonical"]/@href')[0]
         expected_host = 'qiushi0919.cn' if tree.get('lang') == 'zh-CN' else 'qiushi0919.github.io'
@@ -116,20 +121,22 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert author.xpath('./sup/text()') == ['*'], str(p)
         assert not tree.xpath('//button//button'), str(p)
         for wrapper in tree.xpath('//div[@data-preview-motion]'):
-            assert len(wrapper.xpath('./button[@data-preview-play]')) == (0 if 'no-preview-control' in wrapper.get('class','').split() else 1), str(p)
+            popup = 'data-preview-popup' in wrapper.attrib
+            assert len(wrapper.xpath('./button[@data-preview-play]')) == (0 if popup or 'no-preview-control' in wrapper.get('class','').split() else 1), str(p)
             assert len(wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/img[@class="preview-poster"]')) == 1, str(p)
             assert not wrapper.xpath('.//video'), str(p)
             canvas = wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/canvas[@data-preview-auto]')
             assert len(canvas) == 1 and canvas[0].get('width') and canvas[0].get('height'), str(p)
+            assert canvas[0].get('data-preview-load-order') in ('0','1','2'), str(p)
+            assert len(wrapper.xpath('./span[@class="preview-loading-indicator" and @role="status"]')) == 1, str(p)
             sequence = directory / urlsplit(canvas[0].get('data-preview-sequence')).path.lstrip('/')
             data = json.loads(sequence.read_text())
             assert data['frames'] and data['duration'] > 0, str(p)
             assert all((sequence.parent / name).is_file() for name in data['sheets']), str(p)
             if 'data-preview-popup' in wrapper.attrib:
                 assert wrapper.getprevious().get('class') == 'overlay-head', str(p)
-                original = wrapper.getnext()
-                assert original.tag == 'details' and original.get('class') == 'preview-original' and 'open' not in original.attrib, str(p)
-                assert original.xpath('./video[@controls and @playsinline and not(@autoplay)]'), str(p)
+                assert len(wrapper.xpath('./div[@class="preview-transport"]/input[@data-preview-seek]')) == 1, str(p)
+                assert not tree.xpath('//details[@class="preview-original"]'), str(p)
         assert not tree.xpath('//video[@autoplay]'), str(p)
         assert all('controls' in v.attrib for v in tree.xpath('//video')), str(p)
         for leader in tree.xpath('//sup[text()="‡"]'):

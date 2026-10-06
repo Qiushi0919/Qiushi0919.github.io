@@ -17,25 +17,21 @@
       this.drawn = false;
       this.loop = canvas.dataset.previewLoop === 'true';
       this.round = 0;
+      this.resource = window.PortfolioPreviewLoads.register(this.url, Number(canvas.dataset.previewLoadOrder));
+      window.PortfolioPreviewLoads.subscribe(this.resource, item => {
+        canvas.dataset.previewBuffer = item.state;
+        canvas.dataset.previewLoadedSheets = String(item.blobs.size);
+        canvas.dataset.previewTotalSheets = String(item.data?.sheets.length || 0);
+        callbacks.buffering?.(item.state, item.data);
+      });
     }
     async manifest() {
       if (this.data) return this.data;
-      if (!this.loading) this.loading = fetch(this.url).then(response => {
-        if (!response.ok) throw new Error('Preview manifest unavailable');
-        return response.json();
-      }).then(data => {
-        if (!(data.duration > 0 && data.duration < 300 && data.fps > 0 && data.fps <= 30 &&
-              data.width > 0 && data.width <= 1280 && data.height > 0 && data.height <= 1280 &&
-              (data.replayStart === undefined || (Number.isFinite(data.replayStart) && data.replayStart >= 0 && data.replayStart < data.duration)) &&
-              (data.loopIntroExtra === undefined || (Number.isFinite(data.loopIntroExtra) && data.loopIntroExtra >= 0 && data.loopIntroExtra <= 10)) &&
-              data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
-              data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
-              data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16))) {
-          throw new Error('Invalid preview manifest');
-        }
+      if (!this.loading) this.loading = window.PortfolioPreviewLoads.request(this.resource).manifest.promise.then(data => {
         this.canvas.width = data.width;
         this.canvas.height = data.height;
         this.data = data;
+        this.callbacks.time?.(this.elapsed, this.duration());
         return data;
       }).catch(error => { this.loading = null; throw error; });
       return this.loading;
@@ -44,20 +40,20 @@
       if (this.images.has(index)) return Promise.resolve(this.images.get(index));
       if (this.pending.has(index)) return this.pending.get(index);
       const epoch = this.epoch;
-      const url = new URL(this.data.sheets[index], this.url);
-      url.search = this.url.search;
+      const url = URL.createObjectURL(this.resource.blobs.get(index));
       const image = new Image();
       image.decoding = 'async';
       const pending = new Promise((resolve, reject) => {
         image.onload = () => resolve(image);
         image.onerror = () => reject(new Error('Preview frame unavailable'));
-        image.src = url.href;
+        image.src = url;
       }).then(async image => {
         if (typeof image.decode === 'function') await image.decode();
         // A paused/closed gallery must not retain decoded offscreen atlases.
         if (this.running && epoch === this.epoch) this.images.set(index, image);
         return image;
       }).finally(() => {
+        URL.revokeObjectURL(url);
         if (this.pending.get(index) === pending) this.pending.delete(index);
       });
       this.pending.set(index, pending);
@@ -68,7 +64,8 @@
       this.running = true;
       const epoch = ++this.epoch;
       this.last = null;
-      this.manifest().then(data => {
+      window.PortfolioPreviewLoads.request(this.resource);
+      Promise.all([this.manifest(), this.resource.complete.promise]).then(([data]) => {
         if (this.running && epoch === this.epoch) {
           if (skipCover) this.elapsed = data.replayStart || 0;
           this.tick();
@@ -117,6 +114,7 @@
           this.canvas.dataset.previewFrame = String(frame);
           this.canvas.dataset.previewTime = frameTime.toFixed(3);
           this.canvas.dataset.previewCycleTime = this.elapsed.toFixed(3);
+          this.callbacks.time?.(this.elapsed, this.duration());
           if (!this.drawn) { this.drawn = true; this.callbacks.playing(); }
           // At 30fps one atlas lasts only about half a second. Decode two
           // upcoming atlases in advance, including frame zero near a loop.
@@ -146,14 +144,35 @@
         if (this.running && epoch === this.epoch) this.fail(error);
       });
     }
-    pause() {
+    duration() { return this.data ? this.data.duration + (this.loop && this.round ? this.data.loopIntroExtra || 0 : 0) : 0; }
+    async seek(seconds) {
+      if (!this.data || this.resource.state !== 'ready') return;
+      this.elapsed = Math.max(0,Math.min(this.duration()-.001,Number(seconds)||0));
+      this.last = null;
+      const epoch=this.epoch;
+      const serial=this.seekSerial=(this.seekSerial||0)+1;
+      const frameTime=Math.max(0,this.elapsed-(this.loop && this.round ? this.data.loopIntroExtra || 0 : 0));
+      const frame=Math.min(this.data.frames.length-1,Math.floor(frameTime*this.data.fps));
+      const tile=this.data.frames[frame];
+      this.callbacks.time?.(this.elapsed,this.duration());
+      const image=await this.sheet(Math.floor(tile/this.data.tilesPerSheet));
+      if (this.epoch !== epoch || this.seekSerial !== serial) return;
+      const offset=tile%this.data.tilesPerSheet,data=this.data;
+      this.context.drawImage(image,(offset%data.columns)*data.width,Math.floor(offset/data.columns)*data.height,
+        data.width,data.height,0,0,data.width,data.height);
+      this.tile=tile;
+      this.canvas.dataset.previewFrame=String(frame);
+      this.canvas.dataset.previewTime=frameTime.toFixed(3);
+      this.canvas.dataset.previewCycleTime=this.elapsed.toFixed(3);
+      if (!this.drawn) { this.drawn=true;this.callbacks.playing(); }
+    }
+    pause({release=true}={}) {
       this.running = false;
       ++this.epoch;
       cancelAnimationFrame(this.raf);
       this.raf = 0;
       this.last = null;
-      this.images.clear();
-      this.pending.clear();
+      if (release) { this.images.clear();this.pending.clear(); }
     }
     reset() {
       this.pause();
@@ -165,6 +184,7 @@
       delete this.canvas.dataset.previewFrame;
       delete this.canvas.dataset.previewLoops;
       delete this.canvas.dataset.previewCycleTime;
+      this.callbacks.time?.(0,this.duration());
     }
     fail(error) {
       this.reset();
