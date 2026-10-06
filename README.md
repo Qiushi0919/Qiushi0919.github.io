@@ -63,9 +63,11 @@ and BibTeX.
 Paper lists omit the independent date-badge/institution header. Publication month and
 venue share one colored line without repeating the date (dark red for arXiv,
 blue for SPIE). The left column is
-30% of the row, displaying the existing museum interaction pipeline for VaseMuseum
-and NASA B0005 prediction result for the battery paper at their original aspect
-ratios. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
+30% of the row. VaseMuseum displays the existing museum interaction pipeline
+and interface as a compact vertical pair (190px wide on desktop, 170px on the
+portrait-phone canvas); the battery paper displays the NASA B0005 prediction
+result. All images retain their original aspect ratios. The arXiv venue/month
+line is bold. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
 Clicking still opens all original full method/result figures. These cover images
 are selected from existing assets, not cropped, redrawn, stretched, or overwritten.
 The compact split resource tags use a gray label and a colored value; all existing
@@ -169,7 +171,8 @@ and trigger focus on close, and support Escape and backdrop dismissal.
 
 Portfolio controls keep the normal arrow cursor. Contact icons show a shadow on
 hover/focus and cover previews light their magnifier-plus badge. Paper list
-previews use one responsive image with its natural proportions; full figures are
+previews preserve natural image proportions, with a compact two-image stack for
+VaseMuseum; full figures are
 available in the existing overlays.
 The QQ penguin uses the user's supplied black-and-white artwork, preserved
 unchanged under `tools/search/source/contact/qq-logo.png`; CSS frames it at icon

@@ -257,7 +257,7 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-authors a{color:inherit;text-decoration:none}
 .paper-authors a:hover,.paper-authors a:focus-visible{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
 .paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
-.vase-card .paper-venue{color:#a42632}
+.vase-card .paper-venue{color:#a42632;font-weight:700}
 .eecs-card .paper-venue{color:#315b98}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
@@ -266,6 +266,9 @@ article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0
 article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
 article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
+article.vase-card[data-work-category="paper"] .paper-preview{width:min(100%,190px)!important;justify-self:center}
+.paper-preview-stack{display:grid;gap:8px}
+html.portrait-phone article.vase-card[data-work-category="paper"] .paper-preview{width:min(100%,170px)!important}
 article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
 article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
 .paper-authors{font-weight:400}
