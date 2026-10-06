@@ -404,3 +404,12 @@ The paper website is published at https://qiushi0919.cn/battery-rul/ and https:/
 The maintained CN copy is in `tools/search/source/project-sites/battery-rul/` and is copied into the CN build. Its own project repository serves `docs/` on `main`. White background, Times New Roman, centered 860px content, sticky navigation, silent method video, and four full-width, zoomable figures are used on desktop and phones. The repo includes original saved model scripts, NASA/CALCE capacity and decomposition CSVs, ten prediction CSVs, and a standard-library evaluator; missing ALA source/logs and checkpoints are explicitly recorded.
 
 The two paper website resource tags read `Website | Paper`. The CN video thumbnail loads when it enters the viewport, loops muted with inline playback, and pauses offscreen or while the page is hidden. A static result poster remains available before playback and when reduced motion is requested. `source/publication-figures/eecs-2026/method-preview.mp4` is copied unchanged from the approved paper method demonstration. The Chinese mobile summary omits the former `（拟入学）` suffix while retaining the 2027 year.
+
+### Work reading type and About identity (2026-10-06)
+
+Large-view type uses 16px titles, 13px author/meta text and 14px body text
+(at the original phone canvas scale). The works toolbar uses a 16px heading
+and 12px option labels while retaining 44px touch targets. About pages reuse
+the homepage portrait, bilingual identity summary and all nine contact links
+with the same contact dialog. The home biography and device layouts remain
+unchanged. Source: `build_site.py`, `source/work-view.css`, `check_site.py`.

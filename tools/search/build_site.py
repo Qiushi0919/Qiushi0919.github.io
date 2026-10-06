@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'work-views-times-yahei-20261006'
+VERSION = 'work-type-about-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -166,7 +166,7 @@ def build():
         'const screenWidth = Math.min(window.innerWidth, window.screen.width, window.screen.height);',
         "const previewQuery = new URLSearchParams(location.search);\n      const previewPhone = window.parent !== window && previewQuery.get('preview-device') === 'phone';\n      const previewWidth = Number(previewQuery.get('preview-width')) || 390;\n      const screenWidth = previewPhone ? Math.max(320,Math.min(600,previewWidth)) : Math.min(window.innerWidth, window.screen.width, window.screen.height);")
     viewport_script = viewport_script.replace('const portraitPhone = screenWidth <= 600 && window.innerHeight > window.innerWidth;', 'const portraitPhone = previewPhone || (screenWidth <= 600 && window.innerHeight > window.innerWidth);')
-    css = template.find('head/style').text.replace('url("assets/', 'url("../')
+    css = template.find('head/style').text.replace('url("assets/', 'url("../').replace('.profile-copy h1{', '.profile-copy :is(h1,h2){')
     # The browser never hides content while images load.
     css = re.sub(r'html\.portfolio-loading[^}]*}', '', css)
     css += '''
@@ -185,6 +185,7 @@ body{overflow-x:clip}
 .project-card,.works-head{scroll-margin-top:80px}
 .nav-label-compact{display:none}
 .profile-mobile-summary{display:none}
+.profile-section[data-profile-page="about"] .profile-mobile-summary{display:block}
 .profile-biography{display:contents}
 .project-copy h2{overflow-wrap:anywhere}
 .site-footer{margin:28px 16px 0;padding-top:18px;border-top:1px solid var(--line);color:#607483;line-height:1.8}
@@ -198,7 +199,7 @@ body{overflow-x:clip}
 @media(max-width:760px){
  .page{width:calc(100% - 24px);padding:16px 0 40px}
  .profile-section{padding:0 8px 24px;gap:18px}
- .profile-copy{padding:0}.profile-copy h1{font-size:30px;margin-bottom:18px}
+ .profile-copy{padding:0}.profile-copy :is(h1,h2){font-size:30px;margin-bottom:18px}
  .profile-copy p{font-size:15px;line-height:1.75}
  .profile-photo{width:132px;aspect-ratio:3/4;grid-row:1}
  .profile-links,.profile-website{font-size:14px;line-height:1.8;gap:7px}
@@ -485,6 +486,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     for paragraph in profile_copy.findall('p'):
                         biography.append(paragraph)
                     profile_copy.insert(1, biography)
+                if route in ('', 'about'):
                     summary = element('div', **{'class': 'profile-mobile-summary'})
                     for line in AUTHOR['mobile_summary'][language]:
                         summary.append(element('p', line))
@@ -654,7 +656,9 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         links.append(element('a', label, href=href))
                     biography.append(links)
                     heading.getparent().addnext(biography)
-                if route:
+                if route == 'about':
+                    tree.xpath('//section[@class="profile-section"]')[0].set('data-profile-page', 'about')
+                elif route:
                     profile = tree.xpath('//section[@class="profile-section"]')[0]
                     profile.getparent().remove(profile)
                 for card in tree.xpath('//article[@data-work-category]'):

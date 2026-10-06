@@ -93,7 +93,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         c_thumbnail = tree.xpath('//*[@id="nuedcCoverTrigger"]/img/@src')
         if c_thumbnail:
             assert c_thumbnail == ['/assets/portfolio-cover/nuedc-c/test-integrated.webp']
-        if urlsplit(canonical).path == '/':
+        if urlsplit(canonical).path in ('/', '/about/'):
             assert len(tree.xpath('//section[@class="profile-section"]')) == 1
         else:
             assert not tree.xpath('//section[@class="profile-section"]'), str(p)
@@ -101,6 +101,9 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert schema['@graph'][1]['@type'] == 'ProfilePage'
             assert len(tree.xpath('//section[@class="biography"]/p')) == 5
             assert not tree.xpath('//article[@data-work-category]')
+            assert len(tree.xpath('//section[@data-profile-page="about"]//img[@class="profile-photo"]')) == 1
+            assert len(tree.xpath('//section[@data-profile-page="about"]//nav[contains(@class,"profile-icon-links")]/*')) == 9
+            assert len(tree.xpath('//dialog[@id="contactDialog"]')) == 1
             assert len(tree.xpath('//section[@class="biography"]//li/a')) == 4
         if len(urlsplit(canonical).path.strip('/').split('/')) == 2:
             intro = tree.xpath('//*[@class="works-head"]/p')[0].text_content().strip()
