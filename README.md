@@ -64,7 +64,10 @@ and BibTeX.
 Paper lists omit the independent date-badge/institution header. Publication month and
 venue share one colored line without repeating the date (dark red for arXiv,
 blue for SPIE). The left column is
-30% of the row. VaseMuseum displays the existing museum interaction pipeline
+34% of the row on the CN desktop site and 30% on the international site. The CN
+desktop content area is centered at up to 1120px with at least 32px on either
+side. Paper preview containers stretch to their text row; their media retain
+their proportions and remain uncropped. VaseMuseum displays the existing museum interaction pipeline
 and VaseAgent reliability framework as a compact vertical pair that uses the
 full image column; the CN battery-paper thumbnail plays the method video as a silent loop; the international thumbnail retains the NASA B0005 prediction result. All images retain their original aspect ratios. The arXiv venue/month
 line is bold; the SPIE venue line and colored resource-tag values are also bold. Venue names

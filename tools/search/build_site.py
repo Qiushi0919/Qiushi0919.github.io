@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'battery-video-bolditalic-20261006'
+VERSION = 'cn-paper-width-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -199,6 +199,14 @@ article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-
 .paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
 .paper-preview-video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff;pointer-events:none}
 .paper-preview-stack{display:grid;gap:8px}
+/* Let desktop CN thumbnails define the row height without cropping scientific figures. */
+@media(min-width:761px){
+ html[data-origin="cn"]:not(.portrait-phone) .page{width:min(1120px,calc(100% - 64px))}
+ html[data-origin="cn"]:not(.portrait-phone) article[data-work-category="paper"]{grid-template-columns:minmax(0,34%) minmax(0,1fr)!important;align-items:stretch!important}
+ html[data-origin="cn"]:not(.portrait-phone) article[data-work-category="paper"] .paper-preview{align-self:stretch;display:flex;align-items:center;justify-content:center}
+ html[data-origin="cn"]:not(.portrait-phone) .paper-preview-stack{width:100%}
+ html[data-origin="cn"]:not(.portrait-phone) .paper-preview-video{height:100%;min-height:100%;object-fit:contain}
+}
 article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
 article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
 .paper-authors{font-weight:400}
@@ -375,6 +383,7 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
                         wrapper.append(card)
                 tree.set('lang', 'zh-CN' if language == 'zh' else 'en')
                 tree.set('data-language', language)
+                tree.set('data-origin', origin)
                 title = ('谢秋实（Qiushi Xie）— 浙江大学2027级直博生' if language == 'zh'
                          else 'Qiushi Xie (谢秋实) — Incoming PhD Student, ZJU (2027)')
                 description = AUTHOR['description'][language]

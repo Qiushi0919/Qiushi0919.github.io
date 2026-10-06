@@ -268,6 +268,14 @@ article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-
 .paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
 .paper-preview-video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff;pointer-events:none}
 .paper-preview-stack{display:grid;gap:8px}
+/* Let desktop CN thumbnails define the row height without cropping scientific figures. */
+@media(min-width:761px){
+ html[data-origin="cn"]:not(.portrait-phone) .page{width:min(1120px,calc(100% - 64px))}
+ html[data-origin="cn"]:not(.portrait-phone) article[data-work-category="paper"]{grid-template-columns:minmax(0,34%) minmax(0,1fr)!important;align-items:stretch!important}
+ html[data-origin="cn"]:not(.portrait-phone) article[data-work-category="paper"] .paper-preview{align-self:stretch;display:flex;align-items:center;justify-content:center}
+ html[data-origin="cn"]:not(.portrait-phone) .paper-preview-stack{width:100%}
+ html[data-origin="cn"]:not(.portrait-phone) .paper-preview-video{height:100%;min-height:100%;object-fit:contain}
+}
 article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
 article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
 .paper-authors{font-weight:400}
