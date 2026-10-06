@@ -266,10 +266,10 @@
     });
     const setOpen = (project, open) => {
       if (open) projects.filter(item => item !== project).forEach(item => setOpen(item, false));
-      if (open) hydrateOverlay(project);
       project.card.classList.toggle('is-open', open);
       project.trigger.setAttribute('aria-expanded', String(open));
       project.overlay.setAttribute('aria-hidden', String(!open));
+      if (open) hydrateOverlay(project);
       project.overlay.querySelectorAll('video').forEach(video => {
         if (!open) video.pause();
       });

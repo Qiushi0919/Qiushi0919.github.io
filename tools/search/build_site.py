@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'preview-bounded-loading-20261007'
+VERSION = 'preview-bounded-loading-20261007b'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -447,6 +447,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             code = code.replace("media.preload = 'auto';", "media.preload = 'metadata';")
             code = re.sub(r"      \['pointerenter', 'focusin', 'touchstart'\].forEach\(eventName => \{.*?      \}\);\n", '', code, flags=re.S)
             code = re.sub(r'    const preloadAllProjectMedia =.*?    const setOpen', '    const setOpen', code, flags=re.S)
+            # A warm queue can call hydrate synchronously: mark the panel open
+            # before requesting its deferred media, so it is not skipped.
+            code = code.replace('      if (open) hydrateOverlay(project);\n', '')
+            code = code.replace("project.overlay.setAttribute('aria-hidden', String(!open));",
+                                "project.overlay.setAttribute('aria-hidden', String(!open));\n      if (open) hydrateOverlay(project);")
             code = code.replace("    window.addEventListener('portfolio:ready', preloadAllProjectMedia, {once:true});\n", '')
             # Original experiment videos are an explicit user choice; merely
             # opening a gallery must not activate a phone's native media player.

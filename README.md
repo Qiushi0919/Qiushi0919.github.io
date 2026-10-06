@@ -688,3 +688,5 @@ concurrency; the MP4 took 2.146s. This is not a physical-phone startup guarantee
 Proofs and scoped publishing: `docs/preview-bounded-loading-20261007/`.
 Run preview-load-queue, preview-frame-player, preview-video-player,
 preview-playback, startup-loading and gallery-scroll tests, then build/check.
+After building, run gallery-media-loading to cover warm-cache opening and
+closed/superseded deferred panels.
