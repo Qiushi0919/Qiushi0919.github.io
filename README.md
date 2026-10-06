@@ -118,6 +118,14 @@ To replace the artwork, update `original.png`, then run
 `python3 tools/search/make_favicons.py` on macOS before building the site.
 This uses the bundled `sips` format converter; it does not redraw the artwork.
 
+Portrait phone paper cards use the same compact type scale as the original
+project cards: 12px titles, 11px author/venue lines, and 12px summaries on the
+980px canvas. The pottery title icon scales to 18px × 26px. Paper-card text size
+adjustment is held at 100% to avoid mobile browser text inflation; pinch zoom
+remains enabled. These overrides are scoped to `html.portrait-phone` and leave
+desktop typography, publication badges, link buttons and citation dialogs intact.
+The browser behavior is described in [MDN's text-size-adjust reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-size-adjust).
+
 Portrait phones retain the original 980px canvas, scaled to fit the screen, so
 project covers and descriptions keep their compact horizontal card layout. The
 early head script changes the viewport before CSS loads and allows pinch zoom.

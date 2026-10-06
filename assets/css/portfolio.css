@@ -277,3 +277,10 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 html.mobile-contact-ui .citation-text{height:calc(250px / var(--contact-ui-scale));padding:calc(10px / var(--contact-ui-scale));font-size:calc(12px / var(--contact-ui-scale))}
 html.mobile-contact-ui .citation-status{min-height:calc(20px / var(--contact-ui-scale));margin:calc(8px / var(--contact-ui-scale)) 0;font-size:calc(12px / var(--contact-ui-scale))}
 @media(max-width:760px){.paper-authors,.paper-venue{font-size:15px}.paper-topline{grid-template-columns:minmax(0,360px);row-gap:10px}.paper-topline .vase-logos,.paper-topline .project-logos{width:100%;flex-wrap:wrap}}
+html.portrait-phone article[data-work-category="paper"]{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html.portrait-phone .paper-copy h2{font-size:12px;line-height:1.3}
+html.portrait-phone .paper-authors,html.portrait-phone .paper-venue{font-size:11px;line-height:1.4}
+html.portrait-phone .paper-authors{margin:5px 0 4px}
+html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-summary{font-size:12px;line-height:1.4;margin-bottom:9px}
+html.portrait-phone .paper-title-logo{flex-basis:18px;width:18px;height:26px}
+
