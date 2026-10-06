@@ -247,8 +247,9 @@ html.portrait-phone .profile-photo{grid-column:1;grid-row:1 / 5;width:180px;just
 html.portrait-phone .profile-biography{display:block;grid-column:1 / -1;grid-row:5;padding-top:32px}
 html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0 0 16px}
 .paper-copy h2{color:#202428;font-size:16px;line-height:1.4;font-weight:600}
-.paper-copy.has-signature{padding-right:88px}
-.paper-copy .signature-vase{right:0}
+.paper-title{display:flex;align-items:center;gap:8px}
+.paper-title .title-link{flex:1;min-width:0}
+.paper-title-logo{display:block;flex:0 0 24px;width:24px;height:34px;object-fit:contain}
 .paper-authors{margin:7px 0 5px;color:#282e33;font-size:14px;line-height:1.65}
 .paper-author{white-space:nowrap}
 .paper-author-self{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
@@ -263,5 +264,4 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .vase-topline .vase-kicker{flex:1 1 auto;min-width:0}
 .vase-logos{flex:0 0 auto;width:auto;justify-content:flex-end;margin-left:auto;gap:6px;flex-wrap:nowrap}
 .vase-card .vase-logos img,.vase-card .vase-logos img.wide{width:70px;max-width:70px;height:20px;object-fit:contain}
-@media(max-width:760px){.paper-copy.has-signature{padding-right:0}.paper-authors,.paper-venue{font-size:15px}}
-html.portrait-phone .paper-copy.has-signature{padding-right:88px}
+@media(max-width:760px){.paper-authors,.paper-venue{font-size:15px}}
