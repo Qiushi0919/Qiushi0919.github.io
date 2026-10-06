@@ -25,6 +25,24 @@ Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
 
+Paper cards use an academic publication layout: title, ordered author list,
+venue/year, a brief summary, and outlined publication/code/project links. Qiushi
+Xie is underlined in the author line. The VaseMuseum author order follows the
+user-supplied current manuscript: Qiushi Xie, Jiazi Wang, Nonghai Zhang, Zeyu
+Zhang, Yang Zhao, Ling Shao, Hao Tang. The first four retain the manuscript's
+co-first-author daggers. Its structured data uses that same visible author list;
+"Submitted to NMI" remains a submission status. Battery RUL lists Qiushi Xie,
+matching the publisher's Crossref record (DOI 10.1117/12.3122481).
+
+VaseMuseum's five horizontal university marks follow the manuscript's numbered
+affiliations: HUST, Beijing Jiaotong, Peking, La Trobe, and UCAS. The BJTU and
+PKU horizontal originals are maintained under `tools/search/source/publication-logos/`
+and copied to the public portfolio assets. They were downloaded unchanged from
+[BJTU's official identity page](https://www.bjtu.edu.cn/xxgk/xxbz/index.htm) and
+[PKU's official website](https://www.pku.edu.cn/IdentificationSystem.html).
+The other three retain the existing horizontal assets. AIGeeksGroup is not a
+university affiliation, so its logo is no longer part of this university row.
+
 Independent detail-page introductions and share images are maintained in
 `tools/search/source/project-pages.json`. Each detail heading has its own bilingual
 one-sentence introduction. Open Graph, Twitter cards and the page/work structured

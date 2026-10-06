@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'profile-photo-20261005'
+VERSION = 'paper-layout-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -176,6 +176,23 @@ html.portrait-phone .profile-views{grid-column:2;grid-row:4;text-align:left;marg
 html.portrait-phone .profile-photo{grid-column:1;grid-row:1 / 5;width:180px;justify-self:start;align-self:start}
 html.portrait-phone .profile-biography{display:block;grid-column:1 / -1;grid-row:5;padding-top:32px}
 html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0 0 16px}
+.paper-copy h2{color:#202428;font-size:16px;line-height:1.4;font-weight:600}
+.paper-copy.has-signature{padding-right:88px}
+.paper-copy .signature-vase{right:0}
+.paper-authors{margin:7px 0 5px;color:#282e33;font-size:14px;line-height:1.65}
+.paper-author{white-space:nowrap}
+.paper-author-self{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.paper-authors sup{margin-left:1px;font-size:.72em;line-height:0}
+.paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
+.paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
+.paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
+.paper-links{gap:10px;font-size:12px;font-weight:500}
+.paper-links a{display:inline-flex;align-items:center;justify-content:center;min-height:30px;min-width:60px;padding:5px 13px;border:1px solid #30383e;border-radius:3px;color:#252d33;transition:color .15s ease,border-color .15s ease,background-color .15s ease}
+.paper-links a:hover,.paper-links a:focus-visible{color:var(--blue);border-color:var(--blue);background:#f3f8fe}
+.vase-logos{flex:1 1 100%;justify-content:flex-start;margin-left:0;gap:16px}
+.vase-logos img,.vase-logos img.wide{width:100px;max-width:100px;height:27px;object-fit:contain}
+@media(max-width:760px){.paper-copy.has-signature{padding-right:0}.paper-authors,.paper-venue{font-size:15px}.vase-logos{gap:12px}.vase-logos img,.vase-logos img.wide{width:90px;max-width:90px;height:26px}}
+html.portrait-phone .paper-copy.has-signature{padding-right:88px}
 '''
     scripts = []
     for s in template.xpath('//script[not(@src)]'):
@@ -212,6 +229,10 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                 target = destination / 'assets/contact' / source_file.name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
+        for source_file in (SOURCE / 'publication-logos').glob('*.png'):
+            target = destination / 'assets/portfolio-cover' / source_file.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source_file.read_bytes())
         for language in ('zh', 'en'):
             lang_prefix = '' if language == default_lang else language + '/'
             local_base = path_prefix + lang_prefix
@@ -348,7 +369,10 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                     if detail_id == 'eecsProjectCard':
                         work.update({'identifier': 'doi:10.1117/12.3122481', 'sameAs': 'https://doi.org/10.1117/12.3122481', 'author': {'@id': person['@id']}})
                     if detail_id == 'vaseProjectCard':
-                        work.update({'identifier': 'arXiv:2607.06374', 'sameAs': 'https://arxiv.org/abs/2607.06374', 'author': [{'@id': person['@id']}] + [{'@type':'Person', 'name': name} for name in ['Jiazi Wang', 'Nonghai Zhang', 'Zeyu Zhang', 'Yufeng Chen', 'Yang Zhao', 'Ling Shao', 'Hao Tang']]})
+                        work.update({'identifier': 'arXiv:2607.06374', 'sameAs': 'https://arxiv.org/abs/2607.06374',
+                                     'author': [({'@type': 'Person', '@id': person['@id'], 'name': name}
+                                                 if name == 'Qiushi Xie' else {'@type': 'Person', 'name': name})
+                                                for name in cards[detail_id].xpath('.//*[@data-author-name]/@data-author-name')]})
                     graph.append(work)
                     page['mainEntity'] = {'@id': work['@id']}
                     page['about'] = {'@id': person['@id']}
