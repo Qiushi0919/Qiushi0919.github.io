@@ -204,7 +204,8 @@ the width below. `mobile_summary` in the author profile supplies those concise
 identity lines. This uses CSS grid placement of the same biography and contact
 elements, retaining the desktop arrangement and the existing phone work cards.
 The English introductory paragraphs use 12px text with 1.55 line spacing to
-reduce their height. Contact icons retain their original 23px SVG, 20px CV mark,
+reduce their height. Country/flag annotations in English biographies use full-width
+parentheses, such as Zhejiang University（China 🇨🇳）, matching the Chinese format. Contact icons retain their original 23px SVG, 20px CV mark,
 and 32px layout slots, including the compact nine-icon phone row. Category and
 project pages start directly with their work, and `/about/` shows the full
 biography and selected-work links. The category navigation sits in the top
