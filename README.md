@@ -28,8 +28,8 @@ inferred or added by the generator.
 Paper cards use an academic publication layout: title, ordered author list,
 venue/month, a brief summary, and compact flat two-part resource labels. Qiushi
 Xie is underlined in the author line; its dagger is outside the underlined name.
-VaseMuseum's resource labels retain PDF, CODE, Website, Cite in that order; the battery paper has PDF and
-Cite. Cite opens an accessible dialog with a readonly BibTeX field, copy feedback,
+VaseMuseum provides paper, code, project website and citation tags in that order;
+the battery paper provides paper and citation tags. Cite opens an accessible dialog with a readonly BibTeX field, copy feedback,
 and a `.bib` download. Escape, backdrop dismissal and the established close
 control restore focus and the reading position. Direct `.bib` links remain
 available when JavaScript is disabled. The BibTeX sources are maintained under
@@ -45,7 +45,7 @@ remain plain names because the project does not supply personal homepages for
 them. The displayed author order still follows the newer user-provided manuscript.
 The single arXiv venue line reads "In arXiv, 2026.07" in English.
 
-The battery-paper PDF button
+The battery-paper resource tag
 retains the DOI publisher destination, with a labelled SPIE entrance; no public
 direct PDF URL is invented. VaseMuseum retains the small pottery icon immediately to the left of its title.
 The VaseMuseum author order follows the
@@ -60,7 +60,7 @@ omitting the former month/volume/article-number/DOI explanatory row. Author
 superscripts remain visible, and the battery DOI is retained in its PDF link
 and BibTeX.
 
-Paper lists omit the independent date-badge/institution header. Publication month,
+Paper lists omit the independent date-badge/institution header. Publication month and
 venue share one colored line without repeating the date (dark red for arXiv,
 blue for SPIE). The left column is
 30% of the row, displaying the existing museum interaction pipeline for VaseMuseum
