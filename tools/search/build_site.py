@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'cn-paper-width-20261006'
+VERSION = 'work-list-tablet-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -94,6 +94,61 @@ def author_paragraphs(language):
     # relying on text-fragment translation across nested markup.
     return [html.fragment_fromstring('<p>' + paragraph + '</p>')
             for paragraph in AUTHOR['biography'][language]]
+
+
+def format_project_list(card, is_detail):
+    """Use the publication layout while retaining original content and destinations."""
+    card.set('class', card.get('class', '') + ' work-list-card')
+    copy = card.xpath('./div[contains(concat(" ",@class," ")," project-copy ")]')[0]
+    copy.set('class', copy.get('class').replace('has-signature', '') + ' work-copy')
+    topline = card.xpath('./div[@class="project-topline"]')[0]
+    kicker = topline.xpath('./*[contains(concat(" ",@class," ")," project-kicker ")]')[0]
+    meta = copy.xpath('./div[@class="project-meta"]')[0]
+    meta.addnext(kicker)
+    extras = element('div', **{'class':'work-detail-media'})
+    for visual in topline.xpath('./div[@class="project-logos"]') + copy.xpath('./div[contains(concat(" ",@class," ")," signature-visuals ")]'):
+        extras.append(visual)
+    card.remove(topline)
+    if is_detail and len(extras):
+        card.append(extras)
+    if card.get('id') == 'projectCard':
+        wrapper = card.xpath('./div[@class="cover-column"]')[0]
+        preview = wrapper.find('button')
+        wrapper.addprevious(preview)
+        card.remove(wrapper)
+    else:
+        preview = card.find('button')
+        # Dense carousels remain in the full preview; the list shows one clear work image.
+        chosen = {
+            'nuedcProjectCard': ('assets/portfolio-cover/nuedc-c/test-integrated.webp', '数字钥匙实验系统完整实物'),
+            'embeddedProjectCard': ('assets/portfolio-cover/embedded-2025/finals-dual-board.webp', '全国总决赛双板卡演示实物'),
+        }.get(card.get('id'))
+        if chosen:
+            for child in list(preview):
+                if 'cover-zoom-hint' not in child.get('class', ''):
+                    preview.remove(child)
+            preview.insert(0, element('img', src=chosen[0], alt=chosen[1], loading='lazy', decoding='async'))
+    preview.set('class', preview.get('class', '') + ' work-preview')
+    resources = {
+        '项目主页': ('Website', 'Project', 'website'),
+        '项目仓库': ('GitHub', 'CODE', 'code'),
+        '公开测试版': ('Release', 'Beta', 'release'),
+        '下载': ('Release', 'Download', 'release'),
+        '上游项目': ('GitHub', 'Upstream', 'code'),
+        '课程报告': ('Report', 'PDF', 'report'),
+        '赛事页面': ('Contest', 'Website', 'event'),
+        'MCSP Lab': ('MCSP', 'Lab', 'lab'),
+    }
+    for links in copy.xpath('.//div[@class="links"]'):
+        links.set('class', 'links paper-links work-links')
+        for link in links.findall('a'):
+            original = ''.join(link.itertext()).strip()
+            label, value, kind = resources[original]
+            link.text = None
+            link.set('aria-label', original)
+            link.set('class', 'paper-resource resource-' + kind)
+            link.append(element('span', label, **{'class':'resource-label'}))
+            link.append(element('span', value, **{'class':'resource-value'}))
 
 
 def build():
@@ -238,6 +293,37 @@ html.portrait-phone article[data-work-category="paper"] .cover-zoom-hint{width:c
 html.portrait-phone .paper-authors,html.portrait-phone .paper-venue{font-size:11px;line-height:1.4}
 html.portrait-phone .paper-authors{margin:5px 0 4px}
 html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-summary{font-size:12px;line-height:1.4;margin-bottom:9px}
+/* Competitions and personal projects share the publication text and preview layout. */
+.work-list-card{grid-template-columns:minmax(0,30%) minmax(0,1fr)!important;column-gap:24px!important;row-gap:0!important;padding:20px 16px!important;align-items:center!important;border-top:1px solid #edf0f2}
+.work-list-card .work-preview{grid-column:1!important;grid-row:1!important;align-self:stretch!important;display:flex;align-items:center;justify-content:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0!important;border:0!important;border-radius:0;background:transparent;box-shadow:none}
+.work-preview>img,.work-preview>video{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;background:transparent;transform:none!important}
+.work-preview>video{pointer-events:none}
+.work-list-card .work-copy{grid-column:2!important;grid-row:1!important;align-self:center!important;min-width:0;min-height:0!important;padding:0!important;margin:0!important}
+.work-copy h2{margin:0;color:#202428!important;font-size:16px!important;line-height:1.4!important;font-weight:600!important}
+.work-copy .project-meta{margin:7px 0 5px;color:#282e33;font-size:14px;line-height:1.65}
+.work-copy .project-meta p{font-size:14px!important;line-height:1.65;font-weight:400}
+.work-list-card[data-work-category="competition"] .project-meta p:first-child{color:#a35b19;font-weight:700}
+.work-copy .project-kicker{margin:0 0 5px;color:#315b98;font-size:14px;line-height:1.5;font-weight:700;letter-spacing:0}
+.work-copy .summary{max-width:none;margin:0 0 12px;font-size:13px!important;line-height:1.55!important}
+.work-copy .project-bottom{max-width:none}
+.work-copy .nuedc-note{margin:0 0 12px;padding:0;border:0;color:#687985;font-size:12px;line-height:1.55}
+.work-links{gap:6px;font-size:11px;font-weight:400;line-height:1.4}
+.work-list-card .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
+.work-list-card .work-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
+.work-detail-media{grid-column:1/-1;grid-row:2;display:flex;flex-wrap:wrap;align-items:center;gap:20px;margin-top:20px;padding-top:14px;border-top:1px solid #edf0f2}
+.work-detail-media .project-logos{width:auto;justify-content:flex-start;margin:0;flex-wrap:wrap}
+.work-detail-media .signature-visuals{position:static;float:none;width:124px;margin:0;gap:8px}
+.work-detail-media .signature-visuals img{height:auto}
+@media(min-width:761px){html[data-origin="cn"]:not(.portrait-phone) .work-list-card{grid-template-columns:minmax(0,34%) minmax(0,1fr)!important}}
+@media(max-width:760px){
+ html:not(.portrait-phone) .work-list-card{grid-template-columns:1fr!important;row-gap:14px!important}
+ html:not(.portrait-phone) .work-list-card .work-copy{grid-column:1!important;grid-row:2!important}
+ html:not(.portrait-phone) .work-detail-media{grid-row:3}
+}
+html.portrait-phone .work-copy h2{font-size:12px!important;line-height:1.3!important}
+html.portrait-phone .work-copy .project-meta p,html.portrait-phone .work-copy .project-kicker{font-size:11px!important;line-height:1.4}
+html.portrait-phone .work-copy .summary{font-size:12px!important;line-height:1.4!important;margin-bottom:9px}
+html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--portrait-ui-scale));height:calc(18px / var(--portrait-ui-scale))}
 
 '''
     scripts = []
@@ -349,6 +435,8 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
                 if not detail_id:
                     for affiliations in tree.xpath('//*[@class="paper-affiliations"]'):
                         affiliations.getparent().remove(affiliations)
+                for card in tree.xpath('//article[@data-work-category="competition" or @data-work-category="side"]'):
+                    format_project_list(card, bool(detail_id))
                 if language == 'en':
                     translate_tree(tree)
                 for cite in tree.xpath('//*[@data-citation-key]'):

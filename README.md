@@ -80,6 +80,18 @@ hrefs, citation behavior and ordering are retained. The paper entrance tags read
 the original publisher DOI. The article identifier 143271X remains in BibTeX. Only Qiushi's author name is
 emphasized; the other authors retain normal weight and their existing links.
 
+Competition and personal-project entries now share the paper list's typography,
+black titles, colored information lines, compact split resource tags, and image
+column proportions. Their dates move into the text column below the role/award
+line. Institutional marks, hardware cutouts, and app icons remain on the independent
+detail pages; all original project descriptions and link destinations are retained.
+The Intel Cup preview is a direct, naturally sized video rather than a square video
+inside a fixed-height wrapper. At tablet widths up to 760px, each preview and its
+text occupy explicit consecutive grid rows, preventing the former overlap. Portrait
+phones retain their established canvas and paper-sized typography. The digital-key
+and smoke-detector entries show an existing full-system photograph, with the complete
+methods, interfaces, and results still available in their preview overlays.
+
 The battery method overlay uses the locally exported 16:9 horizontal pipeline,
 with the original Visio topology and Times New Roman labels. The method figure
 spans the grid width and retains its natural aspect ratio. Its lossless WebP is
