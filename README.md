@@ -654,30 +654,37 @@ Opening a gallery makes only its images eager; other galleries remain lazy.
 This reserves natural-ratio space before image decoding and avoids collapsed rows.
 Final loading patch: `docs/gallery-loading-final-20261006/`.
 
-## Sequential animation loading (2026-10-06)
+## Ordered animation loading (2026-10-07)
 
-User-confirmed current preferences are recorded in `docs/maintenance-preferences.md`.
-`source/preview-load-queue.js` downloads one manifest/sprite at a time in the
-explicit EECS → Intel Cup → C-topic order (absent projects are skipped).
-Each complete compressed sequence is buffered before playback, then the queue
-continues with the next project. Thumbnail and gallery copies share those blobs;
-replay and EECS loops do not fetch again. Decoded image retention remains bounded
-to the player's existing lookahead and is released offscreen.
+Current preferences: `docs/maintenance-preferences.md`.
+`source/preview-load-queue.js` downloads EECS → Intel Cup → C-topic, skipping
+absent projects. MP4 is smaller than the previous raster sheets (EECS 1.3 vs
+6.5 MiB). One compressed file is fetched per project, then retained as a shared
+Blob URL for thumbnail, expanded player and replay. `preview-video-player.js`
+uses a detached muted inline decoder to draw full-resolution frames into Canvas;
+no native video control surface is exposed. Existing timing, cover reset,
+full-visibility gating and the extra 1.2s EECS intro after round one remain.
 
-The restored startup loader covers only the list below Selected Work; navigation,
-portrait and biography remain visible and usable. It waits for the first sequence and key images,
-with a hard five-second limit and a head-script fail-open timer if the runtime
-does not arrive. Unfinished previews retain their cover with a semi-transparent
-loading spinner at the top; it vanishes once that sequence is fully buffered.
-Playback still requires the existing full-visibility gate. Network errors advance
-the queue and allow explicit retries without discarding already fetched blobs.
+Gallery detail images and original videos wait until the registered thumbnail
+animations finish or fail. Hover/focus/touch do not preload gallery assets.
+A closed gallery skips its deferred callback. Original videos preload metadata
+only and remain a manual user choice. Other gallery figures and source media
+remain available without being copied into the animation cache.
 
-Expanded galleries add custom play/pause, a seekable range and elapsed/duration
-display to the same Canvas player and shared blob cache. Seeking while paused
-keeps that position; seeking while playing resumes. Automatic competition completion
-still returns to the cover; EECS still loops. The redundant original MP4 player
-has been removed from these galleries.
+The five-second startup status occupies a separate row between the work heading
+and list; it never masks the covers or biography. Each unfinished thumbnail has
+an indicator in a reserved strip above its image. Loaded thumbnail status is
+reset correctly even when its decoder was paused while a gallery opened.
+Dark gallery headers use light title/subtitle/close colors.
 
-Run `tests/preview-load-queue.cjs`, `tests/preview-frame-player.cjs`,
-`tests/preview-playback.cjs`, `tests/startup-loading.cjs`, `build_site.py` and
-`check_site.py`. Release: `docs/preview-sequential-loading-20261006/`.
+Video and poster versions derive from their content, independently of the UI
+release, so a style update preserves the unchanged media cache address. Expanded
+players add custom play/pause, a seekable range and time display, reusing the same
+Blob. The former sprite implementation and source files are retained as a
+maintenance reference with its bounded four-file pool and adaptive prefix gate.
+
+Cold HTTP/2 tests from this host: all 25 EECS sprites took about 16s at 1/4/8/25
+concurrency; the MP4 took 2.146s. This is not a physical-phone startup guarantee.
+Proofs and scoped publishing: `docs/preview-bounded-loading-20261007/`.
+Run preview-load-queue, preview-frame-player, preview-video-player,
+preview-playback, startup-loading and gallery-scroll tests, then build/check.

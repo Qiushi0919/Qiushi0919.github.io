@@ -409,7 +409,8 @@ html.portrait-phone .feature-overlay .close::before{font-size:calc(33px / var(--
 /* The plain double dagger shares equal-contribution marks' superscript size. */
 .paper-authors sup.role-lead{font-family:Arial,sans-serif;font-size:.72em;vertical-align:super;line-height:0;font-weight:400}
 /* Separate siblings keep playback independent from the original gallery button. */
-.preview-media{position:relative;min-width:0}
+.preview-media{position:relative;min-width:0;padding-top:22px!important}
+html.portrait-phone .preview-media{padding-top:calc(22px / var(--portrait-ui-scale))!important}
 /* A reserved slim strip keeps the control clear of every poster's text. Its
    height stays fixed while playing so the image and scroll position do not move. */
 :is(.work-preview,.paper-preview).preview-media,.gallery-preview-media{padding-bottom:26px!important}
@@ -441,7 +442,7 @@ html.work-mobile .work-collection[data-work-view="large"] .preview-open>.preview
  html:not(.portrait-phone) .feature-overlay{width:84vw;right:8vw;max-height:76vh;max-height:76dvh}
 }
 @media print{.preview-play-control{display:none!important}.preview-poster{visibility:visible!important}}
-.preview-loading-indicator{--loading-unit:1px;position:absolute;z-index:4;top:calc(5 * var(--loading-unit));left:50%;transform:translateX(-50%);display:none;align-items:center;gap:calc(5 * var(--loading-unit));padding:calc(4 * var(--loading-unit)) calc(7 * var(--loading-unit));border:0;border-radius:calc(12 * var(--loading-unit));background:rgba(255,255,255,.68);color:rgba(28,47,61,.8);font:calc(10 * var(--loading-unit))/1.2 var(--site-font);pointer-events:none;white-space:nowrap}
+.preview-loading-indicator{--loading-unit:1px;position:absolute;z-index:4;top:0;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:calc(5 * var(--loading-unit));padding:calc(3 * var(--loading-unit)) calc(7 * var(--loading-unit));border:0;border-radius:calc(12 * var(--loading-unit));background:rgba(255,255,255,.68);color:rgba(28,47,61,.8);font:calc(10 * var(--loading-unit))/1.2 var(--site-font);pointer-events:none;white-space:nowrap}
 html.portrait-phone .preview-loading-indicator{--loading-unit:calc(1px / var(--portrait-ui-scale))}
 .preview-media:is([data-preview-buffer="waiting"],[data-preview-buffer="loading"])>.preview-loading-indicator{display:inline-flex}
 .preview-loading-spinner{display:block;width:calc(13 * var(--loading-unit));height:calc(13 * var(--loading-unit));border:calc(1.5 * var(--loading-unit)) solid rgba(56,88,108,.2);border-top-color:rgba(56,88,108,.8);border-radius:50%;animation:preview-loading-spin .8s linear infinite}
@@ -463,9 +464,16 @@ html.portrait-phone .preview-transport{--transport-unit:calc(1px / var(--portrai
    fixed picture heights. Natural ratios preserve diagrams and entire photos. */
 .feature-overlay{--gallery-unit:1px}
 .feature-overlay{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;isolation:isolate}
+.feature-overlay img[data-src]{visibility:hidden}
 .feature-overlay>.overlay-head{position:sticky;top:0;z-index:5;background:var(--gallery-header-bg,#f9fbfd);padding-bottom:8px;border-bottom:1px solid #c9d1d7;margin-bottom:10px}
 html.gallery-locked{overflow:hidden!important;overscroll-behavior:none;scrollbar-gutter:stable}
-@media(prefers-color-scheme:dark){.feature-overlay{--gallery-header-bg:#202020}}
+@media(prefers-color-scheme:dark){
+ .feature-overlay{--gallery-header-bg:#202020}
+ .feature-overlay>.overlay-head h3{color:#e7edf2}
+ .feature-overlay>.overlay-head h3 span{color:#b4c3cf}
+ .feature-overlay>.overlay-head{border-bottom-color:#505b64}
+ .feature-overlay>.overlay-head .close{color:#e7edf2;background:#2c3339;border-color:#657581}
+}
 html.portrait-phone .feature-overlay{--gallery-unit:calc(1px / var(--portrait-ui-scale));width:92vw;right:4vw;left:auto;padding:calc(8 * var(--gallery-unit));max-height:82vh;max-height:82dvh}
 html.portrait-phone .project-card.is-open .feature-overlay{transform:translate(0,-50%) scale(1)}
 html.portrait-phone .feature-overlay :is(.feature-grid,.research-grid,.nuedc-grid,.eecs-grid,.embedded-grid,.lowcom-grid,.side-project-demo-grid){grid-template-columns:minmax(0,1fr);gap:calc(10 * var(--gallery-unit))}
@@ -490,15 +498,17 @@ html.portrait-phone .feature-overlay .codex-tidy-demo:not(:first-child){width:mi
  html:not(.portrait-phone) .feature-overlay .codex-tidy-demo:not(:first-child){width:min(100%,220px);justify-self:center}
 }
 .work-loading-region{position:relative}
-.work-loading-region>.portfolio-loader{position:absolute;inset:0;z-index:8;display:block;background:rgba(255,255,255,.94)}
+/* The status stays in its own row above the list; posters remain unobscured. */
+.work-loading-region>.portfolio-loader{position:relative;inset:auto;z-index:1;display:block;padding:8px 0;margin-bottom:8px;background:transparent;pointer-events:none}
+.portfolio-ready .work-loading-region>.portfolio-loader{display:none}
 .portfolio-loader{--loader-unit:1px;font-family:var(--site-font)}
 html.portrait-phone .portfolio-loader{--loader-unit:calc(1px / var(--portrait-ui-scale))}
-.portfolio-loader .loader-inner{position:sticky;top:calc(100 * var(--loader-unit));width:min(80vw,calc(260 * var(--loader-unit)));margin:calc(75 * var(--loader-unit)) auto 0}
-.portfolio-loader .loader-title{font-size:calc(16 * var(--loader-unit))}
-.portfolio-loader .loader-subtitle{font-size:calc(11 * var(--loader-unit));letter-spacing:0;text-transform:none}
-.portfolio-loader .loader-timer{font-size:calc(12 * var(--loader-unit));margin-top:calc(10 * var(--loader-unit))}
-.portfolio-loader .loader-track{height:calc(2 * var(--loader-unit));margin-top:calc(12 * var(--loader-unit))}
-@media(prefers-color-scheme:dark){.work-loading-region>.portfolio-loader{background:rgba(17,17,17,.94)}.loader-title{color:#e2e7eb}.loader-subtitle,.loader-timer{color:#a1aeb7}.loader-track{background:#343b40}}
+.portfolio-loader .loader-inner{position:static;display:flex;align-items:center;justify-content:center;gap:calc(8 * var(--loader-unit));flex-wrap:wrap;width:100%;margin:0;text-align:center}
+.portfolio-loader .loader-title{font-size:calc(12 * var(--loader-unit))}
+.portfolio-loader .loader-subtitle{font-size:calc(10 * var(--loader-unit));letter-spacing:0;text-transform:none;margin:0}
+.portfolio-loader .loader-timer{font-size:calc(10 * var(--loader-unit));margin:0}
+.portfolio-loader .loader-track{flex:none;width:calc(90 * var(--loader-unit));height:calc(2 * var(--loader-unit));margin:0}
+@media(prefers-color-scheme:dark){.loader-title{color:#e2e7eb}.loader-subtitle,.loader-timer{color:#a1aeb7}.loader-track{background:#343b40}}
 @media print{.portfolio-loader{display:none!important}}
 /* Latin glyphs use Times New Roman; CJK glyphs fall through to Microsoft YaHei.
    System fallbacks cover devices that do not have these fonts installed. */

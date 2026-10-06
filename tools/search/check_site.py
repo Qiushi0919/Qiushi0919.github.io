@@ -2,7 +2,7 @@
 from pathlib import Path
 from urllib.parse import urlsplit, unquote
 from urllib.robotparser import RobotFileParser
-import json
+import hashlib, json
 from lxml import html, etree
 
 ROOT = Path(__file__).resolve().parent / 'build'
@@ -114,7 +114,8 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
                 assert urlsplit(canvas.get('data-preview-sequence')).query.startswith('v='), str(p)
                 poster = canvas.getnext()
                 assert urlsplit(poster.get('src')).path == f'/assets/portfolio-cover/{project}/cover-{language}.jpg', str(p)
-                assert urlsplit(poster.get('src')).query == urlsplit(canvas.get('data-preview-sequence')).query, str(p)
+                poster_file = directory / urlsplit(poster.get('src')).path.lstrip('/')
+                assert urlsplit(poster.get('src')).query == 'v=' + hashlib.sha256(poster_file.read_bytes()).hexdigest()[:12], str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Zeyu Zhang"]'):
             assert author.xpath('./sup/text()') == ['†','‡'], str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Hao Tang"]'):
@@ -128,11 +129,21 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             canvas = wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/canvas[@data-preview-auto]')
             assert len(canvas) == 1 and canvas[0].get('width') and canvas[0].get('height'), str(p)
             assert canvas[0].get('data-preview-load-order') in ('0','1','2'), str(p)
+            video_url = urlsplit(canvas[0].get('data-preview-video'))
+            video_file = directory / video_url.path.lstrip('/')
+            assert video_file.is_file() and video_file.suffix == '.mp4', str(p)
+            assert video_url.query == 'v=' + hashlib.sha256(video_file.read_bytes()).hexdigest()[:12], str(p)
+            assert float(canvas[0].get('data-preview-duration')) > 0, str(p)
             assert len(wrapper.xpath('./span[@class="preview-loading-indicator" and @role="status"]')) == 1, str(p)
             sequence = directory / urlsplit(canvas[0].get('data-preview-sequence')).path.lstrip('/')
             data = json.loads(sequence.read_text())
             assert data['frames'] and data['duration'] > 0, str(p)
             assert all((sequence.parent / name).is_file() for name in data['sheets']), str(p)
+            assert data['sheetBytes'] == [(sequence.parent / name).stat().st_size for name in data['sheets']], str(p)
+            fingerprint = hashlib.sha256()
+            for file in sorted(sequence.parent.iterdir()):
+                if file.suffix in ('.json', '.webp'): fingerprint.update(file.name.encode() + b'\0' + file.read_bytes())
+            assert urlsplit(canvas[0].get('data-preview-sequence')).query == 'v=' + fingerprint.hexdigest()[:12], str(p)
             if 'data-preview-popup' in wrapper.attrib:
                 assert wrapper.getprevious().get('class') == 'overlay-head', str(p)
                 assert len(wrapper.xpath('./div[@class="preview-transport"]/input[@data-preview-seek]')) == 1, str(p)

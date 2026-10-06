@@ -2,9 +2,16 @@
    fixed picture heights. Natural ratios preserve diagrams and entire photos. */
 .feature-overlay{--gallery-unit:1px}
 .feature-overlay{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;isolation:isolate}
+.feature-overlay img[data-src]{visibility:hidden}
 .feature-overlay>.overlay-head{position:sticky;top:0;z-index:5;background:var(--gallery-header-bg,#f9fbfd);padding-bottom:8px;border-bottom:1px solid #c9d1d7;margin-bottom:10px}
 html.gallery-locked{overflow:hidden!important;overscroll-behavior:none;scrollbar-gutter:stable}
-@media(prefers-color-scheme:dark){.feature-overlay{--gallery-header-bg:#202020}}
+@media(prefers-color-scheme:dark){
+ .feature-overlay{--gallery-header-bg:#202020}
+ .feature-overlay>.overlay-head h3{color:#e7edf2}
+ .feature-overlay>.overlay-head h3 span{color:#b4c3cf}
+ .feature-overlay>.overlay-head{border-bottom-color:#505b64}
+ .feature-overlay>.overlay-head .close{color:#e7edf2;background:#2c3339;border-color:#657581}
+}
 html.portrait-phone .feature-overlay{--gallery-unit:calc(1px / var(--portrait-ui-scale));width:92vw;right:4vw;left:auto;padding:calc(8 * var(--gallery-unit));max-height:82vh;max-height:82dvh}
 html.portrait-phone .project-card.is-open .feature-overlay{transform:translate(0,-50%) scale(1)}
 html.portrait-phone .feature-overlay :is(.feature-grid,.research-grid,.nuedc-grid,.eecs-grid,.embedded-grid,.lowcom-grid,.side-project-demo-grid){grid-template-columns:minmax(0,1fr);gap:calc(10 * var(--gallery-unit))}

@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'preview-sequential-loading-20261006'
+VERSION = 'preview-bounded-loading-20261007'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -49,6 +49,14 @@ COMPETITION_TEAMS = json.loads((SOURCE / 'competition-teams.json').read_text())
 VERIFICATION = json.loads((SOURCE / 'search-verification.json').read_text()) if (SOURCE / 'search-verification.json').exists() else {}
 PORTRAIT_PATH = 'assets/contact/profile-photo.jpg'
 PORTRAIT_VERSION = hashlib.sha256((SOURCE / 'contact/profile-photo.jpg').read_bytes()).hexdigest()[:12]
+PREVIEW_VERSIONS = {}
+for preview_directory in sorted((SOURCE / 'preview-frames').iterdir()):
+    if not preview_directory.is_dir(): continue
+    fingerprint = hashlib.sha256()
+    for file in sorted(preview_directory.iterdir()):
+        if file.suffix not in ('.json', '.webp'): continue
+        fingerprint.update(file.name.encode() + b'\0' + file.read_bytes())
+    PREVIEW_VERSIONS[preview_directory.name] = fingerprint.hexdigest()[:12]
 
 
 def portrait_url(base=''):
@@ -433,6 +441,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             code = re.sub(r"    const runWhenIdle =.*?    const hydrateOverlay", '    const hydrateOverlay', code, flags=re.S)
             code = code.replace("if (media.tagName === 'IMG') media.fetchPriority = priority;",
                                 "if (media.tagName === 'IMG') { media.loading = 'eager'; media.fetchPriority = priority; }")
+            code = code.replace("const hydrateOverlay = (project, priority = 'high') => {",
+                                "const hydrateOverlay = (project, priority = 'low') => window.PortfolioPreviewLoads.afterPreviews(() => {\n      if (project.overlay.getAttribute('aria-hidden') !== 'false') return;")
+            code = code.replace("    };\n    const preloadAllProjectMedia", "    });\n    const preloadAllProjectMedia")
+            code = code.replace("media.preload = 'auto';", "media.preload = 'metadata';")
+            code = re.sub(r"      \['pointerenter', 'focusin', 'touchstart'\].forEach\(eventName => \{.*?      \}\);\n", '', code, flags=re.S)
             code = re.sub(r'    const preloadAllProjectMedia =.*?    const setOpen', '    const setOpen', code, flags=re.S)
             code = code.replace("    window.addEventListener('portfolio:ready', preloadAllProjectMedia, {once:true});\n", '')
             # Original experiment videos are an explicit user choice; merely
@@ -443,6 +456,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         scripts.append(code)
     scripts.append((SOURCE / 'preview-load-queue.js').read_text())
     scripts.append((SOURCE / 'preview-frame-player.js').read_text())
+    scripts.append((SOURCE / 'preview-video-player.js').read_text())
     scripts.append((SOURCE / 'preview-playback.js').read_text())
     scripts.append((SOURCE / 'startup-loading.js').read_text())
     scripts.append((SOURCE / 'work-view.js').read_text())
@@ -779,14 +793,22 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                             'nuedcCoverTrigger':f'nuedc-c-{language}',
                             'eecsCoverTrigger':'battery-method'}[button.get('id')]
                     sequence = json.loads((SOURCE / 'preview-frames' / name / 'sequence.json').read_text())
+                    video_path = video.get('data-src').split('?', 1)[0]
+                    video_version = hashlib.sha256((destination / video_path.lstrip('/')).read_bytes()).hexdigest()[:12]
                     canvas = element('canvas', **{'id':preview_id,'data-preview-auto':'',
-                        'data-preview-sequence':f'/assets/preview-frames/{name}/sequence.json?v={VERSION}',
+                        'data-preview-video':video_path + '?v=' + video_version,
+                        'data-preview-duration':str(sequence['duration']),
+                        'data-preview-replay-start':str(sequence.get('replayStart', 0)),
+                        'data-preview-loop-intro-extra':str(sequence.get('loopIntroExtra', 0)),
+                        'data-preview-sequence':f'/assets/preview-frames/{name}/sequence.json?v={PREVIEW_VERSIONS[name]}',
                         'data-preview-load-order':str({'eecsCoverTrigger':0,'coverTrigger':1,'nuedcCoverTrigger':2}[button.get('id')]),
                         'aria-label':video.get('aria-label'),'role':'img',
                         'width':str(sequence['width']),'height':str(sequence['height'])})
                     if name == 'battery-method':
                         canvas.set('data-preview-loop', 'true')
                     poster_src = video.get('poster')
+                    poster_file = destination / poster_src.split('?', 1)[0].lstrip('/')
+                    poster_src = poster_src.split('?', 1)[0] + '?v=' + hashlib.sha256(poster_file.read_bytes()).hexdigest()[:12]
                     button.replace(video, canvas)
                     wrapper = element('div', **{'class':button.get('class', '') + ' preview-media',
                                                 'data-preview-motion':'','data-preview-state':'poster',
@@ -841,12 +863,15 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 sizes = json.loads((SOURCE / 'work-media-sizes.json').read_text())
                 gallery_sizes = json.loads((SOURCE / 'gallery-media-sizes.json').read_text())
                 for image in tree.xpath('//section[contains(concat(" ",@class," ")," feature-overlay ")]//img'):
+                    if image.get('src') and image.get('class') != 'preview-poster':
+                        image.set('data-src', image.get('src'))
+                        image.attrib.pop('src')
                     path = (image.get('data-src') or image.get('src') or '').lstrip('/')
                     if path in gallery_sizes:
                         image.set('width', str(gallery_sizes[path][0]))
                         image.set('height', str(gallery_sizes[path][1]))
                 for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video | //div[@data-preview-motion]//img | //div[@data-preview-motion]//video'):
-                    src = (media.get('src') or media.get('data-src') or '').lstrip('/')
+                    src = (media.get('src') or media.get('data-src') or '').split('?', 1)[0].lstrip('/')
                     dimensions = sizes.get(src)
                     if media.tag == 'video' and dimensions is None:
                         dimensions = [1920,1080]
@@ -891,7 +916,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     for child in list(parent):
                         if (child.tag == 'article' and child.get('data-work-category')) or child.get('class') == 'homepage-project-context':
                             region.append(child)
-                    region.append(loader)
+                    region.insert(0, loader)
                 else:
                     loader.getparent().remove(loader)
                 skip = element('a', '跳到作品' if language == 'zh' else 'Skip to content', href='#main-content', **{'class':'skip-link'})

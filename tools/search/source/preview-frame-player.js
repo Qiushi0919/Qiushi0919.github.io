@@ -22,7 +22,8 @@
         canvas.dataset.previewBuffer = item.state;
         canvas.dataset.previewLoadedSheets = String(item.blobs.size);
         canvas.dataset.previewTotalSheets = String(item.data?.sheets.length || 0);
-        callbacks.buffering?.(item.state, item.data);
+        canvas.dataset.previewPlayable=String(item.canPlay);
+        callbacks.buffering?.(item.state, item.data, item.canPlay);
       });
     }
     async manifest() {
@@ -40,20 +41,21 @@
       if (this.images.has(index)) return Promise.resolve(this.images.get(index));
       if (this.pending.has(index)) return this.pending.get(index);
       const epoch = this.epoch;
-      const url = URL.createObjectURL(this.resource.blobs.get(index));
       const image = new Image();
       image.decoding = 'async';
-      const pending = new Promise((resolve, reject) => {
+      let url;
+      const pending = window.PortfolioPreviewLoads.sheet(this.resource,index).then(blob=>new Promise((resolve, reject) => {
+        url = URL.createObjectURL(blob);
         image.onload = () => resolve(image);
         image.onerror = () => reject(new Error('Preview frame unavailable'));
         image.src = url;
-      }).then(async image => {
+      })).then(async image => {
         if (typeof image.decode === 'function') await image.decode();
         // A paused/closed gallery must not retain decoded offscreen atlases.
         if (this.running && epoch === this.epoch) this.images.set(index, image);
         return image;
       }).finally(() => {
-        URL.revokeObjectURL(url);
+        if (url) URL.revokeObjectURL(url);
         if (this.pending.get(index) === pending) this.pending.delete(index);
       });
       this.pending.set(index, pending);
@@ -65,7 +67,7 @@
       const epoch = ++this.epoch;
       this.last = null;
       window.PortfolioPreviewLoads.request(this.resource);
-      Promise.all([this.manifest(), this.resource.complete.promise]).then(([data]) => {
+      Promise.all([this.manifest(), this.resource.playable.promise]).then(([data]) => {
         if (this.running && epoch === this.epoch) {
           if (skipCover) this.elapsed = data.replayStart || 0;
           this.tick();

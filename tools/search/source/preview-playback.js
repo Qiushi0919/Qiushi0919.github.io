@@ -87,11 +87,17 @@
     entry.player.play({skipCover:manual});
     label(entry);
   };
+  const pause = entry => {
+    entry.player.pause();
+    if (!entry.player.drawn && entry.canvas.dataset.previewBuffer === 'ready') {
+      entry.media.dataset.previewState='poster';label(entry);
+    }
+  };
   const sync = () => {
     frame = 0;
     for (const entry of entries) {
       const player = entry.player;
-      if (blocked(entry) || (motion.matches && !entry.manual)) { player.pause(); continue; }
+      if (blocked(entry) || (motion.matches && !entry.manual)) { pause(entry); continue; }
       if (entry.userPaused) continue;
       if (entry.finished || entry.needsManual) continue;
       const box = viewport(entry.popup);
@@ -100,22 +106,24 @@
       if (!entry.started) {
         const complete = rect.width>0 && rect.height>0 && rect.top>=box.top-.5 && rect.left>=box.left-.5 && rect.bottom<=box.bottom+.5 && rect.right<=box.right+.5;
         if (complete) play(entry);
-        else player.pause();
-      } else if (visible < .15) player.pause();
+        else pause(entry);
+      } else if (visible < .15) pause(entry);
       else if (!player.running) play(entry);
     }
   };
   const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
   for (const entry of entries) {
     const canvas = entry.canvas;
-    entry.player = new window.PortfolioFramePlayer(canvas, canvas.dataset.previewSequence, {
-      buffering(state,data) {
+    const Player=canvas.dataset.previewVideo?window.PortfolioVideoPlayer:window.PortfolioFramePlayer;
+    entry.player = new Player(canvas, canvas.dataset.previewVideo || canvas.dataset.previewSequence, {
+      buffering(state,data,canPlay) {
         entry.media.dataset.previewBuffer = state;
         const indicator = entry.media.querySelector('.preview-loading-indicator');
         indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
         if (entry.seek) entry.seek.disabled = state !== 'ready';
-        if (entry.toggle) entry.toggle.disabled = state === 'waiting' || state === 'loading';
+        if (entry.toggle) entry.toggle.disabled = !canPlay && (state === 'waiting' || state === 'loading');
         if (data && entry.seek) entry.seek.max=String(data.duration);
+        if (state === 'ready' && entry.player && !entry.player.running && !entry.player.drawn) entry.media.dataset.previewState='poster';
         if (entry.player) label(entry);
       },
       time(seconds,duration) {

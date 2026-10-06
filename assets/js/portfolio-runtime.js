@@ -250,7 +250,8 @@
     ].filter(project => project.card && project.trigger && project.overlay && project.close);
     const anyOpen = () => projects.some(project => project.card.classList.contains('is-open'));
     const syncBackdrop = () => { const open = anyOpen(); document.body.classList.toggle('overlay-active', open); window.portfolioGalleryLock(open); };
-    const hydrateOverlay = (project, priority = 'high') => {
+    const hydrateOverlay = (project, priority = 'low') => window.PortfolioPreviewLoads.afterPreviews(() => {
+      if (project.overlay.getAttribute('aria-hidden') !== 'false') return;
       project.overlay.querySelectorAll('[data-src]').forEach(media => {
         const source = media.dataset.src;
         if (!source) return;
@@ -258,11 +259,11 @@
         media.src = source;
         media.removeAttribute('data-src');
         if (media.tagName === 'VIDEO') {
-          media.preload = 'auto';
+          media.preload = 'metadata';
           media.load();
         }
       });
-    };
+    });
     const setOpen = (project, open) => {
       if (open) projects.filter(item => item !== project).forEach(item => setOpen(item, false));
       if (open) hydrateOverlay(project);
@@ -283,9 +284,6 @@
     projects.forEach(project => {
       project.overlay.setAttribute('aria-hidden', 'true');
       project.overlay.querySelectorAll('video').forEach(video => video.pause());
-      ['pointerenter', 'focusin', 'touchstart'].forEach(eventName => {
-        project.trigger.addEventListener(eventName, () => hydrateOverlay(project), {once:true, passive:true});
-      });
       project.trigger.addEventListener('click', () => {
         setOpen(project, !project.card.classList.contains('is-open'));
       });
@@ -362,7 +360,8 @@
       });
     })();
   
-/* One network queue for all animated thumbnails and their expanded copies.
+/* One project queue for all animated thumbnails and their expanded copies.
+   Download up to four compressed sheets within the active project together.
    Retain compressed blobs; players keep only a few decoded sprite sheets. */
 (() => {
   const deferred = () => {
@@ -376,18 +375,28 @@
     (data.replayStart === undefined || (Number.isFinite(data.replayStart) && data.replayStart >= 0 && data.replayStart < data.duration)) &&
     (data.loopIntroExtra === undefined || (Number.isFinite(data.loopIntroExtra) && data.loopIntroExtra >= 0 && data.loopIntroExtra <= 10)) &&
     data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
+    (data.sheetBytes === undefined || (Array.isArray(data.sheetBytes) && data.sheetBytes.length === data.sheets.length &&
+      data.sheetBytes.every(size=>Number.isInteger(size) && size>0))) &&
     data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
     data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16);
   class PreviewLoadQueue {
-    constructor() { this.items=new Map(); this.busy=false; this.started=false; }
-    register(url, priority) {
+    constructor() { this.items=new Map(); this.busy=false; this.started=false; this.details=[]; }
+    register(url, priority, videoData) {
       const key=url.href;
       if (!this.items.has(key)) this.items.set(key, {url, priority:Number.isFinite(priority)?priority:100,
         position:this.items.size, state:'waiting', blobs:new Map(), listeners:new Set(),
-        manifest:deferred(), complete:deferred()});
+        manifest:deferred(), playable:deferred(), complete:deferred(), available:new Map(), canPlay:false,
+        ...(videoData?{kind:'video',data:{...videoData,sheets:[url.pathname.split('/').pop()]}}:{})});
       const item=this.items.get(key);
       if (this.started) this.pump();
       return item;
+    }
+    registerVideo(url,priority,data) {
+      return this.register(url,priority,data);
+    }
+    afterPreviews(callback) {
+      this.details.push(callback);
+      this.started=true;this.pump();
     }
     ordered() { return [...this.items.values()].sort((a,b)=>a.priority-b.priority || a.position-b.position); }
     notify(item, state) {
@@ -397,7 +406,9 @@
     subscribe(item, listener) { item.listeners.add(listener); listener(item); }
     request(item) {
       if (item.state === 'error') {
-        item.manifest=deferred(); item.complete=deferred();
+        item.manifest=deferred(); item.playable=deferred(); item.complete=deferred();
+        item.available=new Map();item.canPlay=false;
+        item.error=null;
         this.notify(item,'waiting'); // Explicit retry reuses successful blobs.
       }
       this.started=true;
@@ -408,7 +419,31 @@
       const first=this.ordered()[0];
       if (!first) return Promise.resolve();
       this.request(first);
-      return first.complete.promise;
+      return first.playable.promise;
+    }
+    sheet(item,index) {
+      if (item.blobs.has(index)) return Promise.resolve(item.blobs.get(index));
+      if (item.state === 'error') return Promise.reject(item.error);
+      if (!item.available.has(index)) item.available.set(index,deferred());
+      return item.available.get(index).promise;
+    }
+    playable(item) {
+      if (item.canPlay) return;
+      const data=item.data;
+      let frames=0;
+      while (frames<data.frames.length && item.blobs.has(Math.floor(data.frames[frames]/data.tilesPerSheet))) ++frames;
+      const ahead=frames/data.fps;
+      if (ahead<Math.min(data.frames.length/data.fps,(data.replayStart || 0)+2.5)) return;
+      const downloaded=[...item.blobs.values()].reduce((sum,blob)=>sum+blob.size,0);
+      const remaining=data.sheetBytes
+        ? data.sheetBytes.reduce((sum,size,index)=>sum+(item.blobs.has(index)?0:size),0)
+        : downloaded/item.blobs.size*(data.sheets.length-item.blobs.size);
+      const elapsed=Math.max(.05,(Date.now()-item.startedAt)/1000);
+      // Begin only after a contiguous prefix and enough measured throughput to
+      // finish downloading during this play. A margin absorbs small fluctuations.
+      const runway=data.duration-(data.replayStart || 0)-1.5;
+      if (remaining && remaining/(downloaded/elapsed)*1.1>runway) return;
+      item.canPlay=true;item.playable.resolve(data);this.notify(item,'loading');
     }
     async fetch(url, type) {
       const controller=new AbortController();
@@ -419,12 +454,34 @@
         return await response[type]();
       } finally { clearTimeout(timeout); }
     }
+    async sheets(item) {
+      let cursor=0, failure;
+      const worker=async () => {
+        while (!failure && cursor<item.data.sheets.length) {
+          const index=cursor++;
+          if (item.blobs.has(index)) continue;
+          try {
+            const url=new URL(item.data.sheets[index],item.url);
+            url.search=item.url.search;
+            item.blobs.set(index,await this.fetch(url,'blob'));
+            item.available.get(index)?.resolve(item.blobs.get(index));
+            this.playable(item);
+            this.notify(item,'loading');
+          } catch (error) { failure ||= error; }
+        }
+      };
+      // Drain in-flight requests even after a failure. The next project must
+      // never compete with unfinished downloads from the current one.
+      await Promise.all(Array.from({length:Math.min(4,item.data.sheets.length)},worker));
+      if (failure) throw failure;
+    }
     async pump() {
       if (!this.started || this.busy) return;
       this.busy=true;
       try {
         let item;
         while ((item=this.ordered().find(record=>record.state === 'waiting'))) {
+          item.startedAt=Date.now();
           this.notify(item,'loading');
           try {
             if (!item.data) {
@@ -434,23 +491,27 @@
             }
             item.manifest.resolve(item.data);
             this.notify(item,'loading');
-            for (let index=0;index<item.data.sheets.length;index++) {
-              if (!item.blobs.has(index)) {
-                const url=new URL(item.data.sheets[index],item.url);
-                url.search=item.url.search;
-                item.blobs.set(index,await this.fetch(url,'blob'));
-                this.notify(item,'loading');
-              }
-            }
+            if (item.kind === 'video') {
+              if (!item.blobs.has(0)) item.blobs.set(0,await this.fetch(item.url,'blob'));
+              item.objectURL ||= URL.createObjectURL(item.blobs.get(0));
+            } else await this.sheets(item);
+            item.canPlay=true;item.playable.resolve(item.data);
             this.notify(item,'ready');
             item.complete.resolve(item.data);
           } catch (error) {
+            item.error=error;
             this.notify(item,'error');
-            item.manifest.reject(error); item.complete.reject(error);
+            item.manifest.reject(error); item.playable.reject(error);item.complete.reject(error);
+            for (const pending of item.available.values()) pending.reject(error);
             // A failed upper preview must not block the remaining projects.
           }
         }
-      } finally { this.busy=false; }
+      } finally {
+        this.busy=false;
+        if (!this.ordered().some(item=>item.state==='waiting' || item.state==='loading')) {
+          for (const callback of this.details.splice(0)) callback();
+        }
+      }
     }
   }
   window.PortfolioPreviewLoads=new PreviewLoadQueue();
@@ -480,7 +541,8 @@
         canvas.dataset.previewBuffer = item.state;
         canvas.dataset.previewLoadedSheets = String(item.blobs.size);
         canvas.dataset.previewTotalSheets = String(item.data?.sheets.length || 0);
-        callbacks.buffering?.(item.state, item.data);
+        canvas.dataset.previewPlayable=String(item.canPlay);
+        callbacks.buffering?.(item.state, item.data, item.canPlay);
       });
     }
     async manifest() {
@@ -498,20 +560,21 @@
       if (this.images.has(index)) return Promise.resolve(this.images.get(index));
       if (this.pending.has(index)) return this.pending.get(index);
       const epoch = this.epoch;
-      const url = URL.createObjectURL(this.resource.blobs.get(index));
       const image = new Image();
       image.decoding = 'async';
-      const pending = new Promise((resolve, reject) => {
+      let url;
+      const pending = window.PortfolioPreviewLoads.sheet(this.resource,index).then(blob=>new Promise((resolve, reject) => {
+        url = URL.createObjectURL(blob);
         image.onload = () => resolve(image);
         image.onerror = () => reject(new Error('Preview frame unavailable'));
         image.src = url;
-      }).then(async image => {
+      })).then(async image => {
         if (typeof image.decode === 'function') await image.decode();
         // A paused/closed gallery must not retain decoded offscreen atlases.
         if (this.running && epoch === this.epoch) this.images.set(index, image);
         return image;
       }).finally(() => {
-        URL.revokeObjectURL(url);
+        if (url) URL.revokeObjectURL(url);
         if (this.pending.get(index) === pending) this.pending.delete(index);
       });
       this.pending.set(index, pending);
@@ -523,7 +586,7 @@
       const epoch = ++this.epoch;
       this.last = null;
       window.PortfolioPreviewLoads.request(this.resource);
-      Promise.all([this.manifest(), this.resource.complete.promise]).then(([data]) => {
+      Promise.all([this.manifest(), this.resource.playable.promise]).then(([data]) => {
         if (this.running && epoch === this.epoch) {
           if (skipCover) this.elapsed = data.replayStart || 0;
           this.tick();
@@ -652,6 +715,145 @@
   window.PortfolioFramePlayer = PreviewFramePlayer;
 })();
 
+/* Decode the smaller MP4 into Canvas. The detached, muted inline decoder has
+   no visible native controls or hit area. List/gallery share one cached Blob. */
+(() => {
+  class PreviewVideoPlayer {
+    constructor(canvas,url,callbacks) {
+      this.canvas=canvas;this.callbacks=callbacks;
+      this.context=canvas.getContext('2d',{alpha:false});
+      this.running=false;this.drawn=false;this.elapsed=0;this.round=0;
+      this.epoch=0;this.raf=0;this.last=null;this.hold=0;
+      this.loop=canvas.dataset.previewLoop==='true';
+      this.data={duration:Number(canvas.dataset.previewDuration),replayStart:Number(canvas.dataset.previewReplayStart)||0,
+        loopIntroExtra:Number(canvas.dataset.previewLoopIntroExtra)||0,width:canvas.width,height:canvas.height};
+      this.resource=window.PortfolioPreviewLoads.registerVideo(new URL(url,document.baseURI),
+        Number(canvas.dataset.previewLoadOrder),this.data);
+      window.PortfolioPreviewLoads.subscribe(this.resource,item=>{
+        canvas.dataset.previewBuffer=item.state;
+        canvas.dataset.previewLoadedSheets=String(item.blobs.size);
+        canvas.dataset.previewTotalSheets='1';
+        canvas.dataset.previewPlayable=String(item.canPlay);
+        callbacks.buffering?.(item.state,item.data,item.canPlay);
+      });
+      callbacks.time?.(0,this.duration());
+    }
+    async decoder() {
+      if (this.video?.readyState>=2) return this.video;
+      if (this.loading) return this.loading;
+      this.loading=this.resource.complete.promise.then(()=>new Promise((resolve,reject)=>{
+        const video=this.video ||= document.createElement('video');
+        video.muted=true;video.defaultMuted=true;video.playsInline=true;
+        video.controls=false;video.preload='auto';
+        video.disablePictureInPicture=true;video.disableRemotePlayback=true;
+        video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
+        video.setAttribute('controlslist','nodownload nofullscreen noremoteplayback');
+        const done=()=>{
+          cleanup();
+          this.canvas.width=video.videoWidth;this.canvas.height=video.videoHeight;
+          resolve(video);
+        };
+        const error=()=>{cleanup();reject(new Error('Preview decoder unavailable'))};
+        const cleanup=()=>{video.removeEventListener('loadeddata',done);video.removeEventListener('error',error)};
+        video.addEventListener('loadeddata',done,{once:true});video.addEventListener('error',error,{once:true});
+        video.src=this.resource.objectURL;video.load();
+        // Some phone browsers defer decoded data until play(), even for a
+        // completely cached Blob. Prime the muted inline decoder to avoid a
+        // loadeddata/play deadlock; no frame is shown until the Canvas draws.
+        video.play().then(()=>{
+          if (!this.running) video.pause();
+          if (video.readyState>=2) done();
+        }).catch(error);
+      })).catch(error=>{this.loading=null;throw error});
+      return this.loading;
+    }
+    play({skipCover=false}={}) {
+      if (this.running) return;
+      this.running=true;this.last=null;
+      const epoch=++this.epoch;
+      window.PortfolioPreviewLoads.request(this.resource);
+      this.decoder().then(async video=>{
+        if (!this.running || epoch!==this.epoch) return;
+        if (skipCover) { this.hold=0;this.elapsed=this.data.replayStart;await this.position(this.elapsed); }
+        if (!this.running || epoch!==this.epoch) return;
+        if (!this.hold) await video.play();
+        if (this.running && epoch===this.epoch) this.tick();else if (!this.running) video.pause();
+      }).catch(error=>{if(this.running && epoch===this.epoch)this.fail(error)});
+    }
+    position(seconds) {
+      const video=this.video;
+      if (Math.abs(video.currentTime-seconds)<.001 && !video.seeking) return Promise.resolve();
+      return new Promise((resolve,reject)=>{
+        const done=()=>{cleanup();resolve()};
+        const error=()=>{cleanup();reject(new Error('Preview seek unavailable'))};
+        const cleanup=()=>{video.removeEventListener('seeked',done);video.removeEventListener('error',error)};
+        video.addEventListener('seeked',done,{once:true});video.addEventListener('error',error,{once:true});
+        video.currentTime=seconds;
+      });
+    }
+    draw() {
+      const video=this.video;
+      if (!video || video.readyState<2 || video.seeking) return;
+      this.context.drawImage(video,0,0,this.canvas.width,this.canvas.height);
+      this.canvas.dataset.previewTime=video.currentTime.toFixed(3);
+      this.canvas.dataset.previewCycleTime=this.elapsed.toFixed(3);
+      this.callbacks.time?.(this.elapsed,this.duration());
+      if (!this.drawn) {this.drawn=true;this.callbacks.playing()}
+    }
+    tick() {
+      this.raf=requestAnimationFrame(now=>{
+        this.raf=0;
+        if (!this.running) return;
+        const video=this.video;
+        if (this.hold>0) {
+          this.hold=Math.max(0,this.hold-(this.last===null?0:Math.max(0,(now-this.last)/1000)));
+          this.elapsed=this.data.loopIntroExtra-this.hold;
+          if (!this.hold) video.play().catch(error=>this.fail(error));
+        } else {
+          this.elapsed=video.currentTime+(this.loop && this.round?this.data.loopIntroExtra:0);
+          if (video.ended) {
+            if (!this.loop) {this.reset();this.callbacks.ended();return}
+            const epoch=this.epoch;
+            ++this.round;this.canvas.dataset.previewLoops=String(this.round);
+            this.hold=this.data.loopIntroExtra;this.elapsed=0;this.last=null;
+            this.position(0).then(()=>{
+              if (!this.running || epoch!==this.epoch) return;
+              if (!this.hold) video.play().catch(error=>this.fail(error));
+              this.tick();
+            }).catch(error=>{if(this.running && epoch===this.epoch)this.fail(error)});
+            return;
+          }
+        }
+        this.last=now;this.draw();
+        if (this.running) this.tick();
+      });
+    }
+    duration() {return this.data.duration+(this.loop && this.round?this.data.loopIntroExtra:0)}
+    async seek(seconds) {
+      if (this.resource.state!=='ready') return;
+      const epoch=this.epoch,serial=this.seekSerial=(this.seekSerial||0)+1;
+      this.elapsed=Math.max(0,Math.min(this.duration()-.001,Number(seconds)||0));
+      const extra=this.loop && this.round?this.data.loopIntroExtra:0;
+      this.hold=Math.max(0,extra-this.elapsed);this.last=null;
+      await this.decoder();await this.position(Math.max(0,this.elapsed-extra));
+      if (epoch===this.epoch && serial===this.seekSerial) this.draw();
+    }
+    pause() {
+      this.running=false;++this.epoch;cancelAnimationFrame(this.raf);this.raf=0;this.last=null;
+      this.video?.pause();
+    }
+    reset() {
+      this.pause();this.elapsed=0;this.drawn=false;this.round=0;this.hold=0;
+      if (this.video) this.video.currentTime=0;
+      this.canvas.dataset.previewTime='0';
+      delete this.canvas.dataset.previewLoops;delete this.canvas.dataset.previewCycleTime;
+      this.callbacks.time?.(0,this.duration());
+    }
+    fail(error) {this.reset();this.callbacks.error(error)}
+  }
+  window.PortfolioVideoPlayer=PreviewVideoPlayer;
+})();
+
 /* First full appearance starts playback. Competition previews finish at their
    cover; the battery method loops until paused offscreen or behind a gallery. */
 (() => {
@@ -741,11 +943,17 @@
     entry.player.play({skipCover:manual});
     label(entry);
   };
+  const pause = entry => {
+    entry.player.pause();
+    if (!entry.player.drawn && entry.canvas.dataset.previewBuffer === 'ready') {
+      entry.media.dataset.previewState='poster';label(entry);
+    }
+  };
   const sync = () => {
     frame = 0;
     for (const entry of entries) {
       const player = entry.player;
-      if (blocked(entry) || (motion.matches && !entry.manual)) { player.pause(); continue; }
+      if (blocked(entry) || (motion.matches && !entry.manual)) { pause(entry); continue; }
       if (entry.userPaused) continue;
       if (entry.finished || entry.needsManual) continue;
       const box = viewport(entry.popup);
@@ -754,22 +962,24 @@
       if (!entry.started) {
         const complete = rect.width>0 && rect.height>0 && rect.top>=box.top-.5 && rect.left>=box.left-.5 && rect.bottom<=box.bottom+.5 && rect.right<=box.right+.5;
         if (complete) play(entry);
-        else player.pause();
-      } else if (visible < .15) player.pause();
+        else pause(entry);
+      } else if (visible < .15) pause(entry);
       else if (!player.running) play(entry);
     }
   };
   const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
   for (const entry of entries) {
     const canvas = entry.canvas;
-    entry.player = new window.PortfolioFramePlayer(canvas, canvas.dataset.previewSequence, {
-      buffering(state,data) {
+    const Player=canvas.dataset.previewVideo?window.PortfolioVideoPlayer:window.PortfolioFramePlayer;
+    entry.player = new Player(canvas, canvas.dataset.previewVideo || canvas.dataset.previewSequence, {
+      buffering(state,data,canPlay) {
         entry.media.dataset.previewBuffer = state;
         const indicator = entry.media.querySelector('.preview-loading-indicator');
         indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
         if (entry.seek) entry.seek.disabled = state !== 'ready';
-        if (entry.toggle) entry.toggle.disabled = state === 'waiting' || state === 'loading';
+        if (entry.toggle) entry.toggle.disabled = !canPlay && (state === 'waiting' || state === 'loading');
         if (data && entry.seek) entry.seek.max=String(data.duration);
+        if (state === 'ready' && entry.player && !entry.player.running && !entry.player.drawn) entry.media.dataset.previewState='poster';
         if (entry.player) label(entry);
       },
       time(seconds,duration) {

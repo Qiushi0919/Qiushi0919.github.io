@@ -55,6 +55,7 @@ def render(name, source):
                     'width': width,
                     'height': height, 'columns': COLUMNS, 'tilesPerSheet': TILES,
                     'frames': frames, 'sheets': sheets,
+                    'sheetBytes': [(destination/sheet).stat().st_size for sheet in sheets],
                     'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest()}
         if name == 'battery-method':
             timing = json.loads((source.parent/'preview-timing.json').read_text())

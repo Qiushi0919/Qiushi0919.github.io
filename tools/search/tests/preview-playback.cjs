@@ -36,6 +36,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  const flush=()=>{while(frames.size){const fs=[...frames.values()];frames.clear();fs.forEach(f=>f())}};
  flush();
  return {canvas,player,media,control,attrs,label,rootClasses,bodyClasses,motion,document,overlay,toggle,time,
+  get toggleDisabled(){return toggle.disabled},get seekDisabled(){return range.disabled},
   toggle(){toggleEvents.click({stopPropagation(){}});flush()},
   seek(value){transportEvents.pointerdown();range.value=String(value);transportEvents.input();transportEvents.change();flush()},
   move(t,b){rect={...rect,top:t,bottom:b,height:b-t};docEvents.scroll();flush()},
@@ -74,5 +75,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  const controls=scenario({popup:true,open:true,top:100,bottom:400,transport:true,noControl:true});controls.toggle();assert.equal(controls.player.running,false);controls.seek(6);await Promise.resolve();assert.equal(controls.player.currentTime,6);assert.equal(controls.player.running,false);controls.changed();assert.equal(controls.player.running,false);controls.toggle();assert.equal(controls.player.running,true);assert.equal(controls.player.currentTime,6);n++;
  controls.seek(9);await Promise.resolve();assert.equal(controls.player.currentTime,9);assert.equal(controls.player.running,true);assert.equal(controls.time.textContent,'0:09 / 0:12');n++;
  const boot=scenario({top:100,bottom:400});boot.rootClasses.add('portfolio-loading');boot.changed();assert.equal(boot.player.running,false);boot.rootClasses.delete('portfolio-loading');boot.changed();assert.equal(boot.player.running,true);n++;
+ const buffering=scenario({popup:true,open:true,top:100,bottom:400,transport:true,noControl:true,defer:true});buffering.player.callbacks.buffering('loading',{duration:12},false);assert.equal(buffering.toggleDisabled,true);assert.equal(buffering.seekDisabled,true);buffering.player.drawn=true;buffering.player.callbacks.playing();buffering.player.callbacks.buffering('loading',{duration:12},true);assert.equal(buffering.toggleDisabled,false);assert.equal(buffering.seekDisabled,true);buffering.toggle();assert.equal(buffering.player.running,false);buffering.player.callbacks.buffering('ready',{duration:12},true);assert.equal(buffering.seekDisabled,false);n++;
+ const readyWhileHidden=scenario({top:100,bottom:400,defer:true});readyWhileHidden.bodyClasses.add('overlay-active');readyWhileHidden.changed();readyWhileHidden.canvas.dataset.previewBuffer='ready';readyWhileHidden.player.callbacks.buffering('ready',{duration:12},true);assert.equal(readyWhileHidden.media.dataset.previewState,'poster');assert.equal(readyWhileHidden.attrs['aria-busy'],'false');assert.equal(readyWhileHidden.label.textContent,'播放');n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and frame loading failure'}));
 })();
