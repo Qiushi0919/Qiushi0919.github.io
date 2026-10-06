@@ -59,9 +59,10 @@ def main():
     source = ROOT / 'source/project-previews'
     intel = source / 'intelcup-2026'
     files = [intel/'inputs'/name for name in INTEL_FILES]
-    durations = [round(float(probe(path)[0]['format']['duration'])*FPS)/FPS for path in files]
+    original_durations = [float(probe(path)[0]['format']['duration']) for path in files]
+    durations = [4,4,3,3,round(original_durations[4]*FPS)/FPS,3]
     inputs = [['-i', str(path)] for path in files]
-    filters = [f'[{i}:v]fps={FPS},scale=1080:720:force_original_aspect_ratio=decrease,pad=1080:720:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,trim=duration={d},settb=1/{FPS},setpts=PTS-STARTPTS[v{i}]' for i,d in enumerate(durations)]
+    filters = [f'[{i}:v]setpts=(PTS-STARTPTS)*{d/original_durations[i]:.12f},fps={FPS},scale=1080:720:force_original_aspect_ratio=decrease,pad=1080:720:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,tpad=stop_mode=clone:stop_duration=0.1,trim=duration={d},settb=1/{FPS},setpts=PTS-STARTPTS[v{i}]' for i,d in enumerate(durations)]
     transitions, label, duration = cyclic_fades([f'v{i}' for i in range(6)], durations)
     filters += transitions
     video = intel / 'preview-sequence.mp4'
@@ -69,24 +70,24 @@ def main():
     (intel/'sequence-sources.json').write_text(json.dumps({'dimensions':[1080,720], 'fps':FPS,
         'fade_seconds':FADE,'duration_seconds':duration,'sound':False,
         'fit':'contain with white padding; no cropping or stretching',
-        'order':INTEL_FILES,'inputs':[record(path) for path in files]},indent=2)+'\n')
+        'order':INTEL_FILES,'scene_duration_seconds':durations,'original_duration_seconds':original_durations,'retiming':'complete original clips; speed adjusted to target duration','inputs':[record(path) for path in files]},indent=2)+'\n')
     print(json.dumps({'intel':str(video),'duration':duration,'bytes':video.stat().st_size}),flush=True)
     public = ROOT.parent / 'project-sites/nuedc-c/website/public'
     cfiles = [public/'images/test-integrated.jpg',public/'images/software-unlock.png',
               public/'report/pdoa-principle.png',public/'report/program-flow.png']
-    inputs = [['-loop','1','-framerate',str(FPS),'-t','4','-i',str(path)] for path in cfiles]
+    inputs = [['-loop','1','-framerate',str(FPS),'-t','3.5','-i',str(path)] for path in cfiles]
     filters = [f'[{i}:v]scale=1280:960:force_original_aspect_ratio=decrease,pad=1280:960:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,settb=1/{FPS},setpts=PTS-STARTPTS[v{i}]' for i in range(2)]
     filters += [f'[2:v]scale=716:936:force_original_aspect_ratio=decrease,pad=736:960:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,settb=1/{FPS},setpts=PTS-STARTPTS[left]',
                 f'[3:v]scale=520:936:force_original_aspect_ratio=decrease,pad=544:960:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,settb=1/{FPS},setpts=PTS-STARTPTS[right]',
                 '[left][right]hstack=inputs=2[v2]']
-    transitions, label, duration = cyclic_fades(['v0','v1','v2'], [4,4,4])
+    transitions, label, duration = cyclic_fades(['v0','v1','v2'], [3.5,3.5,3.5])
     filters += transitions
     video = source/'nuedc-c/preview-sequence.mp4'
     encode(inputs, filters, label, duration, video)
     (video.parent/'sequence-sources.json').write_text(json.dumps({'dimensions':[1280,960],
         'fps':FPS,'fade_seconds':FADE,'duration_seconds':duration,'sound':False,
         'order':['Complete hardware','Unlock interface','PDoA principle left / control loop right'],
-        'fit':'contain; original figures retained in full', 'inputs':[record(path) for path in cfiles]},indent=2)+'\n')
+        'scene_duration_seconds':[3.5,3.5,3.5],'fit':'contain; original figures retained in full', 'inputs':[record(path) for path in cfiles]},indent=2)+'\n')
     print(json.dumps({'c_topic':str(video),'duration':duration,'bytes':video.stat().st_size}),flush=True)
 
 

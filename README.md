@@ -435,14 +435,52 @@ Each sequence has a `sequence-sources.json` provenance record. The build exclude
 input caches and copies only the output videos/posters and existing public assets.
 
 Competition card and portfolio detail headers use the user-confirmed roster in
-`source/competition-teams.json`, with † for team leads and ‡ for advisors; former
-award, role and event/date header lines are removed. Challenge Cup follows the
+`source/competition-teams.json`, with ‡ for team leads and * for advisors; former
+role lines are replaced by the roster; the event/date line now incorporates
+the source-confirmed awards, following the user’s correction. Challenge Cup follows the
 two supplied slides in order, led by Tianyang Lu. Embedded members are Qiushi Xie,
-Yutong Bai and Jinghuan Xiao; Yujiang Zeng is their advisor. VaseMuseum uses * for
-equal contribution, † for project lead Zeyu Zhang and ‡ for correspondence,
+Yutong Bai and Jinghuan Xiao; Yujiang Zeng is their advisor. VaseMuseum uses † for
+equal contribution, ‡ for project lead Zeyu Zhang and * for correspondence,
 retaining the established author order. Detail pages explain the markers.
 
 `source/competition-presentation.css` increases the expanded-gallery close
 glyph by 50% on desktop, tablets and portrait phones, retaining its existing
 48px touch target and leaving contact dialogs unchanged. Validation and release
 records are in `docs/competition-sequences-teams-20261006/`.
+
+### White competition covers and Large view playback (2026-10-06)
+
+The final user-selected convention is † equal contribution, ‡ team/project lead,
+* advisor/corresponding author. It applies to both languages, rosters, detail-page
+legends and cover names. VaseMuseum preserves its existing author order.
+
+`render_competition_covers.cjs` creates six white bilingual SVG/JPEG covers using
+unchanged originals, with provenance/SHA-256 in
+`source/project-previews/inputs/cover-sources.json`. Install `sharp` through npm if
+unavailable, then run `node render_competition_covers.cjs`. The local renderer
+uses Times New Roman and PingFang SC as the macOS fallback for Microsoft YaHei;
+set `FONTCONFIG_FILE` if the renderer cannot discover installed fonts. C-topic
+uses the complete integrated hardware and unchanged running interface selected
+by the user. Embedded uses the supplied RA6M5 board photograph on the left and
+the original prediction plot on the right. Students and advisors share one
+cover-name line, with small raised ‡ and * marks. No demo values become metrics.
+
+Run `python3 prepend_competition_covers.py` after rendering. It composes the
+complete original Intel clips and C figures directly, with a 1.5-second cover
+hold, 0.5-second crossfades and a fade back to the cover. After the user’s speed
+revision, Intel scenes are 4/4/3/3/1.9583/3 seconds
+(full clips retimed); C scenes are each 3.5 seconds. Including covers and
+overlapping fades, total durations are 17.9583s and 11s. Embedded uses a still
+cover; expanded galleries retain their original media.
+
+`source/preview-playback.js` and `.css` control only list preview videos. In Large
+view, each starts at zero after its first full appearance below the sticky bars,
+then resumes normally when visible. Until qualification, an explicit poster
+layer hides decoded frames even if Overview previously played that video.
+Overview and desktop retain autoplay at 15% visibility. Reduced motion keeps a
+poster, hidden tabs/offscreen previews pause, and an open gallery pauses the
+background previews. Switching keeps the current project and waits for its
+scroll restoration before checking visibility. No global viewport is modified.
+
+Build and check with `python3 build_site.py` and `python3 check_site.py`.
+Release, verification and preview records: `docs/large-preview-covers-20261006/`.

@@ -1,0 +1,7 @@
+/* This poster layer also restores a still after a preview has played in Overview. */
+[data-preview-motion]{position:relative}
+[data-preview-motion]>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:1}
+[data-preview-motion][data-preview-state="playing"]>.preview-poster{visibility:hidden}
+[data-preview-motion]>.cover-zoom-hint{z-index:2}
+
+html.work-mobile .work-collection[data-work-view="large"] [data-preview-motion]>img.preview-poster{height:100%!important}

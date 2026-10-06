@@ -5,12 +5,17 @@
   ],
   "fps": 24,
   "fade_seconds": 0.5,
-  "duration_seconds": 10.5,
+  "duration_seconds": 9.0,
   "sound": false,
   "order": [
     "Complete hardware",
     "Unlock interface",
     "PDoA principle left / control loop right"
+  ],
+  "scene_duration_seconds": [
+    3.5,
+    3.5,
+    3.5
   ],
   "fit": "contain; original figures retained in full",
   "inputs": [

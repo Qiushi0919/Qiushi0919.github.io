@@ -11,3 +11,6 @@
 }
 html.portrait-phone .feature-overlay .close{font-size:0}
 html.portrait-phone .feature-overlay .close::before{font-size:calc(33px / var(--portrait-ui-scale))}
+
+/* Keep the event/date row and integrate the source-confirmed award into it. */
+.work-list-card .competition-award{color:#945a2d;font-weight:600}

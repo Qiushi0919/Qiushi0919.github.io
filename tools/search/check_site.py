@@ -51,6 +51,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert 'position:sticky;top:0' in styles and 'Times New Roman' in styles
             continue
         count += 1
+        language = 'zh' if tree.get('lang') == 'zh-CN' else 'en'
         assert len(tree.xpath('//h1')) == 1, str(p)
         phone_canvas = tree.xpath('//head/script[not(@type) and not(@src)]')
         assert len(phone_canvas) == 1 and 'const portraitCanvasWidth = 980' in phone_canvas[0].text, str(p)
@@ -96,19 +97,22 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             members = card.xpath('.//div[contains(@class,"competition-team")]//span[@data-author-name]')
             assert [a.get('data-author-name') for a in members] == [person['zh'] for person in team['members'] + team['advisors']], str(p)
             assert [a.get('data-author-name') for a in members if a.get('data-team-role') == 'leader'] == [team['leader']], str(p)
-            assert len(card.xpath('.//sup[text()="†"]')) == 1, str(p)
-            assert len(card.xpath('.//sup[text()="‡"]')) == len(team['advisors']), str(p)
-            assert not card.xpath('.//*[contains(concat(" ",@class," ")," project-kicker ")]'), str(p)
+            assert len(card.xpath('.//sup[text()="‡"]')) == 1, str(p)
+            assert not card.xpath('.//sup[text()="†"]'), str(p)
+            assert len(card.xpath('.//sup[text()="*"]')) == len(team['advisors']), str(p)
+            assert len(card.xpath('.//*[contains(concat(" ",@class," ")," project-kicker ")]')) == 1, str(p)
+            if card.get('id') != 'lowcomProjectCard' or team.get('award'):
+                assert len(card.xpath('.//span[@class="competition-award"]')) == 1, str(p)
         for trigger, project, dimensions in [('coverTrigger','intelcup-2026',['1080','720']), ('nuedcCoverTrigger','nuedc-c',['1280','960'])]:
             for video in tree.xpath(f'//*[@id="{trigger}"]/video'):
-                assert video.get('data-src') == f'/assets/portfolio-cover/{project}/preview-sequence.mp4', str(p)
+                assert video.get('data-src') == f'/assets/portfolio-cover/{project}/preview-with-cover-{language}.mp4', str(p)
                 assert [video.get('width'),video.get('height')] == dimensions, str(p)
                 assert all(attribute in video.attrib for attribute in ('muted','loop','playsinline','data-preview-auto')), str(p)
-                assert video.get('poster') == f'/assets/portfolio-cover/{project}/preview-sequence.jpg', str(p)
+                assert video.get('poster') == f'/assets/portfolio-cover/{project}/cover-{language}.jpg', str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Zeyu Zhang"]'):
-            assert author.xpath('./sup/text()') == ['*','†'], str(p)
+            assert author.xpath('./sup/text()') == ['†','‡'], str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Hao Tang"]'):
-            assert author.xpath('./sup/text()') == ['‡'], str(p)
+            assert author.xpath('./sup/text()') == ['*'], str(p)
         if urlsplit(canonical).path in ('/', '/about/'):
             assert len(tree.xpath('//section[@class="profile-section"]')) == 1
         else:

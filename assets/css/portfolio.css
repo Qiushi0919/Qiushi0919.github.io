@@ -402,6 +402,16 @@ html.work-mobile .work-collection[data-work-view="large"] .cover-zoom-hint{width
 }
 html.portrait-phone .feature-overlay .close{font-size:0}
 html.portrait-phone .feature-overlay .close::before{font-size:calc(33px / var(--portrait-ui-scale))}
+
+/* Keep the event/date row and integrate the source-confirmed award into it. */
+.work-list-card .competition-award{color:#945a2d;font-weight:600}
+/* This poster layer also restores a still after a preview has played in Overview. */
+[data-preview-motion]{position:relative}
+[data-preview-motion]>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:1}
+[data-preview-motion][data-preview-state="playing"]>.preview-poster{visibility:hidden}
+[data-preview-motion]>.cover-zoom-hint{z-index:2}
+
+html.work-mobile .work-collection[data-work-view="large"] [data-preview-motion]>img.preview-poster{height:100%!important}
 /* Latin glyphs use Times New Roman; CJK glyphs fall through to Microsoft YaHei.
    System fallbacks cover devices that do not have these fonts installed. */
 :root{--site-font:"Times New Roman",Times,"Microsoft YaHei","微软雅黑","Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",serif}

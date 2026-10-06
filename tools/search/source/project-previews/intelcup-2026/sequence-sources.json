@@ -5,7 +5,7 @@
   ],
   "fps": 24,
   "fade_seconds": 0.5,
-  "duration_seconds": 32.5,
+  "duration_seconds": 15.958333333333334,
   "sound": false,
   "fit": "contain with white padding; no cropping or stretching",
   "order": [
@@ -16,6 +16,23 @@
     "gesture-gaze.mp4",
     "text-recognition.mp4"
   ],
+  "scene_duration_seconds": [
+    4,
+    4,
+    3,
+    3,
+    1.9583333333333333,
+    3
+  ],
+  "original_duration_seconds": [
+    12.0,
+    11.8,
+    3.5,
+    3.0,
+    1.95,
+    3.25
+  ],
+  "retiming": "complete original clips; speed adjusted to target duration",
   "inputs": [
     {
       "path": "homepage/source/project-previews/intelcup-2026/inputs/flight-summary.mp4",

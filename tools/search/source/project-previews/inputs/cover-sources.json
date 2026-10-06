@@ -1,0 +1,83 @@
+{
+  "hust": {
+    "path": "source/project-previews/inputs/hust.png",
+    "url": "https://qiushi0919.cn/assets/hust_logo.png",
+    "sha256": "86e9ef84d69cc01a8e0deaaa2bfc9e59a3c9fa30ddee5eb555781758068d6c05"
+  },
+  "intel-logo": {
+    "path": "source/project-previews/inputs/intel-logo.webp",
+    "url": "https://qiushi0919.cn/assets/figures/fig_01.webp",
+    "sha256": "c6dd94d962f58f0ee8668c2240eaeb7bef6170d7e9807cc8173e52dbf7f10aa9"
+  },
+  "dk2500": {
+    "path": "source/project-previews/inputs/dk2500.webp",
+    "url": "https://qiushi0919.cn/assets/hardware/dk2500-cutout.webp",
+    "sha256": "329674eef9d1d1aed5e7706a4a32cd20ac02ac43546cc89d38d4bc36ca1985ea"
+  },
+  "drone": {
+    "path": "source/project-previews/inputs/drone.webp",
+    "url": "https://qiushi0919.cn/assets/hardware/drone-cutout.webp",
+    "sha256": "fedd18ffe2a79577536707d887eaa393fd0ff13e428ef0d50af952dab7c9d479"
+  },
+  "ground-station": {
+    "path": "source/project-previews/inputs/ground-station.png",
+    "url": "https://qiushi0919.github.io/IntelCup-2026/assets/nationals/ground-station-overview.png",
+    "sha256": "b41bf5d3d23c724b3844e9cb00a89229c8e2761308eae395265bfabb72ad18c1"
+  },
+  "nuedc-logo": {
+    "path": "source/project-previews/inputs/nuedc-logo.png",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/nuedc-c/nuedc-badge.png",
+    "sha256": "045d88478aae44cddcfb87e77f03b2c96b0f28e342a9eec01813a50a2bd9a636"
+  },
+  "key": {
+    "path": "source/project-previews/inputs/key.jpg",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/nuedc-c/digital-key.jpg",
+    "sha256": "7fbb2fc4bdecf71bde05a4d65dcb330b8d8b5e0b42b6893ba9fe9ad894c526f8"
+  },
+  "c-system": {
+    "path": "source/project-previews/inputs/c-system.webp",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/nuedc-c/system-overview.webp",
+    "sha256": "420ec0cc6b490928baa4ea67c716b60c176764c8a88b06028d6a3e8ddba2e42f"
+  },
+  "c-software": {
+    "path": "source/project-previews/inputs/c-software.png",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/nuedc-c/software-unlock.png",
+    "sha256": "664395fa5bfaad020063b9ac77c448bf610c9c8a42012e6fa4c85da573b1cc60"
+  },
+  "embedded-logo": {
+    "path": "source/project-previews/inputs/embedded-logo.png",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/embedded-2025/competition-logo.png",
+    "sha256": "7aee1aadd48d4569faaf8c07b0be82a92c0eccfc3add678083d6c0df94e358e1"
+  },
+  "renesas": {
+    "path": "source/project-previews/inputs/renesas.png",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/embedded-2025/renesas-logo.png",
+    "sha256": "6a4925e47400d265d80a71789cee569351afd8e2cfe1f59b828d71031249c67f"
+  },
+  "embedded-prototype": {
+    "path": "source/project-previews/inputs/embedded-prototype.webp",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/embedded-2025/compact-prototype.webp",
+    "sha256": "a11dff57bd9ae7f2648329d3f26c96383ab3841d8ad30623921f761c692146b3"
+  },
+  "embedded-internal": {
+    "path": "source/project-previews/inputs/embedded-internal.webp",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/embedded-2025/compact-internal.webp",
+    "sha256": "eb52bc860d133330483b2c8642351d60a36b1ed8a31ba82b221a918edeafcc62"
+  },
+  "embedded-curve": {
+    "path": "source/project-previews/inputs/embedded-curve.png",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/embedded-2025/prediction-curve.png",
+    "sha256": "3ed8f55ddb64b277bcaf23e49b7377d2b99bc35710fc084d6a08615b4b3747e4"
+  },
+  "embedded-board": {
+    "path": "source/project-previews/inputs/embedded-board.webp",
+    "url": "https://qiushi0919.cn/assets/portfolio-cover/embedded-2025/finals-dual-board.webp",
+    "sha256": "71ab5bf7d2581573d4c9a883eeb921e7c73e360612ff05f0037e28b125594733"
+  },
+  "ra6m5-board": {
+    "path": "source/project-previews/inputs/ra6m5-board.png",
+    "url": null,
+    "sha256": "8906eeddc71a9139a93b31130bf1955d3b41fa45791d4382612b976b23f6a641",
+    "evidence": "User-selected RA6M5 board image, 2026-10-06"
+  }
+}

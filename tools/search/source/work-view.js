@@ -27,6 +27,7 @@
     const safeTop = nav && getComputedStyle(nav).position === 'sticky' ? nav.getBoundingClientRect().height : 0;
     collection.style.setProperty('--work-nav-offset', `${safeTop}px`);
     collection.style.setProperty('--work-bar-height', `${toolbar.getBoundingClientRect().height}px`);
+    window.dispatchEvent(new Event('portfolio:workviewchange'));
   };
   const apply = () => {
     collection.dataset.workView = view;
@@ -45,9 +46,28 @@
     if (rect.top < line && rect.bottom - line < 44 / scale && cards[index+1]) return cards[index+1];
     return candidate;
   };
+  let inputAnchor, restoredAnchor;
+  // Focusing a radio inside a sticky bar can scroll its original flow box into
+  // view before change fires. Capture the reading position before that focus.
+  toolbar.addEventListener('pointerdown', event => {
+    const option = event.target.closest('.work-view-option');
+    if (!option) return;
+    inputAnchor = {card:currentCard(), time:performance.now()};
+    event.preventDefault();
+    option.querySelector('input')?.focus({preventScroll:true});
+  });
+  toolbar.addEventListener('keydown', event => {
+    if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End',' '].includes(event.key)) {
+      inputAnchor = {card:currentCard(), time:performance.now()};
+    }
+  });
   radios.forEach(radio => radio.addEventListener('change', () => {
     if (!radio.checked || radio.value === view) return;
-    const anchor = currentCard();
+    // A short Overview list may reach the page bottom before the selected card
+    // can align with the bar. Keep that card for a return switch until scrolling.
+    const anchor = restoredAnchor && Math.abs(window.scrollY-restoredAnchor.y) < 2 ? restoredAnchor.card :
+      inputAnchor && performance.now()-inputAnchor.time < 2000 ? inputAnchor.card : currentCard();
+    inputAnchor = null;
     const token = ++generation;
     view = radio.value;
     used = true;
@@ -60,6 +80,7 @@
       // the same project. Native radio focus remains on the chosen control.
       const top = parseFloat(getComputedStyle(collection).getPropertyValue('--work-nav-offset')) + toolbar.getBoundingClientRect().height + 8;
       window.scrollBy({top:anchor.getBoundingClientRect().top - top, behavior:'instant'});
+      restoredAnchor = {card:anchor, y:window.scrollY};
     });
   }));
   let resizeFrame;

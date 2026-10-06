@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'competition-sequences-teams-20261006'
+VERSION = 'large-preview-covers-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -101,6 +101,7 @@ def format_competition_team(card, language):
     team = COMPETITION_TEAMS[card.get('id')]
     copy = card.xpath('.//div[contains(concat(" ",@class," ")," work-copy ")]')[0]
     meta = copy.xpath('./div[@class="project-meta"]')[0]
+    award = ''.join(meta.find('p').itertext()).strip() if card.get('id') != 'lowcomProjectCard' else team.get('award', {}).get(language, '')
     meta.set('class', 'project-meta competition-team')
     for child in list(meta): meta.remove(child)
     roster = element('p', **{'class':'paper-authors project-authors'})
@@ -114,14 +115,16 @@ def format_competition_team(card, language):
         else: author.text = person[language]
         if role in ('leader','advisor'):
             meaning = {'leader':('队长','Team lead'),'advisor':('指导教师','Advisor')}[role][0 if language == 'zh' else 1]
-            author.append(element('sup', '†' if role == 'leader' else '‡', title=meaning, aria_label=meaning))
+            author.append(element('sup', '‡' if role == 'leader' else '*', title=meaning, aria_label=meaning))
         if index < len(all_people)-1: author.tail = ', '
         roster.append(author)
     meta.append(roster)
     for kicker in copy.xpath('./*[contains(concat(" ",@class," ")," project-kicker ")]'):
-        copy.remove(kicker)
+        if award:
+            suffix = element('span', ' · ' + award, **{'class':'competition-award'})
+            (kicker[0] if 'kicker-lines' in kicker.get('class', '') and len(kicker) else kicker).append(suffix)
     if card.xpath('./div[@class="work-detail-media"]'):
-        note = element('p', '† 队长 · ‡ 指导教师' if language == 'zh' else '† Team lead · ‡ Advisor', **{'class':'team-symbol-note'})
+        note = element('p', '‡ 队长 · * 指导教师' if language == 'zh' else '‡ Team lead · * Advisor', **{'class':'team-symbol-note'})
         card.xpath('./div[@class="work-detail-media"]')[0].insert(0, note)
 
 
@@ -133,21 +136,21 @@ def format_vase_contributions(tree, language, is_detail):
         name = author.get('data-author-name')
         for mark in author.findall('sup'):
             if name == 'Hao Tang':
-                mark.text = '‡'
+                mark.text = '*'
                 meaning = '通讯作者' if language == 'zh' else 'Corresponding author'
             else:
-                mark.text = '*'
+                mark.text = '†'
                 meaning = '共同第一作者' if language == 'zh' else 'Equal contribution'
             mark.set('title', meaning); mark.set('aria-label', meaning)
         if name == 'Zeyu Zhang':
             meaning = '项目负责人' if language == 'zh' else 'Project lead'
-            author.append(element('sup', '†', title=meaning, aria_label=meaning))
+            author.append(element('sup', '‡', title=meaning, aria_label=meaning))
     if is_detail:
         affiliations = card.xpath('.//div[@class="paper-affiliations"]')[0]
-        affiliations.insert(0, element('p', '* 共同第一作者 · † 项目负责人 · ‡ 通讯作者' if language == 'zh' else '* Equal contribution · † Project lead · ‡ Corresponding author', **{'class':'paper-symbol-note'}))
+        affiliations.insert(0, element('p', '† 共同第一作者 · ‡ 项目负责人 · * 通讯作者' if language == 'zh' else '† Equal contribution · ‡ Project lead · * Corresponding author', **{'class':'paper-symbol-note'}))
 
 
-def format_project_list(card, is_detail):
+def format_project_list(card, is_detail, language):
     """Use the publication layout while retaining original content and destinations."""
     card.set('class', card.get('class', '') + ' work-list-card')
     copy = card.xpath('./div[contains(concat(" ",@class," ")," project-copy ")]')[0]
@@ -171,10 +174,10 @@ def format_project_list(card, is_detail):
         video.attrib.pop('src', None)
         video.attrib.pop('autoplay', None)
         video.set('class', 'competition-preview-video')
-        video.set('data-src', 'assets/portfolio-cover/intelcup-2026/preview-sequence.mp4')
+        video.set('data-src', f'assets/portfolio-cover/intelcup-2026/preview-with-cover-{language}.mp4')
         video.set('data-preview-auto', '')
         video.set('aria-label', 'Intel Cup sequential demo preview')
-        video.set('poster', 'assets/portfolio-cover/intelcup-2026/preview-sequence.jpg')
+        video.set('poster', f'assets/portfolio-cover/intelcup-2026/cover-{language}.jpg')
     else:
         preview = card.find('button')
         # Dense carousels remain in the full preview; the list shows one clear work image.
@@ -183,11 +186,11 @@ def format_project_list(card, is_detail):
                 if 'cover-zoom-hint' not in child.get('class', ''):
                     preview.remove(child)
             preview.insert(0, element('video', **{'class':'competition-preview-video', 'muted':'', 'loop':'',
-                'playsinline':'', 'preload':'none', 'poster':'assets/portfolio-cover/nuedc-c/preview-sequence.jpg',
-                'data-src':'assets/portfolio-cover/nuedc-c/preview-sequence.mp4', 'data-preview-auto':'',
+                'playsinline':'', 'preload':'none', 'poster':f'assets/portfolio-cover/nuedc-c/cover-{language}.jpg',
+                'data-src':f'assets/portfolio-cover/nuedc-c/preview-with-cover-{language}.mp4', 'data-preview-auto':'',
                 'aria-label':'数字钥匙实验系统循环演示'}))
         chosen = {
-            'embeddedProjectCard': ('assets/portfolio-cover/embedded-2025/finals-dual-board.webp', '全国总决赛双板卡演示实物'),
+            'embeddedProjectCard': (f'assets/portfolio-cover/embedded-2025/cover-{language}.jpg', '智能烟雾检测与预测系统组成' if language == 'zh' else 'Smoke detection and prediction system components'),
         }.get(card.get('id'))
         if chosen:
             for child in list(preview):
@@ -402,6 +405,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
 '''
     css += (SOURCE / 'work-view.css').read_text()
     css += (SOURCE / 'competition-presentation.css').read_text()
+    css += (SOURCE / 'preview-playback.css').read_text()
     typography = (SOURCE / 'site-typography.css').read_text()
     css += typography
     scripts = []
@@ -418,30 +422,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             code = code.replace("    window.addEventListener('portfolio:ready', preloadAllProjectMedia, {once:true});\n", '')
         scripts.append(code)
     scripts.append("requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });")
-    scripts.append('''(() => {
-      const videos = [...document.querySelectorAll('video[data-preview-auto]')];
-      if (!videos.length) return;
-      const motion = matchMedia('(prefers-reduced-motion:reduce)');
-      const visible = new Set();
-      const sync = video => {
-        if (!visible.has(video) || document.hidden || motion.matches) { video.pause(); return; }
-        if (!video.getAttribute('src')) { video.src = video.dataset.src; video.preload = 'metadata'; }
-        video.muted = true;
-        video.play().catch(() => {});
-      };
-      if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver(entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting && entry.intersectionRatio >= .15) visible.add(entry.target);
-            else visible.delete(entry.target);
-            sync(entry.target);
-          });
-        }, {threshold:[0,.15]});
-        videos.forEach(video => observer.observe(video));
-      } else { videos.forEach(video => { visible.add(video); sync(video); }); }
-      document.addEventListener('visibilitychange', () => videos.forEach(sync));
-      motion.addEventListener('change', () => videos.forEach(sync));
-    })();''')
+    scripts.append((SOURCE / 'preview-playback.js').read_text())
     scripts.append((SOURCE / 'work-view.js').read_text())
     scripts.append((SOURCE / 'device-preview/frame-context.js').read_text())
     runtime = '\n'.join(scripts)
@@ -530,7 +511,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     for affiliations in tree.xpath('//*[@class="paper-affiliations"]'):
                         affiliations.getparent().remove(affiliations)
                 for card in tree.xpath('//article[@data-work-category="competition" or @data-work-category="side"]'):
-                    format_project_list(card, bool(detail_id))
+                    format_project_list(card, bool(detail_id), language)
                 if language == 'en':
                     translate_tree(tree)
                 for competition in tree.xpath('//article[@data-work-category="competition"]'):
@@ -763,6 +744,12 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         for child in list(copy):
                             if child.tag != 'h2': details.append(child)
                         copy.append(details)
+                for video in tree.xpath('//article[@data-work-category]/button/video[@data-preview-auto]'):
+                    button = video.getparent()
+                    button.set('data-preview-motion', '')
+                    button.set('data-preview-state', 'poster')
+                    poster = element('img', src=video.get('poster'), alt='', **{'class':'preview-poster', 'aria-hidden':'true'})
+                    button.insert(button.index(video)+1, poster)
                 sizes = json.loads((SOURCE / 'work-media-sizes.json').read_text())
                 for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video'):
                     src = (media.get('src') or media.get('data-src') or '').lstrip('/')

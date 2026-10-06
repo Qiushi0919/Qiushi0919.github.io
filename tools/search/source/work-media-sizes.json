@@ -46,5 +46,45 @@
   "assets/portfolio-cover/nuedc-c/preview-sequence.mp4": [
     1280,
     960
+  ],
+  "assets/portfolio-cover/intelcup-2026/cover-zh.jpg": [
+    1080,
+    720
+  ],
+  "assets/portfolio-cover/intelcup-2026/preview-with-cover-zh.mp4": [
+    1080,
+    720
+  ],
+  "assets/portfolio-cover/intelcup-2026/cover-en.jpg": [
+    1080,
+    720
+  ],
+  "assets/portfolio-cover/intelcup-2026/preview-with-cover-en.mp4": [
+    1080,
+    720
+  ],
+  "assets/portfolio-cover/nuedc-c/cover-zh.jpg": [
+    1280,
+    960
+  ],
+  "assets/portfolio-cover/nuedc-c/preview-with-cover-zh.mp4": [
+    1280,
+    960
+  ],
+  "assets/portfolio-cover/nuedc-c/cover-en.jpg": [
+    1280,
+    960
+  ],
+  "assets/portfolio-cover/nuedc-c/preview-with-cover-en.mp4": [
+    1280,
+    960
+  ],
+  "assets/portfolio-cover/embedded-2025/cover-zh.jpg": [
+    1280,
+    960
+  ],
+  "assets/portfolio-cover/embedded-2025/cover-en.jpg": [
+    1280,
+    960
   ]
 }
