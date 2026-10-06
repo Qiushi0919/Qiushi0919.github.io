@@ -26,9 +26,9 @@ are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
 
 Paper cards use an academic publication layout: title, ordered author list,
-venue/year, a brief summary, and outlined publication/code/project links. Qiushi
+venue/month, a brief summary, and compact flat two-part resource labels. Qiushi
 Xie is underlined in the author line; its dagger is outside the underlined name.
-VaseMuseum's buttons read PDF, CODE, Website, Cite; the battery paper has PDF and
+VaseMuseum's resource labels retain PDF, CODE, Website, Cite in that order; the battery paper has PDF and
 Cite. Cite opens an accessible dialog with a readonly BibTeX field, copy feedback,
 and a `.bib` download. Escape, backdrop dismissal and the established close
 control restore focus and the reading position. Direct `.bib` links remain
@@ -43,33 +43,38 @@ Zeyu Zhang, Yang Zhao, Ling Shao and Hao Tang link to their personal homepages;
 Qiushi Xie links to the local-language homepage. Jiazi Wang and Nonghai Zhang
 remain plain names because the project does not supply personal homepages for
 them. The displayed author order still follows the newer user-provided manuscript.
-The arXiv venue line reads "In arXiv, 2026 · Submitted to NMI" in English.
+The single arXiv venue line reads "In arXiv, 2026.07 · Submitted to NMI" in English.
 
 The battery-paper PDF button
 retains the DOI publisher destination, with a labelled SPIE entrance; no public
-direct PDF URL is invented. VaseMuseum's existing pottery icon sits
-immediately to the left of its title; the former large right-side signature
-image is removed. The VaseMuseum author order follows the
+direct PDF URL is invented. Paper titles have no decorative pottery icon.
+The VaseMuseum author order follows the
 user-supplied current manuscript: Qiushi Xie, Jiazi Wang, Nonghai Zhang, Zeyu
 Zhang, Yang Zhao, Ling Shao, Hao Tang. The first four retain the manuscript's
 co-first-author daggers. Its structured data uses that same visible author list;
 "Submitted to NMI" remains a submission status. Battery RUL lists Qiushi Xie,
 matching the publisher's Crossref record (DOI 10.1117/12.3122481).
 The VaseMuseum card omits the former co-first-author/advisor explanatory row.
-The battery card uses the single venue line "In Proc. SPIE, 2026 · EECS 2026",
+The battery card uses the single venue line "In Proc. SPIE, 2026.09 · EECS 2026",
 omitting the former month/volume/article-number/DOI explanatory row. Author
 superscripts remain visible, and the battery DOI is retained in its PDF link
 and BibTeX.
 
-The paper headers replace research-period descriptions with compact colored
-publication badges: `2026.07 · arXiv` for VaseMuseum and `2026.09 · Proc. SPIE` for
-the battery paper. Each badge is centered horizontally above its thumbnail,
-and the university marks remain aligned to the right. These labels identify the preprint/published venue, not a
-claim of NMI acceptance.
+Paper lists omit the independent date-badge/institution header. Publication month,
+venue and status share one line without repeating the date. The left column is
+30% of the row, displaying the existing virtual-museum interface for VaseMuseum
+and NASA B0005 prediction result for the battery paper at their original aspect
+ratios. Thumbnails have no outer border or shadow and a small, muted zoom hint.
+Clicking still opens all original full method/result figures. These cover images
+are selected from existing assets, not cropped, redrawn, stretched, or overwritten.
+The compact split resource tags use a gray label and a colored value; all existing
+hrefs, citation behavior and ordering are retained. Only Qiushi's author name is
+emphasized; the other authors retain normal weight and their existing links.
 
-VaseMuseum's five horizontal university marks are right-aligned on the same
-top row as the publication badge, matching the battery-paper header. They follow the manuscript's numbered
-affiliations: HUST, Beijing Jiaotong, Peking, La Trobe, and UCAS. The BJTU and
+University/publisher marks appear only in the independent paper detail pages,
+below the main paper content. VaseMuseum's horizontal marks retain the manuscript's
+numbered affiliation order: HUST, Beijing Jiaotong, Peking, La Trobe, and UCAS.
+The BJTU and
 PKU horizontal originals are maintained under `tools/search/source/publication-logos/`
 and copied to the public portfolio assets. They were downloaded unchanged from
 [BJTU's official identity page](https://www.bjtu.edu.cn/xxgk/xxbz/index.htm) and
@@ -120,10 +125,10 @@ This uses the bundled `sips` format converter; it does not redraw the artwork.
 
 Portrait phone paper cards use the same compact type scale as the original
 project cards: 12px titles, 11px author/venue lines, and 12px summaries on the
-980px canvas. The pottery title icon scales to 18px × 26px. Paper-card text size
+980px canvas. Paper-card text size
 adjustment is held at 100% to avoid mobile browser text inflation; pinch zoom
 remains enabled. These overrides are scoped to `html.portrait-phone` and leave
-desktop typography, publication badges, link buttons and citation dialogs intact.
+desktop typography and citation dialogs intact.
 The browser behavior is described in [MDN's text-size-adjust reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/text-size-adjust).
 
 Portrait phones retain the original 980px canvas, scaled to fit the screen, so
@@ -160,9 +165,9 @@ normal behavior. Dialogs lock background scrolling, restore the reading position
 and trigger focus on close, and support Escape and backdrop dismissal.
 
 Portfolio controls keep the normal arrow cursor. Contact icons show a shadow on
-hover/focus and cover previews light their magnifier-plus badge. Multi-image
-paper previews use flex panels with absolutely contained images and a 10px
-inner margin, avoiding percentage-height grid overflow in mobile browsers.
+hover/focus and cover previews light their magnifier-plus badge. Paper list
+previews use one responsive image with its natural proportions; full figures are
+available in the existing overlays.
 The QQ penguin uses the user's supplied black-and-white artwork, preserved
 unchanged under `tools/search/source/contact/qq-logo.png`; CSS frames it at icon
 size. The generator copies those contact assets onto both origins.

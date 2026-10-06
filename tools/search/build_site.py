@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'mobile-paper-type-20261006'
+VERSION = 'light-paper-list-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -177,9 +177,7 @@ html.portrait-phone .profile-photo{grid-column:1;grid-row:1 / 5;width:180px;just
 html.portrait-phone .profile-biography{display:block;grid-column:1 / -1;grid-row:5;padding-top:32px}
 html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0 0 16px}
 .paper-copy h2{color:#202428;font-size:16px;line-height:1.4;font-weight:600}
-.paper-title{display:flex;align-items:center;gap:8px}
-.paper-title .title-link{flex:1;min-width:0}
-.paper-title-logo{display:block;flex:0 0 24px;width:24px;height:34px;object-fit:contain}
+.paper-title{display:block}
 .paper-authors{margin:7px 0 5px;color:#282e33;font-size:14px;line-height:1.65}
 .paper-author{white-space:nowrap}
 .paper-author-self .paper-author-name{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
@@ -189,30 +187,41 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
-.paper-links{gap:10px;font-size:12px;font-weight:500}
-.paper-links a{display:inline-flex;align-items:center;justify-content:center;min-height:30px;min-width:60px;padding:5px 13px;border:1px solid #30383e;border-radius:3px;color:#252d33;transition:color .15s ease,border-color .15s ease,background-color .15s ease}
-.paper-links a:hover,.paper-links a:focus-visible{color:var(--blue);border-color:var(--blue);background:#f3f8fe}
-.vase-topline{flex-wrap:nowrap;align-items:center}
-.paper-topline{display:grid;grid-template-columns:205px minmax(0,1fr);column-gap:24px;align-items:center}
-.paper-badge{justify-self:center;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;min-height:28px;padding:4px 13px;border-radius:3px;color:#fff;font-size:12px;font-weight:700;line-height:1.4;white-space:nowrap;box-shadow:0 3px 9px rgba(24,40,58,.16)}
-.paper-badge-arxiv{background:#b21e32}
-.paper-badge-spie{background:#315b98}
-
-.vase-topline .vase-kicker{flex:1 1 auto;min-width:0}
-.vase-logos{flex:0 0 auto;width:auto;justify-content:flex-end;margin-left:auto;gap:6px;flex-wrap:nowrap}
-.vase-card .vase-logos img,.vase-card .vase-logos img.wide{width:70px;max-width:70px;height:20px;object-fit:contain}
+/* Paper lists put the work first; institutional marks only render on details. */
+article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0,1fr)!important;column-gap:24px!important;row-gap:0!important;padding:20px 16px!important;border-top:1px solid #edf0f2;align-items:center!important}
+article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
+article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
+article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:18px;height:18px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
+article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
+.paper-authors{font-weight:400}
+.paper-author-self .paper-author-name{font-weight:600}
+.paper-links{gap:6px;font-size:11px;font-weight:400;line-height:1.4}
+.paper-links .paper-resource{display:inline-flex;align-items:stretch;min-width:0;min-height:0;padding:0;border:0;border-radius:0;background:transparent;color:#fff;text-decoration:none;box-shadow:none;white-space:nowrap;transition:opacity .15s ease}
+.paper-resource .resource-label,.paper-resource .resource-value{display:inline-flex;align-items:center;gap:4px;padding:3px 6px;background:#555;color:#fff}
+.paper-resource .resource-value{background:#315b98}
+.paper-resource.resource-arxiv .resource-value{background:#b31b1b}
+.paper-resource.resource-code .resource-value{background:#22863a}
+.paper-resource.resource-website .resource-value{background:#ffddbc;color:#303030}
+.paper-resource.resource-cite .resource-value{background:#675780}
+.paper-resource .resource-icon{width:12px;height:12px;flex:0 0 12px}
+.paper-links .paper-resource:hover{background:transparent;color:#fff;opacity:.85}
+.paper-links .paper-resource:focus-visible{outline:2px solid var(--blue);outline-offset:3px;background:transparent;color:#fff}
+.paper-affiliations{grid-column:1 / -1;grid-row:2;margin-top:20px;padding-top:14px;border-top:1px solid #edf0f2}
+.paper-affiliations h3{margin:0 0 10px;color:#607483;font-size:12px;line-height:1.5;font-weight:400}
+.paper-affiliations :is(.vase-logos,.project-logos){width:auto!important;justify-content:flex-start!important;margin-left:0!important;gap:14px;flex-wrap:wrap!important}
+.paper-affiliations .vase-logos img,.paper-affiliations .vase-logos img.wide{width:100px;max-width:100px;height:28px;object-fit:contain}
 .citation-dialog{width:min(620px,calc(100% - 36px))}
 .citation-text{display:block;width:100%;height:260px;max-height:45vh;padding:12px;border:1px solid #d5dde2;border-radius:4px;background:#f7f9fb;color:#263b4b;font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere}
 .citation-status{min-height:20px;margin:8px 0;color:#607483;font-size:12px}
 html.mobile-contact-ui .citation-text{height:calc(250px / var(--contact-ui-scale));padding:calc(10px / var(--contact-ui-scale));font-size:calc(12px / var(--contact-ui-scale))}
 html.mobile-contact-ui .citation-status{min-height:calc(20px / var(--contact-ui-scale));margin:calc(8px / var(--contact-ui-scale)) 0;font-size:calc(12px / var(--contact-ui-scale))}
-@media(max-width:760px){.paper-authors,.paper-venue{font-size:15px}.paper-topline{grid-template-columns:minmax(0,360px);row-gap:10px}.paper-topline .vase-logos,.paper-topline .project-logos{width:100%;flex-wrap:wrap}}
+@media(max-width:760px){html:not(.portrait-phone) article[data-work-category="paper"]{grid-template-columns:1fr!important;row-gap:14px!important}html:not(.portrait-phone) article[data-work-category="paper"] .paper-copy{grid-column:1!important;grid-row:2!important}html:not(.portrait-phone) .paper-affiliations{grid-row:3}}
 html.portrait-phone article[data-work-category="paper"]{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html.portrait-phone .paper-copy h2{font-size:12px;line-height:1.3}
 html.portrait-phone .paper-authors,html.portrait-phone .paper-venue{font-size:11px;line-height:1.4}
 html.portrait-phone .paper-authors{margin:5px 0 4px}
 html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-summary{font-size:12px;line-height:1.4;margin-bottom:9px}
-html.portrait-phone .paper-title-logo{flex-basis:18px;width:18px;height:26px}
 
 '''
     scripts = []
@@ -284,6 +293,10 @@ html.portrait-phone .paper-title-logo{flex-basis:18px;width:18px;height:26px}
                     if ((route == 'about') or (category and card.get('data-work-category') != category[2]) or
                         (detail_id and card.get('id') != detail_id)):
                         card.getparent().remove(card)
+                # Keep affiliation originals in each paper's own page, not list headers.
+                if not detail_id:
+                    for affiliations in tree.xpath('//*[@class="paper-affiliations"]'):
+                        affiliations.getparent().remove(affiliations)
                 if language == 'en':
                     translate_tree(tree)
                 for cite in tree.xpath('//*[@data-citation-key]'):
