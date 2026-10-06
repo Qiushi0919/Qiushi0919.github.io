@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'light-paper-list-20261006'
+VERSION = 'light-paper-list-final-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -177,7 +177,9 @@ html.portrait-phone .profile-photo{grid-column:1;grid-row:1 / 5;width:180px;just
 html.portrait-phone .profile-biography{display:block;grid-column:1 / -1;grid-row:5;padding-top:32px}
 html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0 0 16px}
 .paper-copy h2{color:#202428;font-size:16px;line-height:1.4;font-weight:600}
-.paper-title{display:block}
+.paper-title{display:flex;align-items:center;gap:8px}
+.paper-title .title-link{flex:1;min-width:0}
+.paper-title-logo{display:block;flex:0 0 24px;width:24px;height:34px;object-fit:contain}
 .paper-authors{margin:7px 0 5px;color:#282e33;font-size:14px;line-height:1.65}
 .paper-author{white-space:nowrap}
 .paper-author-self .paper-author-name{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
@@ -185,6 +187,8 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-authors a{color:inherit;text-decoration:none}
 .paper-authors a:hover,.paper-authors a:focus-visible{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
 .paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
+.vase-card .paper-venue{color:#a42632}
+.eecs-card .paper-venue{color:#315b98}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
 /* Paper lists put the work first; institutional marks only render on details. */
@@ -192,7 +196,7 @@ article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0
 article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
 article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
-article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:18px;height:18px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
+article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
 article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
 .paper-authors{font-weight:400}
 .paper-author-self .paper-author-name{font-weight:600}
@@ -219,6 +223,8 @@ html.mobile-contact-ui .citation-status{min-height:calc(20px / var(--contact-ui-
 @media(max-width:760px){html:not(.portrait-phone) article[data-work-category="paper"]{grid-template-columns:1fr!important;row-gap:14px!important}html:not(.portrait-phone) article[data-work-category="paper"] .paper-copy{grid-column:1!important;grid-row:2!important}html:not(.portrait-phone) .paper-affiliations{grid-row:3}}
 html.portrait-phone article[data-work-category="paper"]{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html.portrait-phone .paper-copy h2{font-size:12px;line-height:1.3}
+html.portrait-phone .paper-title-logo{flex-basis:18px;width:18px;height:26px}
+html.portrait-phone article[data-work-category="paper"] .cover-zoom-hint{width:calc(18px / var(--portrait-ui-scale));height:calc(18px / var(--portrait-ui-scale))}
 html.portrait-phone .paper-authors,html.portrait-phone .paper-venue{font-size:11px;line-height:1.4}
 html.portrait-phone .paper-authors{margin:5px 0 4px}
 html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-summary{font-size:12px;line-height:1.4;margin-bottom:9px}

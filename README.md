@@ -35,24 +35,24 @@ control restore focus and the reading position. Direct `.bib` links remain
 available when JavaScript is disabled. The BibTeX sources are maintained under
 `tools/search/source/citations/`, and are copied unchanged to `/assets/citations/`.
 VaseMuseum's entry follows the current manuscript author order provided by the
-user and identifies the arXiv preprint, without treating the NMI submission as a
-publication. The battery entry uses the publisher's DOI metadata.
+user and identifies the arXiv preprint. Submission status is omitted from the visible
+entry at the user's request. The battery entry uses the publisher's DOI metadata.
 
 Author-name links are verified against the [VaseMuseum project page](https://aigeeksgroup.github.io/VaseMuseum/):
 Zeyu Zhang, Yang Zhao, Ling Shao and Hao Tang link to their personal homepages;
 Qiushi Xie links to the local-language homepage. Jiazi Wang and Nonghai Zhang
 remain plain names because the project does not supply personal homepages for
 them. The displayed author order still follows the newer user-provided manuscript.
-The single arXiv venue line reads "In arXiv, 2026.07 · Submitted to NMI" in English.
+The single arXiv venue line reads "In arXiv, 2026.07" in English.
 
 The battery-paper PDF button
 retains the DOI publisher destination, with a labelled SPIE entrance; no public
-direct PDF URL is invented. Paper titles have no decorative pottery icon.
+direct PDF URL is invented. VaseMuseum retains the small pottery icon immediately to the left of its title.
 The VaseMuseum author order follows the
 user-supplied current manuscript: Qiushi Xie, Jiazi Wang, Nonghai Zhang, Zeyu
 Zhang, Yang Zhao, Ling Shao, Hao Tang. The first four retain the manuscript's
 co-first-author daggers. Its structured data uses that same visible author list;
-"Submitted to NMI" remains a submission status. Battery RUL lists Qiushi Xie,
+No NMI submission status is shown in the paper entry. Battery RUL lists Qiushi Xie,
 matching the publisher's Crossref record (DOI 10.1117/12.3122481).
 The VaseMuseum card omits the former co-first-author/advisor explanatory row.
 The battery card uses the single venue line "In Proc. SPIE, 2026.09 · EECS 2026",
@@ -61,14 +61,17 @@ superscripts remain visible, and the battery DOI is retained in its PDF link
 and BibTeX.
 
 Paper lists omit the independent date-badge/institution header. Publication month,
-venue and status share one line without repeating the date. The left column is
-30% of the row, displaying the existing virtual-museum interface for VaseMuseum
+venue share one colored line without repeating the date (dark red for arXiv,
+blue for SPIE). The left column is
+30% of the row, displaying the existing museum interaction pipeline for VaseMuseum
 and NASA B0005 prediction result for the battery paper at their original aspect
-ratios. Thumbnails have no outer border or shadow and a small, muted zoom hint.
+ratios. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
 Clicking still opens all original full method/result figures. These cover images
 are selected from existing assets, not cropped, redrawn, stretched, or overwritten.
 The compact split resource tags use a gray label and a colored value; all existing
-hrefs, citation behavior and ordering are retained. Only Qiushi's author name is
+hrefs, citation behavior and ordering are retained. The paper entrance tags read
+"arXiv | 2607.06374" and "SPIE | Vol. 14327"; the latter still resolves through
+the original publisher DOI. The article identifier 143271X remains in BibTeX. Only Qiushi's author name is
 emphasized; the other authors retain normal weight and their existing links.
 
 University/publisher marks appear only in the independent paper detail pages,
