@@ -254,6 +254,8 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-author{white-space:nowrap}
 .paper-author-self .paper-author-name{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 .paper-authors sup{margin-left:1px;font-size:.72em;line-height:0}
+.paper-authors a{color:inherit;text-decoration:none}
+.paper-authors a:hover,.paper-authors a:focus-visible{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
 .paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
@@ -264,4 +266,9 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .vase-topline .vase-kicker{flex:1 1 auto;min-width:0}
 .vase-logos{flex:0 0 auto;width:auto;justify-content:flex-end;margin-left:auto;gap:6px;flex-wrap:nowrap}
 .vase-card .vase-logos img,.vase-card .vase-logos img.wide{width:70px;max-width:70px;height:20px;object-fit:contain}
+.citation-dialog{width:min(620px,calc(100% - 36px))}
+.citation-text{display:block;width:100%;height:260px;max-height:45vh;padding:12px;border:1px solid #d5dde2;border-radius:4px;background:#f7f9fb;color:#263b4b;font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere}
+.citation-status{min-height:20px;margin:8px 0;color:#607483;font-size:12px}
+html.mobile-contact-ui .citation-text{height:calc(250px / var(--contact-ui-scale));padding:calc(10px / var(--contact-ui-scale));font-size:calc(12px / var(--contact-ui-scale))}
+html.mobile-contact-ui .citation-status{min-height:calc(20px / var(--contact-ui-scale));margin:calc(8px / var(--contact-ui-scale)) 0;font-size:calc(12px / var(--contact-ui-scale))}
 @media(max-width:760px){.paper-authors,.paper-venue{font-size:15px}}

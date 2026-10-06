@@ -28,7 +28,24 @@ inferred or added by the generator.
 Paper cards use an academic publication layout: title, ordered author list,
 venue/year, a brief summary, and outlined publication/code/project links. Qiushi
 Xie is underlined in the author line; its dagger is outside the underlined name.
-VaseMuseum's buttons read PDF, CODE, Website. The battery-paper PDF button
+VaseMuseum's buttons read PDF, CODE, Website, Cite; the battery paper has PDF and
+Cite. Cite opens an accessible dialog with a readonly BibTeX field, copy feedback,
+and a `.bib` download. Escape, backdrop dismissal and the established close
+control restore focus and the reading position. Direct `.bib` links remain
+available when JavaScript is disabled. The BibTeX sources are maintained under
+`tools/search/source/citations/`, and are copied unchanged to `/assets/citations/`.
+VaseMuseum's entry follows the current manuscript author order provided by the
+user and identifies the arXiv preprint, without treating the NMI submission as a
+publication. The battery entry uses the publisher's DOI metadata.
+
+Author-name links are verified against the [VaseMuseum project page](https://aigeeksgroup.github.io/VaseMuseum/):
+Zeyu Zhang, Yang Zhao, Ling Shao and Hao Tang link to their personal homepages;
+Qiushi Xie links to the local-language homepage. Jiazi Wang and Nonghai Zhang
+remain plain names because the project does not supply personal homepages for
+them. The displayed author order still follows the newer user-provided manuscript.
+The arXiv venue line reads "In arXiv, 2026 · Submitted to NMI" in English.
+
+The battery-paper PDF button
 retains the DOI publisher destination, with a labelled SPIE entrance; no public
 direct PDF URL is invented. VaseMuseum's existing pottery icon sits
 immediately to the left of its title; the former large right-side signature
@@ -38,6 +55,8 @@ Zhang, Yang Zhao, Ling Shao, Hao Tang. The first four retain the manuscript's
 co-first-author daggers. Its structured data uses that same visible author list;
 "Submitted to NMI" remains a submission status. Battery RUL lists Qiushi Xie,
 matching the publisher's Crossref record (DOI 10.1117/12.3122481).
+The VaseMuseum card omits the former co-first-author/advisor explanatory row;
+the author superscripts and publication information remain visible.
 
 VaseMuseum's five horizontal university marks are right-aligned on the same
 top row as the research date, matching the battery-paper header. They follow the manuscript's numbered

@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'paper-buttons-20261006'
+VERSION = 'paper-citations-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -184,6 +184,8 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-author{white-space:nowrap}
 .paper-author-self .paper-author-name{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 .paper-authors sup{margin-left:1px;font-size:.72em;line-height:0}
+.paper-authors a{color:inherit;text-decoration:none}
+.paper-authors a:hover,.paper-authors a:focus-visible{color:var(--blue);text-decoration:underline;text-underline-offset:3px}
 .paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
@@ -194,6 +196,11 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .vase-topline .vase-kicker{flex:1 1 auto;min-width:0}
 .vase-logos{flex:0 0 auto;width:auto;justify-content:flex-end;margin-left:auto;gap:6px;flex-wrap:nowrap}
 .vase-card .vase-logos img,.vase-card .vase-logos img.wide{width:70px;max-width:70px;height:20px;object-fit:contain}
+.citation-dialog{width:min(620px,calc(100% - 36px))}
+.citation-text{display:block;width:100%;height:260px;max-height:45vh;padding:12px;border:1px solid #d5dde2;border-radius:4px;background:#f7f9fb;color:#263b4b;font:12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;resize:vertical;white-space:pre-wrap;overflow-wrap:anywhere}
+.citation-status{min-height:20px;margin:8px 0;color:#607483;font-size:12px}
+html.mobile-contact-ui .citation-text{height:calc(250px / var(--contact-ui-scale));padding:calc(10px / var(--contact-ui-scale));font-size:calc(12px / var(--contact-ui-scale))}
+html.mobile-contact-ui .citation-status{min-height:calc(20px / var(--contact-ui-scale));margin:calc(8px / var(--contact-ui-scale)) 0;font-size:calc(12px / var(--contact-ui-scale))}
 @media(max-width:760px){.paper-authors,.paper-venue{font-size:15px}}
 '''
     scripts = []
@@ -235,6 +242,10 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
             target = destination / 'assets/portfolio-cover' / source_file.name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(source_file.read_bytes())
+        for source_file in (SOURCE / 'citations').glob('*.bib'):
+            target = destination / 'assets/citations' / source_file.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source_file.read_bytes())
         for language in ('zh', 'en'):
             lang_prefix = '' if language == default_lang else language + '/'
             local_base = path_prefix + lang_prefix
@@ -263,6 +274,13 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                         card.getparent().remove(card)
                 if language == 'en':
                     translate_tree(tree)
+                for cite in tree.xpath('//*[@data-citation-key]'):
+                    cite.set('data-citation-text', (SOURCE / 'citations' / (cite.get('data-citation-key') + '.bib')).read_text())
+                if not tree.xpath('//*[@data-citation-key]'):
+                    citation_dialog = tree.xpath('//*[@id="citationDialog"]')[0]
+                    citation_dialog.getparent().remove(citation_dialog)
+                for author_home in tree.xpath('//*[@data-author-home="self"]'):
+                    author_home.set('href', local_base)
                 profile_copy = tree.xpath('//*[contains(concat(" ",@class," ")," profile-copy ")]')[0]
                 for paragraph in profile_copy.findall('p'):
                     profile_copy.remove(paragraph)
@@ -375,6 +393,10 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
                                      'author': [({'@type': 'Person', '@id': person['@id'], 'name': name}
                                                  if name == 'Qiushi Xie' else {'@type': 'Person', 'name': name})
                                                 for name in cards[detail_id].xpath('.//*[@data-author-name]/@data-author-name')]})
+                        for item, author_node in zip(work['author'], cards[detail_id].xpath('.//*[@data-author-name]')):
+                            homepage = author_node.xpath('.//a/@href')
+                            if homepage:
+                                item['url'] = person['url'] if item['name'] == 'Qiushi Xie' else homepage[0]
                     graph.append(work)
                     page['mainEntity'] = {'@id': work['@id']}
                     page['about'] = {'@id': person['@id']}

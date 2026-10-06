@@ -274,4 +274,63 @@
     });
     if (reduceMotion) document.querySelectorAll('video').forEach(video => video.pause());
   
+
+    (() => {
+      const dialog = document.getElementById('citationDialog');
+      if (!dialog) return;
+      const content = document.getElementById('citationText');
+      const paperTitle = document.getElementById('citationPaperTitle');
+      const copy = document.getElementById('citationCopy');
+      const download = document.getElementById('citationDownload');
+      const close = document.getElementById('citationClose');
+      const status = document.getElementById('citationStatus');
+      const english = document.documentElement.dataset.language === 'en';
+      let trigger = null;
+      let scroll = {x:0,y:0};
+      document.querySelectorAll('[data-citation-key]').forEach(link => {
+        link.addEventListener('click', event => {
+          if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !dialog.showModal) return;
+          event.preventDefault();
+          if (dialog.open) return;
+          document.querySelector('.project-card.is-open .close')?.click();
+          trigger = link;
+          scroll = {x:window.scrollX,y:window.scrollY};
+          content.value = link.dataset.citationText;
+          paperTitle.textContent = link.closest('article').querySelector('h2').textContent.trim();
+          download.href = link.href;
+          download.download = link.download;
+          status.textContent = '';
+          document.documentElement.classList.add('contact-modal-open');
+          dialog.showModal();
+          close.focus({preventScroll:true});
+        });
+      });
+      copy.addEventListener('click', async () => {
+        try {
+          if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+          await navigator.clipboard.writeText(content.value);
+          status.textContent = english ? 'BibTeX copied.' : 'BibTeX 已复制。';
+        } catch (_) {
+          content.focus({preventScroll:true});
+          content.select();
+          status.textContent = english ? 'Citation selected. Please copy it manually.' : '引用已选中，请手动复制。';
+        }
+      });
+      close.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {event.preventDefault();dialog.close();}
+      });
+      dialog.addEventListener('cancel', event => {event.preventDefault();dialog.close();});
+      dialog.addEventListener('click', event => {
+        if (event.target !== dialog) return;
+        const b = dialog.getBoundingClientRect();
+        if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close();
+      });
+      dialog.addEventListener('close', () => {
+        document.documentElement.classList.remove('contact-modal-open');
+        window.scrollTo(scroll.x,scroll.y);
+        trigger?.focus({preventScroll:true});
+      });
+    })();
+  
 requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });

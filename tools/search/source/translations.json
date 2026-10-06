@@ -315,5 +315,9 @@
   "VaseMuseum 论文 PDF": "VaseMuseum paper PDF",
   "VaseMuseum 项目代码": "VaseMuseum project code",
   "VaseMuseum 图标": "VaseMuseum icon",
-  "电池寿命预测论文 PDF（SPIE 出版社入口）": "Battery RUL paper PDF (SPIE publisher page)"
+  "电池寿命预测论文 PDF（SPIE 出版社入口）": "Battery RUL paper PDF (SPIE publisher page)",
+  "电池论文 BibTeX": "Battery paper BibTeX",
+  "关闭引用窗口": "Close citation",
+  "下载 .bib": "Download .bib",
+  "复制 BibTeX": "Copy BibTeX"
 }
