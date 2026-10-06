@@ -20,7 +20,7 @@ portfolio while waiting for images.
 Preferred Chinese URLs live on `qiushi0919.cn`; preferred English URLs live on
 GitHub Pages. Same-language alternate copies point to those preferred URLs with
 canonical links. Reciprocal `zh-CN`, `en`, and `x-default` hreflang links describe
-the language alternatives. Each origin's sitemap lists its 15 preferred pages.
+the language alternatives. Each origin's sitemap lists its 15 preferred portfolio pages; the CN sitemap also lists the battery-paper project website.
 Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
@@ -29,7 +29,7 @@ Paper cards use an academic publication layout: title, ordered author list,
 venue/month, a brief summary, and compact flat two-part resource labels. Qiushi
 Xie is underlined in the author line; its dagger is outside the underlined name.
 VaseMuseum provides paper, code, project website and citation tags in that order;
-the battery paper provides paper and citation tags. Cite opens an accessible dialog with a readonly BibTeX field, copy feedback,
+the battery paper provides paper, code, project website and citation tags. Cite opens an accessible dialog with a readonly BibTeX field, copy feedback,
 and a `.bib` download. Escape, backdrop dismissal and the established close
 control restore focus and the reading position. Direct `.bib` links remain
 available when JavaScript is disabled. The BibTeX sources are maintained under
@@ -77,6 +77,12 @@ hrefs, citation behavior and ordering are retained. The paper entrance tags read
 "arXiv | 2607.06374" and "PDF | Vol. 14327"; the latter still resolves through
 the original publisher DOI. The article identifier 143271X remains in BibTeX. Only Qiushi's author name is
 emphasized; the other authors retain normal weight and their existing links.
+
+The battery method overlay uses the locally exported 16:9 horizontal pipeline,
+with the original Visio topology and Times New Roman labels. The method figure
+spans the grid width and retains its natural aspect ratio. Its lossless WebP is
+maintained in `source/publication-figures/eecs-2026/framework-landscape.webp` and
+copied to both build origins. The original portrait asset remains available.
 
 University/publisher marks appear only in the independent paper detail pages,
 below the main paper content. VaseMuseum's horizontal marks retain the manuscript's
@@ -324,3 +330,9 @@ that timing does not promise search indexing.
 `cv/qiushi-xie-cv.webp` with `pypdfium2` (2.5x scale, WebP quality 92) for mobile
 compatibility. The current document is the user's original September 2026 PDF;
 do not typeset a replacement when updating the website.
+
+## Battery paper project website
+
+The paper website is published at https://qiushi0919.cn/battery-rul/ and https://qiushi0919.github.io/ALA-VMD-BiTCN-AM/. Its public experiment repository is https://github.com/Qiushi0919/ALA-VMD-BiTCN-AM. The portfolio resource tag selects the CN website for the CN origin and the project GitHub Pages website for the international origin.
+
+The maintained CN copy is in `tools/search/source/project-sites/battery-rul/` and is copied into the CN build. Its own project repository serves `docs/` on `main`. White background, Times New Roman, centered 860px content, sticky navigation, silent method video, and four full-width, zoomable figures are used on desktop and phones. The repo includes original saved model scripts, NASA/CALCE capacity and decomposition CSVs, ten prediction CSVs, and a standard-library evaluator; missing ALA source/logs and checkpoints are explicitly recorded.

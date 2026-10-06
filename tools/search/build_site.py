@@ -35,6 +35,7 @@ DETAILS = {
     'mindMapProjectCard': 'projects/mindmap',
 }
 EXTERNAL_PROJECTS = {
+    'https://qiushi0919.cn/battery-rul/': 'https://qiushi0919.github.io/ALA-VMD-BiTCN-AM/',
     'https://qiushi0919.cn/vasemuseum/': 'https://aigeeksgroup.github.io/VaseMuseum/',
     'https://qiushi0919.cn/intelcup-2026/': 'https://qiushi0919.github.io/IntelCup-2026/',
     'https://qiushi0919.cn/nuedc-c/': 'https://qiushi0919.github.io/2026-NUEDC-C/',
@@ -269,6 +270,13 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
             target = destination / 'assets/portfolio-cover' / source_file.name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(source_file.read_bytes())
+        # Native paper figures exported from the user's local experiment visualization.
+        figures = SOURCE / 'publication-figures'
+        for source_file in figures.rglob('*'):
+            if source_file.is_file():
+                target = destination / 'assets/portfolio-cover' / source_file.relative_to(figures)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(source_file.read_bytes())
         for source_file in (SOURCE / 'citations').glob('*.bib'):
             target = destination / 'assets/citations' / source_file.name
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -529,6 +537,13 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
                 body.append(element('script', src=asset_prefix + 'js/portfolio-runtime.js?v=' + VERSION))
                 target = destination / lang_prefix / route / 'index.html'
                 write(target, '<!doctype html>\n' + etree.tostring(tree, encoding='unicode', method='html') + '\n')
+        # The standalone paper project has its own repository for the international site.
+        if origin == 'cn':
+            for source_file in (SOURCE / 'project-sites/battery-rul').rglob('*'):
+                if source_file.is_file():
+                    target = destination / 'battery-rul' / source_file.relative_to(SOURCE / 'project-sites/battery-rul')
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(source_file.read_bytes())
         # Keep the exact public ownership files issued by the search platforms.
         verification = ROOT / 'verification'
         if verification.exists():
@@ -548,6 +563,9 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
             etree.SubElement(url, 'loc').text = route_url(base, route)
             for lang, alt in [('zh-CN', CN), ('en', GH), ('x-default', GH)]:
                 etree.SubElement(url, '{http://www.w3.org/1999/xhtml}link', rel='alternate', hreflang=lang, href=route_url(alt, route))
+        if origin == 'cn':
+            project_url = etree.SubElement(sitemap, 'url')
+            etree.SubElement(project_url, 'loc').text = CN + 'battery-rul/'
         write(destination / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n' + etree.tostring(sitemap, encoding='unicode', pretty_print=True))
         alias = f'<!doctype html><html lang="{default_lang}"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url={base}"><link rel="canonical" href="{base}"><title>Qiushi Xie / 谢秋实</title></head><body><a href="{base}">Qiushi Xie / 谢秋实 · Homepage</a></body></html>\n'
         write(destination / 'portfolio-cover.html', alias)

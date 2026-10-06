@@ -11,7 +11,8 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
     directory = ROOT / origin
     sitemap = etree.parse(str(directory / 'sitemap.xml'))
     locations = sitemap.xpath('//*[local-name()="loc"]/text()')
-    assert len(locations) == 15 and len(set(locations)) == 15
+    expected_locations = 16 if origin == 'cn' else 15
+    assert len(locations) == expected_locations and len(set(locations)) == expected_locations
     robots = RobotFileParser()
     robots.parse((directory / 'robots.txt').read_text().splitlines())
     assert robots.site_maps() == [f'https://{host}/sitemap.xml']
@@ -22,6 +23,18 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert not robots.can_fetch(agent, f'https://{host}/{path}')
     for p in directory.rglob('index.html'):
         tree = html.fromstring(p.read_text())
+        if p.relative_to(directory).as_posix() == 'battery-rul/index.html':
+            assert origin == 'cn'
+            assert tree.xpath('//link[@rel="canonical"]/@href') == ['https://qiushi0919.cn/battery-rul/']
+            assert len(tree.xpath('//h1')) == 1
+            assert len(tree.xpath('//div[@class="method-grid"]/figure')) == 4
+            assert len(tree.xpath('//video/source[@type="video/mp4"]')) == 1
+            for src in tree.xpath('//img/@src | //video/@poster | //source/@src | //script/@src | //link[@rel="stylesheet"]/@href'):
+                assert (p.parent / src).is_file(), src
+            styles = (p.parent / 'styles.css').read_text()
+            assert 'grid-template-columns:1fr' in styles
+            assert 'position:sticky;top:0' in styles and 'Times New Roman' in styles
+            continue
         count += 1
         assert len(tree.xpath('//h1')) == 1, str(p)
         phone_canvas = tree.xpath('//head/script[not(@type) and not(@src)]')
@@ -88,4 +101,4 @@ for p in (ROOT / 'github-legacy').rglob('index.html'):
     assert tree.xpath('//a/@href') == [target], str(p)
     legacy_count += 1
 assert legacy_count == 30
-print(json.dumps({'status':'passed','static_pages':count,'sitemap_urls':30,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, visible content, root migration redirects'}))
+print(json.dumps({'status':'passed','static_pages':count,'paper_project_pages':1,'sitemap_urls':31,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, visible content, root migration redirects, paper project assets'}))

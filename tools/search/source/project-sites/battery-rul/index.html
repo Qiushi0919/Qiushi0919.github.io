@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ALA-tuned VMD and BiTCN-AM for lithium-ion battery capacity prediction and remaining useful life estimation. Paper, method animation, framework, and results.">
+  <meta name="color-scheme" content="light">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ALA–VMD–BiTCN–AM | Battery Remaining Useful Life">
+  <meta property="og:description" content="Adaptive decomposition, bidirectional temporal features, attention, and capacity reconstruction.">
+  <meta property="og:image" content="https://qiushi0919.cn/battery-rul/assets/01-overview.webp">
+  <meta property="og:url" content="https://qiushi0919.cn/battery-rul/">
+  <link rel="canonical" href="https://qiushi0919.cn/battery-rul/">
+  <title>ALA–VMD–BiTCN–AM | Qiushi Xie</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="site.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav-wrap" aria-label="Main navigation">
+      <a class="wordmark" href="#top">ALA–VMD–BiTCN–AM</a>
+      <div class="nav-links">
+        <a href="#demo">Demo</a><a href="#method">Method</a><a href="#results">Results</a><a href="#citation">BibTeX</a>
+      </div>
+    </nav>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="paper-title">
+      <h1 id="paper-title">Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model</h1>
+      <p class="authors"><a href="https://qiushi0919.cn/" target="_blank" rel="noopener noreferrer">Qiushi Xie</a></p>
+      <p class="affiliation">School of Electronic Information and Communications<br>Huazhong University of Science and Technology, Wuhan, China</p>
+      <p class="venue">In <em>Proc. SPIE</em>, 2026.09</p>
+      <div class="resources" aria-label="Paper resources">
+        <a class="resource" href="https://github.com/Qiushi0919/ALA-VMD-BiTCN-AM" target="_blank" rel="noopener noreferrer">Code</a>
+        <a class="resource" href="https://github.com/Qiushi0919/ALA-VMD-BiTCN-AM/tree/main/data" target="_blank" rel="noopener noreferrer">Dataset</a>
+        <a class="resource" href="https://doi.org/10.1117/12.3122481" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg>Paper · SPIE</a>
+        <a class="resource" href="#demo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg>Method video</a>
+        <a class="resource" href="#citation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6H5v5h4v7H4M20 6h-4v5h4v7h-5"/></svg>BibTeX</a>
+      </div>
+      <p class="paper-meta">Volume 14327 · Article 143271X · DOI: <a href="https://doi.org/10.1117/12.3122481">10.1117/12.3122481</a></p>
+      <p class="takeaway">Adaptive signal decomposition meets bidirectional temporal learning for battery capacity prediction and remaining useful life estimation.</p>
+    </section>
+
+    <section class="demo-section section" id="demo" aria-labelledby="demo-title">
+      <div class="section-heading"><h2 id="demo-title">Method in motion</h2><span>ALA–VMD → BiTCN–AM → RUL</span></div>
+      <video controls playsinline preload="metadata" poster="assets/01-overview.webp" aria-label="Animated ALA–VMD–BiTCN–AM method pipeline">
+        <source src="assets/method-demo.mp4" type="video/mp4">
+        <p><a href="assets/method-demo.mp4">Download the method video</a>.</p>
+      </video>
+      <p class="figure-caption">From a capacity sequence to VMD components, bidirectional features, attention, and the reconstructed capacity trajectory.</p>
+    </section>
+
+    <section class="abstract section" aria-labelledby="abstract-title">
+      <h2 id="abstract-title">Overview</h2>
+      <p>The Artificial Lemming Algorithm (ALA) selects the mode number and penalty factor for Variational Mode Decomposition (VMD). A Bidirectional Temporal Convolutional Network with Attention Mechanism (BiTCN-AM) learns from the decomposed capacity signals. The model outputs are aggregated to reconstruct the capacity trajectory and estimate end of life at the failure threshold. Experiments in the paper use the NASA and CALCE battery datasets.</p>
+    </section>
+
+    <section class="method section" id="method" aria-labelledby="method-title">
+      <h2 id="method-title" class="group-title">The method</h2>
+      <div class="method-grid">
+      <figure class="method-figure">
+        <figcaption class="figure-heading"><span class="figure-number">01</span><div><h3>Complete framework</h3><p>Data preprocessing · Adaptive decomposition · Hybrid prediction · RUL estimation</p></div></figcaption>
+        <button class="figure-open" type="button" data-image="assets/01-overview.webp" data-caption="Complete ALA–VMD–BiTCN–AM framework" aria-label="Enlarge complete framework">
+          <img src="assets/01-overview.webp" width="1920" height="1080" alt="Horizontal paper framework connecting data preprocessing, ALA–VMD decomposition, BiTCN and Attention, and RUL estimation." loading="lazy">
+          <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M10 7v6M7 10h6"/></svg></span>
+        </button>
+      </figure>
+
+      <figure class="method-figure">
+        <figcaption class="figure-heading"><span class="figure-number">02</span><div><h3>Adaptive data decomposition</h3><p>ALA selects (K, α); VMD decomposes the capacity sequence.</p></div></figcaption>
+        <button class="figure-open" type="button" data-image="assets/02-ala-vmd.webp" data-caption="Part A · Adaptive Data Decomposition (ALA–VMD)" aria-label="Enlarge ALA–VMD decomposition">
+          <img src="assets/02-ala-vmd.webp" width="1920" height="1080" alt="Actual NASA B5 capacity sequence with the ALA optimizer, VMD decomposition, and eight saved intrinsic mode functions, each showing its amplitude scale." loading="lazy">
+          <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M10 7v6M7 10h6"/></svg></span>
+        </button>
+        <p class="figure-caption">The NASA B5 decomposition contains eight IMFs. The first component and the sum of components 2–8 form the two prediction inputs.</p>
+      </figure>
+
+      <figure class="method-figure">
+        <figcaption class="figure-heading"><span class="figure-number">03</span><div><h3>Bidirectional temporal features and attention</h3><p>Forward TCN · Reverse TCN · Feature fusion · Weighted aggregation</p></div></figcaption>
+        <button class="figure-open" type="button" data-image="assets/03-bitcn-attention.webp" data-caption="Part B · Hybrid Prediction Model (BiTCN–AM)" aria-label="Enlarge BiTCN and Attention architecture">
+          <img src="assets/03-bitcn-attention.webp" width="1920" height="1080" alt="Original paper schematic of forward and reverse TCN branches with dilated causal convolution, weight normalization, ReLU and feature fusion, followed by H, e, alpha and weighted aggregation." loading="lazy">
+          <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M10 7v6M7 10h6"/></svg></span>
+        </button>
+        <p class="figure-caption">Paper architecture: the two branches form temporal features, followed by attention scores, weights, and a weighted output representation.</p>
+      </figure>
+      <figure class="method-figure" id="results">
+        <figcaption class="figure-heading"><span class="figure-number">04</span><div><h3 id="results-title">Capacity prediction and RUL estimation</h3><p>Aggregated prediction · Capacity reconstruction · Failure threshold</p></div></figcaption>
+        <button class="figure-open" type="button" data-image="assets/04-prediction.webp" data-caption="Part C · RUL Estimation — NASA B5" aria-label="Enlarge capacity prediction results">
+          <img src="assets/04-prediction.webp" width="1920" height="1080" alt="NASA B5 true capacity and saved prediction curves over test indices 61–167, with an inset and the 1.40 Ah failure threshold." loading="lazy">
+          <span class="zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M10 7v6M7 10h6"/></svg></span>
+        </button>
+        <p class="figure-caption">NASA B5 · Test indices 61–167 · Capacity RMSE: 0.01137 Ah. The true and predicted trajectories first fall below 1.40 Ah at index 124.</p>
+      </figure>
+      </div>
+    </section>
+
+    <section class="citation section" id="citation" aria-labelledby="citation-title">
+      <div class="section-heading"><h2 id="citation-title">BibTeX</h2><div class="citation-actions"><button id="copy-citation" type="button">Copy</button><a href="assets/battery-rul.bib" download>Download .bib</a></div></div>
+      <pre id="bibtex"><code>@inproceedings{xie2026batteryrul,
+  author = {Xie, Qiushi},
+  title = {Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model},
+  booktitle = {Third International Conference on Electronics, Electrical, and Control System (EECS 2026)},
+  publisher = {SPIE},
+  volume = {14327},
+  year = {2026},
+  doi = {10.1117/12.3122481},
+  url = {https://doi.org/10.1117/12.3122481}
+}</code></pre>
+      <p id="copy-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <footer><p>Qiushi Xie · Huazhong University of Science and Technology</p><a href="https://qiushi0919.cn/">Author homepage</a></footer>
+  <dialog id="figure-dialog" aria-labelledby="zoom-title">
+    <div class="dialog-header"><p id="zoom-title"></p><button id="close-figure" type="button" aria-label="Close enlarged figure">×</button></div>
+    <img id="zoom-image" src="assets/01-overview.webp" alt="">
+  </dialog>
+</body>
+</html>
