@@ -34,7 +34,8 @@ co-first-author daggers. Its structured data uses that same visible author list;
 "Submitted to NMI" remains a submission status. Battery RUL lists Qiushi Xie,
 matching the publisher's Crossref record (DOI 10.1117/12.3122481).
 
-VaseMuseum's five horizontal university marks follow the manuscript's numbered
+VaseMuseum's five horizontal university marks are right-aligned on the same
+top row as the research date, matching the battery-paper header. They follow the manuscript's numbered
 affiliations: HUST, Beijing Jiaotong, Peking, La Trobe, and UCAS. The BJTU and
 PKU horizontal originals are maintained under `tools/search/source/publication-logos/`
 and copied to the public portfolio assets. They were downloaded unchanged from

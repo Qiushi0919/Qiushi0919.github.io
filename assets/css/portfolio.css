@@ -259,7 +259,9 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-links{gap:10px;font-size:12px;font-weight:500}
 .paper-links a{display:inline-flex;align-items:center;justify-content:center;min-height:30px;min-width:60px;padding:5px 13px;border:1px solid #30383e;border-radius:3px;color:#252d33;transition:color .15s ease,border-color .15s ease,background-color .15s ease}
 .paper-links a:hover,.paper-links a:focus-visible{color:var(--blue);border-color:var(--blue);background:#f3f8fe}
-.vase-logos{flex:1 1 100%;justify-content:flex-start;margin-left:0;gap:16px}
-.vase-logos img,.vase-logos img.wide{width:100px;max-width:100px;height:27px;object-fit:contain}
-@media(max-width:760px){.paper-copy.has-signature{padding-right:0}.paper-authors,.paper-venue{font-size:15px}.vase-logos{gap:12px}.vase-logos img,.vase-logos img.wide{width:90px;max-width:90px;height:26px}}
+.vase-topline{flex-wrap:nowrap;align-items:center}
+.vase-topline .vase-kicker{flex:1 1 auto;min-width:0}
+.vase-logos{flex:0 0 auto;width:auto;justify-content:flex-end;margin-left:auto;gap:6px;flex-wrap:nowrap}
+.vase-card .vase-logos img,.vase-card .vase-logos img.wide{width:70px;max-width:70px;height:20px;object-fit:contain}
+@media(max-width:760px){.paper-copy.has-signature{padding-right:0}.paper-authors,.paper-venue{font-size:15px}}
 html.portrait-phone .paper-copy.has-signature{padding-right:88px}
