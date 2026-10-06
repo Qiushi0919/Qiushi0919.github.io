@@ -27,7 +27,10 @@ inferred or added by the generator.
 
 Paper cards use an academic publication layout: title, ordered author list,
 venue/year, a brief summary, and outlined publication/code/project links. Qiushi
-Xie is underlined in the author line. VaseMuseum's existing pottery icon sits
+Xie is underlined in the author line; its dagger is outside the underlined name.
+VaseMuseum's buttons read PDF, CODE, Website. The battery-paper PDF button
+retains the DOI publisher destination, with a labelled SPIE entrance; no public
+direct PDF URL is invented. VaseMuseum's existing pottery icon sits
 immediately to the left of its title; the former large right-side signature
 image is removed. The VaseMuseum author order follows the
 user-supplied current manuscript: Qiushi Xie, Jiazi Wang, Nonghai Zhang, Zeyu

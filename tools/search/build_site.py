@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'paper-title-logo-20261006'
+VERSION = 'paper-buttons-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -182,7 +182,7 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-title-logo{display:block;flex:0 0 24px;width:24px;height:34px;object-fit:contain}
 .paper-authors{margin:7px 0 5px;color:#282e33;font-size:14px;line-height:1.65}
 .paper-author{white-space:nowrap}
-.paper-author-self{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.paper-author-self .paper-author-name{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
 .paper-authors sup{margin-left:1px;font-size:.72em;line-height:0}
 .paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
