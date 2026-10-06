@@ -47,6 +47,15 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert not urlsplit(canonical).path.startswith('/Qiushi-Portfolio/'), str(p)
         assert set(tree.xpath('//link[@rel="alternate"]/@hreflang')) == {'zh-CN','en','x-default'}
         assert not tree.xpath('//article[@hidden]')
+        assert not tree.xpath('//*[contains(@class,"profile-mobile-summary") and contains(string(.),"（拟入学）")]')
+        battery = tree.xpath('//*[@id="eecsCoverTrigger"]')
+        if battery:
+            if origin == 'cn':
+                preview = battery[0].xpath('./video[@muted and @loop and @playsinline and @data-preview-auto]')
+                assert len(preview) == 1 and preview[0].get('data-src') == '/assets/portfolio-cover/eecs-2026/method-preview.mp4'
+                assert (directory / preview[0].get('data-src').lstrip('/')).is_file()
+            else:
+                assert battery[0].xpath('./img[@class="paper-preview-image"]')
         assert '谢秋实' in tree.text_content() and 'Qiushi Xie' in tree.text_content()
         assert tree.xpath('//meta[@name="description"]/@content')[0]
         schema = json.loads(tree.xpath('//script[@type="application/ld+json"]/text()')[0])

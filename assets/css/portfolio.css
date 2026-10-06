@@ -1,5 +1,5 @@
 
-    @font-face{font-family:Lato;font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/lato-regular.woff2") format("woff2")}@font-face{font-family:Lato;font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/lato-bold.woff2") format("woff2")}@font-face{font-family:Lato;font-style:italic;font-weight:400;font-display:swap;src:url("../fonts/lato-italic.woff2") format("woff2")}
+    @font-face{font-family:Lato;font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/lato-regular.woff2") format("woff2")}@font-face{font-family:Lato;font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/lato-bold.woff2") format("woff2")}@font-face{font-family:Lato;font-style:italic;font-weight:700;font-display:swap;src:url("../fonts/lato-bold-italic.woff2") format("woff2")}@font-face{font-family:Lato;font-style:italic;font-weight:400;font-display:swap;src:url("../fonts/lato-italic.woff2") format("woff2")}
     :root{--blue:#1772d0;--navy:#162a3a;--muted:#5f7180;--line:#e2e7eb;--paper:#fff;--bg:#fff}
     *{box-sizing:border-box}html{color-scheme:light;overflow-x:hidden}body{margin:0;overflow-x:hidden;background:var(--bg);color:#1d2d3a;font-family:Lato,Verdana,Helvetica,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px}
     a{color:var(--blue);text-decoration:none}a:hover{color:#f09228;text-decoration:none}
@@ -266,6 +266,7 @@ article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0
 article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
 article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
+.paper-preview-video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff;pointer-events:none}
 .paper-preview-stack{display:grid;gap:8px}
 article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
 article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}

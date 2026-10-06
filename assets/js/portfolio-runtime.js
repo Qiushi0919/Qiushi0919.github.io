@@ -334,3 +334,27 @@
     })();
   
 requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });
+(() => {
+      const videos = [...document.querySelectorAll('video[data-preview-auto]')];
+      if (!videos.length) return;
+      const motion = matchMedia('(prefers-reduced-motion:reduce)');
+      const visible = new Set();
+      const sync = video => {
+        if (!visible.has(video) || document.hidden || motion.matches) { video.pause(); return; }
+        if (!video.getAttribute('src')) { video.src = video.dataset.src; video.preload = 'metadata'; }
+        video.muted = true;
+        video.play().catch(() => {});
+      };
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio >= .15) visible.add(entry.target);
+            else visible.delete(entry.target);
+            sync(entry.target);
+          });
+        }, {threshold:[0,.15]});
+        videos.forEach(video => observer.observe(video));
+      } else { videos.forEach(video => { visible.add(video); sync(video); }); }
+      document.addEventListener('visibilitychange', () => videos.forEach(sync));
+      motion.addEventListener('change', () => videos.forEach(sync));
+    })();

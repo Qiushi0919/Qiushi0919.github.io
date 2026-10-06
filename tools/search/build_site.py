@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'light-paper-clean-title-20261006'
+VERSION = 'battery-video-bolditalic-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -197,6 +197,7 @@ article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0
 article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
 article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
+.paper-preview-video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#fff;pointer-events:none}
 .paper-preview-stack{display:grid;gap:8px}
 article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
 article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
@@ -245,6 +246,30 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
             code = code.replace("    window.addEventListener('portfolio:ready', preloadAllProjectMedia, {once:true});\n", '')
         scripts.append(code)
     scripts.append("requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });")
+    scripts.append('''(() => {
+      const videos = [...document.querySelectorAll('video[data-preview-auto]')];
+      if (!videos.length) return;
+      const motion = matchMedia('(prefers-reduced-motion:reduce)');
+      const visible = new Set();
+      const sync = video => {
+        if (!visible.has(video) || document.hidden || motion.matches) { video.pause(); return; }
+        if (!video.getAttribute('src')) { video.src = video.dataset.src; video.preload = 'metadata'; }
+        video.muted = true;
+        video.play().catch(() => {});
+      };
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio >= .15) visible.add(entry.target);
+            else visible.delete(entry.target);
+            sync(entry.target);
+          });
+        }, {threshold:[0,.15]});
+        videos.forEach(video => observer.observe(video));
+      } else { videos.forEach(video => { visible.add(video); sync(video); }); }
+      document.addEventListener('visibilitychange', () => videos.forEach(sync));
+      motion.addEventListener('change', () => videos.forEach(sync));
+    })();''')
     runtime = '\n'.join(scripts)
     cards = {e.get('id'): e for e in template.xpath('//article[@data-work-category]')}
 
@@ -255,6 +280,11 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
         path_prefix = '/'
         write(destination / 'assets/css/portfolio.css', css)
         write(destination / 'assets/js/portfolio-runtime.js', runtime)
+        for source_file in (SOURCE / 'fonts').glob('*'):
+            if source_file.is_file():
+                target = destination / 'assets/fonts' / source_file.name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(source_file.read_bytes())
         for source_name, target_name in [('favicon.ico', 'favicon.ico'),
                                           ('qiushi-favicon.png', 'assets/contact/qiushi-favicon.png'),
                                           ('apple-touch-icon.png', 'assets/contact/apple-touch-icon.png')]:
@@ -508,6 +538,13 @@ html.portrait-phone .paper-copy .summary,html.portrait-phone .paper-copy .vase-s
                     title_link.attrib.pop('target', None)
                 for photo in tree.xpath('//img[@class="profile-photo"]'):
                     photo.set('src', portrait_url())
+                if origin == 'cn':
+                    for image in tree.xpath('//*[@id="eecsCoverTrigger"]/img[@class="paper-preview-image"]'):
+                        preview = element('video', **{'class':'paper-preview-video', 'muted':'', 'loop':'',
+                            'playsinline':'', 'preload':'none', 'poster':image.get('src'),
+                            'data-src':'assets/portfolio-cover/eecs-2026/method-preview.mp4',
+                            'data-preview-auto':'', 'aria-label':'Battery RUL animated method preview'})
+                        image.getparent().replace(image, preview)
                 for e in tree.iter():
                     if not isinstance(e.tag, str): continue
                     for attr in ('src', 'href', 'poster', 'data-src', 'data-contact-src'):

@@ -66,10 +66,9 @@ venue share one colored line without repeating the date (dark red for arXiv,
 blue for SPIE). The left column is
 30% of the row. VaseMuseum displays the existing museum interaction pipeline
 and VaseAgent reliability framework as a compact vertical pair that uses the
-full image column; the battery paper displays the NASA B0005 prediction
-result. All images retain their original aspect ratios. The arXiv venue/month
+full image column; the CN battery-paper thumbnail plays the method video as a silent loop; the international thumbnail retains the NASA B0005 prediction result. All images retain their original aspect ratios. The arXiv venue/month
 line is bold; the SPIE venue line and colored resource-tag values are also bold. Venue names
-retain italic styling with an explicit 700 weight. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
+retain italic styling with an explicit 700 weight and a locally hosted Lato bold-italic font, with its SIL OFL license. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
 Clicking still opens all original full method/result figures. These cover images
 are selected from existing assets, not cropped, redrawn, stretched, or overwritten.
 The compact split resource tags use a gray label and a colored value; all existing
@@ -336,3 +335,5 @@ do not typeset a replacement when updating the website.
 The paper website is published at https://qiushi0919.cn/battery-rul/ and https://qiushi0919.github.io/ALA-VMD-BiTCN-AM/. Its public experiment repository is https://github.com/Qiushi0919/ALA-VMD-BiTCN-AM. The portfolio resource tag selects the CN website for the CN origin and the project GitHub Pages website for the international origin.
 
 The maintained CN copy is in `tools/search/source/project-sites/battery-rul/` and is copied into the CN build. Its own project repository serves `docs/` on `main`. White background, Times New Roman, centered 860px content, sticky navigation, silent method video, and four full-width, zoomable figures are used on desktop and phones. The repo includes original saved model scripts, NASA/CALCE capacity and decomposition CSVs, ten prediction CSVs, and a standard-library evaluator; missing ALA source/logs and checkpoints are explicitly recorded.
+
+The two paper website resource tags read `Website | Paper`. The CN video thumbnail loads when it enters the viewport, loops muted with inline playback, and pauses offscreen or while the page is hidden. A static result poster remains available before playback and when reduced motion is requested. `source/publication-figures/eecs-2026/method-preview.mp4` is copied unchanged from the approved paper method demonstration. The Chinese mobile summary omits the former `（拟入学）` suffix while retaining the 2027 year.
