@@ -407,9 +407,12 @@ The two paper website resource tags read `Website | Paper`. The CN video thumbna
 
 ### Work reading type and About identity (2026-10-06)
 
-Large-view type uses 16px titles, 13px author/meta text and 14px body text
-(at the original phone canvas scale). The works toolbar uses a 16px heading
-and 12px option labels while retaining 44px touch targets. About pages reuse
-the homepage portrait, bilingual identity summary and all nine contact links
-with the same contact dialog. The home biography and device layouts remain
-unchanged. Source: `build_site.py`, `source/work-view.css`, `check_site.py`.
+Large-view type uses 15px titles, 12px author/meta text and 13px body text
+(at the original phone canvas scale). The works toolbar uses a 14px heading,
+11px option labels, 32px controls and 4px vertical padding. Resource tags use
+10.5px lettering, 24px height and compact padding. These replace the oversized
+44px view buttons and 36px resource tags following the user's visual review.
+About pages reuse the homepage portrait, bilingual identity summary and all
+nine contact links with the same contact dialog. The home biography and
+device layouts remain unchanged. Source: `build_site.py`, `source/work-view.css`,
+`check_site.py`.

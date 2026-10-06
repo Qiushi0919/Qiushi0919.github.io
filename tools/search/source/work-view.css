@@ -7,17 +7,17 @@ html.portrait-phone .site-toolbar::before{content:"";position:absolute;top:0;bot
 .work-view-controls,.work-view-hint{display:none}
 html.work-mobile .work-collection{--wu:calc(1px / var(--work-ui-scale))}
 html.work-mobile .work-collection>.works-head{display:contents}
-html.work-mobile .work-readingbar{position:sticky;top:var(--work-nav-offset);z-index:19;flex-wrap:wrap;gap:calc(8 * var(--wu));padding:calc(8 * var(--wu)) calc(6 * var(--wu));border-bottom:1px solid var(--line);background:#fff}
-html.work-mobile .work-readingbar :is(h1,h2){margin:0;color:#1d2d3a;font-size:calc(16 * var(--wu));line-height:1.35;font-weight:600}
+html.work-mobile .work-readingbar{position:sticky;top:var(--work-nav-offset);z-index:19;flex-wrap:wrap;gap:calc(8 * var(--wu));padding:calc(4 * var(--wu)) calc(6 * var(--wu));border-bottom:1px solid var(--line);background:#fff}
+html.work-mobile .work-readingbar :is(h1,h2){margin:0;color:#1d2d3a;font-size:calc(14 * var(--wu));line-height:1.35;font-weight:600}
 html.work-mobile .work-view-controls{display:flex;flex:0 0 auto;gap:0;padding:0;margin:0;min-width:0;border:1px solid #91a2b0;border-radius:calc(6 * var(--wu));overflow:hidden;background:#fff}
 .work-view-controls legend{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .work-view-option{position:relative;display:flex;cursor:pointer}
 .work-view-option input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-html.work-mobile .work-view-option>span{display:flex;align-items:center;justify-content:center;gap:calc(5 * var(--wu));min-width:calc(44 * var(--wu));min-height:calc(44 * var(--wu));padding:calc(7 * var(--wu)) calc(9 * var(--wu));font-size:calc(12 * var(--wu));line-height:1.25;color:#294052;background:#fff;white-space:nowrap}
+html.work-mobile .work-view-option>span{display:flex;align-items:center;justify-content:center;gap:calc(5 * var(--wu));min-width:calc(44 * var(--wu));min-height:calc(32 * var(--wu));padding:calc(4 * var(--wu)) calc(7 * var(--wu));font-size:calc(11 * var(--wu));line-height:1.25;color:#294052;background:#fff;white-space:nowrap}
 .work-view-option+.work-view-option{border-left:1px solid #91a2b0}
 .work-view-option input:checked+span{background:#e7eef4;color:#173e5a;font-weight:700}
 .work-view-option input:focus-visible+span{outline:2px solid #1772d0;outline-offset:-3px}
-html.work-mobile .work-view-option svg{width:calc(14 * var(--wu));height:calc(14 * var(--wu));flex-shrink:0}
+html.work-mobile .work-view-option svg{width:calc(12 * var(--wu));height:calc(12 * var(--wu));flex-shrink:0}
 html.work-mobile .work-collection>.works-head>.work-list-description{display:none}
 html.work-mobile .work-view-hint{display:block;margin:calc(8 * var(--wu)) calc(6 * var(--wu)) calc(12 * var(--wu));color:#526777;font-size:calc(12 * var(--wu));line-height:1.5}
 .work-view-hint[hidden]{display:none!important}
@@ -34,13 +34,13 @@ html.work-mobile .work-collection[data-work-view="large"] :is(.paper-copy,.work-
 html.work-mobile .work-collection[data-work-view="large"] .work-reading-details{grid-column:1;grid-row:3;min-width:0}
 html.work-mobile .work-collection[data-work-view="large"] :is(.paper-preview-image,.paper-preview-video,.work-preview>img,.work-preview>video){display:block;width:100%;height:auto!important;min-height:0!important;object-fit:contain}
 html.work-mobile .work-collection[data-work-view="large"] .paper-preview-stack{gap:calc(8 * var(--wu))}
-html.work-mobile .work-collection[data-work-view="large"] :is(.paper-copy h2,.work-copy h2){font-size:calc(16 * var(--wu))!important;line-height:1.4!important;margin:0}
-html.work-mobile .work-collection[data-work-view="large"] :is(.paper-authors,.paper-venue,.project-meta p,.project-kicker){font-size:calc(13 * var(--wu))!important;line-height:1.55!important}
+html.work-mobile .work-collection[data-work-view="large"] :is(.paper-copy h2,.work-copy h2){font-size:calc(15 * var(--wu))!important;line-height:1.4!important;margin:0}
+html.work-mobile .work-collection[data-work-view="large"] :is(.paper-authors,.paper-venue,.project-meta p,.project-kicker){font-size:calc(12 * var(--wu))!important;line-height:1.55!important}
 html.work-mobile .work-collection[data-work-view="large"] :is(.paper-authors,.project-meta){margin:calc(8 * var(--wu)) 0 calc(6 * var(--wu))}
-html.work-mobile .work-collection[data-work-view="large"] :is(.summary,.vase-summary){font-size:calc(14 * var(--wu))!important;line-height:1.65!important;margin-bottom:calc(12 * var(--wu))!important}
+html.work-mobile .work-collection[data-work-view="large"] :is(.summary,.vase-summary){font-size:calc(13 * var(--wu))!important;line-height:1.65!important;margin-bottom:calc(12 * var(--wu))!important}
 html.work-mobile .work-collection[data-work-view="large"] .nuedc-note{font-size:calc(12 * var(--wu));line-height:1.5}
-html.work-mobile .work-collection[data-work-view="large"] .paper-links{display:flex;flex-wrap:wrap;gap:calc(7 * var(--wu));font-size:calc(12 * var(--wu));line-height:1.4}
-html.work-mobile .work-collection[data-work-view="large"] .paper-resource :is(.resource-label,.resource-value){padding:calc(7 * var(--wu)) calc(7 * var(--wu));min-height:calc(36 * var(--wu))}
-html.work-mobile .work-collection[data-work-view="large"] .paper-resource .resource-icon{width:calc(14 * var(--wu));height:calc(14 * var(--wu));flex-basis:calc(14 * var(--wu))}
+html.work-mobile .work-collection[data-work-view="large"] .paper-links{display:flex;flex-wrap:wrap;gap:calc(5 * var(--wu));font-size:calc(10.5 * var(--wu));line-height:1.4}
+html.work-mobile .work-collection[data-work-view="large"] .paper-resource :is(.resource-label,.resource-value){gap:calc(3 * var(--wu));padding:calc(3 * var(--wu)) calc(5 * var(--wu));min-height:calc(24 * var(--wu))}
+html.work-mobile .work-collection[data-work-view="large"] .paper-resource .resource-icon{width:calc(11 * var(--wu));height:calc(11 * var(--wu));flex-basis:calc(11 * var(--wu))}
 html.work-mobile .work-collection[data-work-view="large"] .cover-zoom-hint{width:calc(24 * var(--wu));height:calc(24 * var(--wu))}
 @media print{.work-view-controls,.work-view-hint{display:none!important}.work-readingbar{position:static!important}}
