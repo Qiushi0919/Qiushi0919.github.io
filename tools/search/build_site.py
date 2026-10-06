@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'light-paper-two-previews-20261006'
+VERSION = 'light-paper-framework-pair-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -196,9 +196,7 @@ article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0
 article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
 article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .paper-preview-image{display:block;width:100%;height:auto;object-fit:contain}
-article.vase-card[data-work-category="paper"] .paper-preview{width:min(100%,190px)!important;justify-self:center}
 .paper-preview-stack{display:grid;gap:8px}
-html.portrait-phone article.vase-card[data-work-category="paper"] .paper-preview{width:min(100%,170px)!important}
 article[data-work-category="paper"] .cover-zoom-hint{right:3px;top:3px;width:27px;height:27px;border:0;border-radius:2px;background:rgba(255,255,255,.8);color:#657783;box-shadow:none;opacity:.65}
 article[data-work-category="paper"] .paper-preview:is(:hover,:focus-visible) .cover-zoom-hint{color:var(--blue);border:0;background:#fff;box-shadow:none;opacity:1}
 .paper-authors{font-weight:400}

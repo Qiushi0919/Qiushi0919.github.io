@@ -64,15 +64,15 @@ Paper lists omit the independent date-badge/institution header. Publication mont
 venue share one colored line without repeating the date (dark red for arXiv,
 blue for SPIE). The left column is
 30% of the row. VaseMuseum displays the existing museum interaction pipeline
-and interface as a compact vertical pair (190px wide on desktop, 170px on the
-portrait-phone canvas); the battery paper displays the NASA B0005 prediction
+and VaseAgent reliability framework as a compact vertical pair that uses the
+full image column; the battery paper displays the NASA B0005 prediction
 result. All images retain their original aspect ratios. The arXiv venue/month
 line is bold. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
 Clicking still opens all original full method/result figures. These cover images
 are selected from existing assets, not cropped, redrawn, stretched, or overwritten.
 The compact split resource tags use a gray label and a colored value; all existing
 hrefs, citation behavior and ordering are retained. The paper entrance tags read
-"arXiv | 2607.06374" and "SPIE | Vol. 14327"; the latter still resolves through
+"arXiv | 2607.06374" and "PDF | Vol. 14327"; the latter still resolves through
 the original publisher DOI. The article identifier 143271X remains in BibTeX. Only Qiushi's author name is
 emphasized; the other authors retain normal weight and their existing links.
 
