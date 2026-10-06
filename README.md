@@ -55,11 +55,20 @@ Zhang, Yang Zhao, Ling Shao, Hao Tang. The first four retain the manuscript's
 co-first-author daggers. Its structured data uses that same visible author list;
 "Submitted to NMI" remains a submission status. Battery RUL lists Qiushi Xie,
 matching the publisher's Crossref record (DOI 10.1117/12.3122481).
-The VaseMuseum card omits the former co-first-author/advisor explanatory row;
-the author superscripts and publication information remain visible.
+The VaseMuseum card omits the former co-first-author/advisor explanatory row.
+The battery card uses the single venue line "In Proc. SPIE, 2026 · EECS 2026",
+omitting the former month/volume/article-number/DOI explanatory row. Author
+superscripts remain visible, and the battery DOI is retained in its PDF link
+and BibTeX.
+
+The paper headers replace research-period descriptions with compact colored
+publication badges: `2026.07 · arXiv` for VaseMuseum and `2026.09 · Proc. SPIE` for
+the battery paper. Each badge is centered horizontally above its thumbnail,
+and the university marks remain aligned to the right. These labels identify the preprint/published venue, not a
+claim of NMI acceptance.
 
 VaseMuseum's five horizontal university marks are right-aligned on the same
-top row as the research date, matching the battery-paper header. They follow the manuscript's numbered
+top row as the publication badge, matching the battery-paper header. They follow the manuscript's numbered
 affiliations: HUST, Beijing Jiaotong, Peking, La Trobe, and UCAS. The BJTU and
 PKU horizontal originals are maintained under `tools/search/source/publication-logos/`
 and copied to the public portfolio assets. They were downloaded unchanged from

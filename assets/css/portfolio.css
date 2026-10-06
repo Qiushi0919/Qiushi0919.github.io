@@ -263,6 +263,11 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-links a{display:inline-flex;align-items:center;justify-content:center;min-height:30px;min-width:60px;padding:5px 13px;border:1px solid #30383e;border-radius:3px;color:#252d33;transition:color .15s ease,border-color .15s ease,background-color .15s ease}
 .paper-links a:hover,.paper-links a:focus-visible{color:var(--blue);border-color:var(--blue);background:#f3f8fe}
 .vase-topline{flex-wrap:nowrap;align-items:center}
+.paper-topline{display:grid;grid-template-columns:205px minmax(0,1fr);column-gap:24px;align-items:center}
+.paper-badge{justify-self:center;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;min-height:28px;padding:4px 13px;border-radius:3px;color:#fff;font-size:12px;font-weight:700;line-height:1.4;white-space:nowrap;box-shadow:0 3px 9px rgba(24,40,58,.16)}
+.paper-badge-arxiv{background:#b21e32}
+.paper-badge-spie{background:#315b98}
+
 .vase-topline .vase-kicker{flex:1 1 auto;min-width:0}
 .vase-logos{flex:0 0 auto;width:auto;justify-content:flex-end;margin-left:auto;gap:6px;flex-wrap:nowrap}
 .vase-card .vase-logos img,.vase-card .vase-logos img.wide{width:70px;max-width:70px;height:20px;object-fit:contain}
@@ -271,4 +276,4 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .citation-status{min-height:20px;margin:8px 0;color:#607483;font-size:12px}
 html.mobile-contact-ui .citation-text{height:calc(250px / var(--contact-ui-scale));padding:calc(10px / var(--contact-ui-scale));font-size:calc(12px / var(--contact-ui-scale))}
 html.mobile-contact-ui .citation-status{min-height:calc(20px / var(--contact-ui-scale));margin:calc(8px / var(--contact-ui-scale)) 0;font-size:calc(12px / var(--contact-ui-scale))}
-@media(max-width:760px){.paper-authors,.paper-venue{font-size:15px}}
+@media(max-width:760px){.paper-authors,.paper-venue{font-size:15px}.paper-topline{grid-template-columns:minmax(0,360px);row-gap:10px}.paper-topline .vase-logos,.paper-topline .project-logos{width:100%;flex-wrap:wrap}}
