@@ -49,7 +49,9 @@ def render(name, source):
             atlas.save(destination / sheet, 'WEBP', quality=85, method=6)
             sheets.append(sheet)
             atlas.close()
-        manifest = {'version': 1, 'fps': FPS, 'duration': duration, 'width': width,
+        manifest = {'version': 1, 'fps': FPS, 'duration': duration,
+                    'replayStart': 0 if name == 'battery-method' else 2,
+                    'width': width,
                     'height': height, 'columns': COLUMNS, 'tilesPerSheet': TILES,
                     'frames': frames, 'sheets': sheets,
                     'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest()}

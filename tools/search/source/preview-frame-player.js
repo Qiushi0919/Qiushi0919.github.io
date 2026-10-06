@@ -24,6 +24,7 @@
       }).then(data => {
         if (!(data.duration > 0 && data.duration < 300 && data.fps > 0 && data.fps <= 30 &&
               data.width > 0 && data.width <= 1280 && data.height > 0 && data.height <= 1280 &&
+              (data.replayStart === undefined || (Number.isFinite(data.replayStart) && data.replayStart >= 0 && data.replayStart < data.duration)) &&
               data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
               data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
               data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16))) {
@@ -58,13 +59,16 @@
       this.pending.set(index, pending);
       return pending;
     }
-    play() {
+    play({skipCover=false}={}) {
       if (this.running) return;
       this.running = true;
       const epoch = ++this.epoch;
       this.last = null;
-      this.manifest().then(() => {
-        if (this.running && epoch === this.epoch) this.tick();
+      this.manifest().then(data => {
+        if (this.running && epoch === this.epoch) {
+          if (skipCover) this.elapsed = data.replayStart || 0;
+          this.tick();
+        }
       }).catch(error => {
         if (this.running && epoch === this.epoch) this.fail(error);
       });

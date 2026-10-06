@@ -5,7 +5,7 @@
   ],
   "fps": 24,
   "fade_seconds": 0.5,
-  "duration_seconds": 9.0,
+  "duration_seconds": 4.5,
   "sound": false,
   "order": [
     "Complete hardware",
@@ -13,9 +13,9 @@
     "PDoA principle left / control loop right"
   ],
   "scene_duration_seconds": [
-    3.5,
-    3.5,
-    3.5
+    2,
+    2,
+    2
   ],
   "fit": "contain; original figures retained in full",
   "inputs": [

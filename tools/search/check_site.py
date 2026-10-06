@@ -116,7 +116,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert author.xpath('./sup/text()') == ['*'], str(p)
         assert not tree.xpath('//button//button'), str(p)
         for wrapper in tree.xpath('//div[@data-preview-motion]'):
-            assert len(wrapper.xpath('./button[@data-preview-play]')) == 1, str(p)
+            assert len(wrapper.xpath('./button[@data-preview-play]')) == (0 if 'no-preview-control' in wrapper.get('class','').split() else 1), str(p)
             assert len(wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/img[@class="preview-poster"]')) == 1, str(p)
             assert not wrapper.xpath('.//video'), str(p)
             canvas = wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/canvas[@data-preview-auto]')

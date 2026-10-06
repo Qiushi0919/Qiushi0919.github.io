@@ -420,12 +420,15 @@ html.portrait-phone .feature-overlay .close::before{font-size:calc(33px / var(--
 .preview-open>.cover-zoom-hint{z-index:2}
 .preview-media>.preview-play-control{position:absolute;z-index:3;left:0;bottom:1px;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:24px;padding:3px 6px;border:0;border-radius:4px;background:rgba(255,255,255,.5);color:rgba(32,60,78,.7);font:11px/1.2 var(--site-font);font-weight:400;box-shadow:none;cursor:pointer;pointer-events:auto}
 .preview-play-control:hover{background:rgba(232,240,246,.65);color:#203c4e}
+.preview-media[data-preview-state="loading"]>.preview-play-control{cursor:wait}
 .preview-media[data-preview-state="playing"]>.preview-play-control{visibility:hidden;pointer-events:none}
 .preview-play-control:focus-visible{outline:2px solid #1772d0;outline-offset:3px}
 .preview-play-icon{font-family:Arial,sans-serif;font-size:14px;line-height:1;min-width:13px}
 html.portrait-phone :is(.work-preview,.paper-preview).preview-media,html.portrait-phone .gallery-preview-media{padding-bottom:calc(26px / var(--portrait-ui-scale))!important}
 html.portrait-phone .preview-media>.preview-play-control{bottom:calc(1px / var(--portrait-ui-scale));min-height:calc(24px / var(--portrait-ui-scale));padding:calc(3px / var(--portrait-ui-scale)) calc(6px / var(--portrait-ui-scale));gap:calc(4px / var(--portrait-ui-scale));font-size:calc(11px / var(--portrait-ui-scale));border-radius:calc(4px / var(--portrait-ui-scale))}
 html.portrait-phone .preview-play-icon{font-size:calc(14px / var(--portrait-ui-scale));min-width:calc(13px / var(--portrait-ui-scale))}
+:is(.paper-preview,.work-preview).preview-media.no-preview-control,
+html.portrait-phone :is(.paper-preview,.work-preview).preview-media.no-preview-control{padding-bottom:0!important}
 .gallery-preview-media{display:block;width:100%;margin:0 0 16px;grid-column:1/-1;background:#fff}
 .gallery-preview-media>.preview-open{cursor:default;aspect-ratio:auto}
 .gallery-preview-media>.preview-open>canvas{width:100%;height:auto;max-height:52vh;min-height:0;object-fit:contain}

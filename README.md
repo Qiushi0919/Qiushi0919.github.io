@@ -586,3 +586,28 @@ wrappers; category/detail cards and footer/reading-toolbar lines also match.
 The final 0.8px separator uses a fractional inset stroke, rather than a CSS
 border that Chromium may round up to 1px. Every page footer is included, as
 explicitly requested, and the reading toolbar uses the same bottom stroke.
+
+
+The battery paper preview uses `framework-landscape.webp` as its static cover,
+including its first display and finish/reset state. The original NASA result plot
+remains in the detailed figure gallery. The 2400×1350 landscape source is retained
+and its intrinsic dimensions are recorded in `source/work-media-sizes.json`.
+Correction release and browser evidence: `docs/preview-timing-landscape-20261006/`.
+
+The current Intel preview scene lengths are 2/2/1.5/2.5/original/2 seconds;
+C-topic scenes are 2 seconds each. Shared timing constants in
+`render_competition_previews.py` also feed `prepend_competition_covers.py`.
+With the existing cover hold and 0.5-second overlapping fades, the displayed
+cover sequences total about 10.96 seconds (Intel) and 6.5 seconds (C-topic).
+
+Manual play/replay skips the introductory competition cover and begins at the
+first fully visible demo frame (`replayStart=2`). Automatic playback retains the
+existing opening cover. While a frame is loading the control immediately shows
+Loading/加载中 and prevents repeated clicks from resetting the pending load.
+Offscreen playback still releases decoded images; network/decode delays show
+feedback instead of silently accepting repeated restarts.
+
+The EECS list thumbnail has no play/replay button and no reserved control strip.
+It still automatically plays once after full visibility and resets to the
+landscape framework poster. Its expanded gallery retains manual replay.
+Playback code also supports previews that intentionally have no control.

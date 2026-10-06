@@ -360,6 +360,7 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       }).then(data => {
         if (!(data.duration > 0 && data.duration < 300 && data.fps > 0 && data.fps <= 30 &&
               data.width > 0 && data.width <= 1280 && data.height > 0 && data.height <= 1280 &&
+              (data.replayStart === undefined || (Number.isFinite(data.replayStart) && data.replayStart >= 0 && data.replayStart < data.duration)) &&
               data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
               data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
               data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16))) {
@@ -394,13 +395,16 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       this.pending.set(index, pending);
       return pending;
     }
-    play() {
+    play({skipCover=false}={}) {
       if (this.running) return;
       this.running = true;
       const epoch = ++this.epoch;
       this.last = null;
-      this.manifest().then(() => {
-        if (this.running && epoch === this.epoch) this.tick();
+      this.manifest().then(data => {
+        if (this.running && epoch === this.epoch) {
+          if (skipCover) this.elapsed = data.replayStart || 0;
+          this.tick();
+        }
       }).catch(error => {
         if (this.running && epoch === this.epoch) this.fail(error);
       });
@@ -517,13 +521,17 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
     ? entry.popup.getAttribute('aria-hidden') !== 'false'
     : document.body.classList.contains('overlay-active') || root.classList.contains('contact-modal-open'));
   const label = entry => {
+    if (!entry.control) return;
+    const loading = entry.media.dataset.previewState === 'loading';
     const replay = entry.hasPlayed;
-    const value = replay ? (english?'Replay':'重播') : (english?'Play':'播放');
-    entry.control.setAttribute('aria-label', value + (english?' animation':'动画'));
+    const value = loading ? (english?'Loading':'加载中') : replay ? (english?'Replay':'重播') : (english?'Play':'播放');
+    entry.control.setAttribute('aria-disabled', String(loading));
+    entry.control.setAttribute('aria-busy', String(loading));
+    entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
     entry.control.title = value;
     entry.control.querySelector('.preview-play-label').textContent = value;
-    entry.control.querySelector('.preview-play-icon').textContent = replay ? '↻' : '▶';
-    entry.control.dataset.previewAction = replay ? 'replay' : 'play';
+    entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
+    entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
   };
   const still = entry => {
     entry.player.reset();
@@ -531,7 +539,7 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
     label(entry);
   };
   const play = (entry, manual=false) => {
-    if (blocked(entry)) return;
+    if (blocked(entry) || entry.player.running) return;
     if (manual) {
       entry.manual = true;
       entry.finished = false;
@@ -540,7 +548,11 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       still(entry);
     }
     entry.started = true;
-    entry.player.play();
+    if (!entry.player.drawn) {
+      entry.media.dataset.previewState = 'loading';
+      label(entry);
+    }
+    entry.player.play({skipCover:manual});
   };
   const sync = () => {
     frame = 0;
@@ -582,13 +594,13 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
       }
     });
     label(entry);
-    entry.control.addEventListener('click', event => {
+    entry.control?.addEventListener('click', event => {
       event.stopPropagation();
       play(entry,true);
     });
     // The original gallery treats Space as a close shortcut. Preserve native
     // button activation here, while allowing Escape to keep closing the gallery.
-    entry.control.addEventListener('keydown', event => {
+    entry.control?.addEventListener('keydown', event => {
       if (event.key === ' ') event.stopPropagation();
     });
   }

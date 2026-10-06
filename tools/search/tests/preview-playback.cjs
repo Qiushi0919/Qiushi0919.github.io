@@ -1,12 +1,12 @@
 /* Playback state transitions, independent of a browser or specific layout. */
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const source=fs.readFileSync(require('node:path').join(__dirname,'../source/preview-playback.js'),'utf8');
-function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false}={}){
+function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false,defer=false,noControl=false}={}){
  const events={},docEvents={},handlers={},clicks={},attrs={},frames=new Map(),mutations=[];let next=0;
  const rootClasses=new Set(),bodyClasses=new Set();
  const icon={textContent:''},label={textContent:''};
  const control={dataset:{},setAttribute:(k,v)=>attrs[k]=v,querySelector:s=>s.includes('icon')?icon:label,addEventListener:(e,f)=>clicks[e]=f};
- const media={dataset:{previewState:'poster'},querySelector:()=>control};
+ const media={dataset:{previewState:'poster'},querySelector:()=>noControl?null:control};
  const overlay={hidden:!open,getAttribute:()=>overlay.hidden?'true':'false'};
  let rect={top,bottom,left:0,right:400,width:400,height:bottom-top};
  const canvas={dataset:{previewSequence:'demo.json'},closest:s=>s==='.preview-media'?media:(popup?overlay:null),getBoundingClientRect:()=>rect};
@@ -15,7 +15,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   constructor(c,url,callbacks){player=this;this.canvas=c;this.callbacks=callbacks;this.running=false;this.currentTime=0;this.plays=0;this.deny=deny}
   pause(){this.running=false}
   reset(){this.pause();this.currentTime=0}
-  play(){this.plays++;if(this.deny){this.callbacks.error();return}this.running=true;this.callbacks.playing()}
+  play(options){this.skipCover=options?.skipCover;this.plays++;if(this.deny){this.callbacks.error();return}this.running=true;if(!defer)this.callbacks.playing()}
  }
  const nav={getBoundingClientRect:()=>({top:0,bottom:50}),style:{position:'sticky',top:'0px'}};
  const bar={getBoundingClientRect:()=>({top:50,bottom:90}),style:{position:'sticky',top:'50px'}};
@@ -30,7 +30,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   MutationObserver:class{constructor(f){mutations.push(f)}observe(){}},Number});
  const flush=()=>{while(frames.size){const fs=[...frames.values()];frames.clear();fs.forEach(f=>f())}};
  flush();
- return {canvas,player,media,control,rootClasses,bodyClasses,motion,document,overlay,
+ return {canvas,player,media,control,attrs,label,rootClasses,bodyClasses,motion,document,overlay,
   move(t,b){rect={...rect,top:t,bottom:b,height:b-t};docEvents.scroll();flush()},
   view(){events['portfolio:workviewchange']();flush()},
   ended(){player.callbacks.ended();flush()},
@@ -61,5 +61,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  hidden.document.hidden=false;hidden.bodyClasses.add('overlay-active');hidden.changed();assert.equal(hidden.player.running,false);n++;
  gallery.ended();gallery.overlay.hidden=true;gallery.changed();gallery.overlay.hidden=false;gallery.changed();assert.equal(gallery.player.running,false);assert.equal(gallery.media.dataset.previewState,'poster');n++;
  const denied=scenario({top:100,bottom:400,deny:true});await Promise.resolve();denied.move(100,400);assert.equal(denied.player.plays,1);denied.player.deny=false;denied.click();assert.equal(denied.player.running,true);n++;
+ const slow=scenario({defer:true});slow.click();assert.equal(slow.media.dataset.previewState,'loading');assert.equal(slow.label.textContent,'加载中');assert.equal(slow.attrs['aria-busy'],'true');assert.equal(slow.player.skipCover,true);const starts=slow.player.plays;slow.click();slow.click();assert.equal(slow.player.plays,starts);slow.player.callbacks.playing();assert.equal(slow.media.dataset.previewState,'playing');assert.equal(slow.attrs['aria-busy'],'false');n++;
+ const automaticOnly=scenario({top:100,bottom:400,noControl:true});assert.equal(automaticOnly.player.running,true);automaticOnly.ended();automaticOnly.move(100,400);assert.equal(automaticOnly.media.dataset.previewState,'poster');assert.equal(automaticOnly.player.plays,1);n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and frame loading failure'}));
 })();

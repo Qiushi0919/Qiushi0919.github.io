@@ -37,13 +37,17 @@
     ? entry.popup.getAttribute('aria-hidden') !== 'false'
     : document.body.classList.contains('overlay-active') || root.classList.contains('contact-modal-open'));
   const label = entry => {
+    if (!entry.control) return;
+    const loading = entry.media.dataset.previewState === 'loading';
     const replay = entry.hasPlayed;
-    const value = replay ? (english?'Replay':'重播') : (english?'Play':'播放');
-    entry.control.setAttribute('aria-label', value + (english?' animation':'动画'));
+    const value = loading ? (english?'Loading':'加载中') : replay ? (english?'Replay':'重播') : (english?'Play':'播放');
+    entry.control.setAttribute('aria-disabled', String(loading));
+    entry.control.setAttribute('aria-busy', String(loading));
+    entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
     entry.control.title = value;
     entry.control.querySelector('.preview-play-label').textContent = value;
-    entry.control.querySelector('.preview-play-icon').textContent = replay ? '↻' : '▶';
-    entry.control.dataset.previewAction = replay ? 'replay' : 'play';
+    entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
+    entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
   };
   const still = entry => {
     entry.player.reset();
@@ -51,7 +55,7 @@
     label(entry);
   };
   const play = (entry, manual=false) => {
-    if (blocked(entry)) return;
+    if (blocked(entry) || entry.player.running) return;
     if (manual) {
       entry.manual = true;
       entry.finished = false;
@@ -60,7 +64,11 @@
       still(entry);
     }
     entry.started = true;
-    entry.player.play();
+    if (!entry.player.drawn) {
+      entry.media.dataset.previewState = 'loading';
+      label(entry);
+    }
+    entry.player.play({skipCover:manual});
   };
   const sync = () => {
     frame = 0;
@@ -102,13 +110,13 @@
       }
     });
     label(entry);
-    entry.control.addEventListener('click', event => {
+    entry.control?.addEventListener('click', event => {
       event.stopPropagation();
       play(entry,true);
     });
     // The original gallery treats Space as a close shortcut. Preserve native
     // button activation here, while allowing Escape to keep closing the gallery.
-    entry.control.addEventListener('keydown', event => {
+    entry.control?.addEventListener('keydown', event => {
       if (event.key === ' ') event.stopPropagation();
     });
   }

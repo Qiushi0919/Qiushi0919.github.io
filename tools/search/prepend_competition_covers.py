@@ -1,12 +1,12 @@
 """Compose bilingual covers and complete original demos into a seamless cycle.
 
 The first cover holds 1.5 seconds, then crossfades for 0.5 seconds. Original
-Intel clips are retimed (never cropped) to 4/4/3/3/original/3 seconds. C-topic
-figures each occupy 3.5-second segments. Every boundary has a 0.5-second overlap.
+Intel clips are retimed (never cropped) to 2/2/1.5/2.5/original/2 seconds. C-topic
+figures each occupy 2-second segments. Every boundary has a 0.5-second overlap.
 """
 from pathlib import Path
 import json
-from render_competition_previews import probe, cyclic_fades, encode, INTEL_FILES, FPS, FADE
+from render_competition_previews import probe, cyclic_fades, encode, INTEL_FILES, FPS, FADE, intel_durations, C_SCENE_SECONDS
 ROOT=Path(__file__).resolve().parent
 records=[]
 for project in ['intelcup-2026','nuedc-c']:
@@ -20,7 +20,7 @@ for project in ['intelcup-2026','nuedc-c']:
   if project=='intelcup-2026':
    files=[directory/'inputs'/name for name in INTEL_FILES]
    originals=[float(probe(path)[0]['format']['duration']) for path in files]
-   durations=[4,4,3,3,round(originals[4]*FPS)/FPS,3]
+   durations=intel_durations(originals)
    inputs += [['-i',str(path)] for path in files]
    for i,d in enumerate(durations):
     filters.append(f'[{i+1}:v]setpts=(PTS-STARTPTS)*{d/originals[i]:.12f},fps={FPS},scale=1080:720:force_original_aspect_ratio=decrease,pad=1080:720:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,tpad=stop_mode=clone:stop_duration=0.1,trim=duration={d},settb=1/{FPS},setpts=PTS-STARTPTS[v{i}]')
@@ -28,8 +28,8 @@ for project in ['intelcup-2026','nuedc-c']:
   else:
    public=ROOT.parent/'project-sites/nuedc-c/website/public'
    files=[public/'images/test-integrated.jpg',public/'images/software-unlock.png',public/'report/pdoa-principle.png',public/'report/program-flow.png']
-   inputs += [['-loop','1','-framerate',str(FPS),'-t','3.5','-i',str(path)] for path in files]
-   durations=[3.5,3.5,3.5]
+   inputs += [['-loop','1','-framerate',str(FPS),'-t',str(C_SCENE_SECONDS),'-i',str(path)] for path in files]
+   durations=[C_SCENE_SECONDS]*3
    for i in range(2):
     filters.append(f'[{i+1}:v]scale=1280:960:force_original_aspect_ratio=decrease,pad=1280:960:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,settb=1/{FPS},setpts=PTS-STARTPTS[v{i}]')
    filters += [f'[3:v]scale=716:936:force_original_aspect_ratio=decrease,pad=736:960:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,settb=1/{FPS},setpts=PTS-STARTPTS[left]',f'[4:v]scale=520:936:force_original_aspect_ratio=decrease,pad=544:960:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,format=yuv420p,settb=1/{FPS},setpts=PTS-STARTPTS[right]','[left][right]hstack=inputs=2[v2]']
