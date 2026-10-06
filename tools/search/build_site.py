@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'light-paper-bold-italic-20261006'
+VERSION = 'light-paper-clean-title-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -179,7 +179,6 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-copy h2{color:#202428;font-size:16px;line-height:1.4;font-weight:600}
 .paper-title{display:flex;align-items:center;gap:8px}
 .paper-title .title-link{flex:1;min-width:0}
-.paper-title-logo{display:block;flex:0 0 24px;width:24px;height:34px;object-fit:contain}
 .paper-authors{margin:7px 0 5px;color:#282e33;font-size:14px;line-height:1.65}
 .paper-author{white-space:nowrap}
 .paper-author-self .paper-author-name{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
@@ -225,7 +224,6 @@ html.mobile-contact-ui .citation-status{min-height:calc(20px / var(--contact-ui-
 @media(max-width:760px){html:not(.portrait-phone) article[data-work-category="paper"]{grid-template-columns:1fr!important;row-gap:14px!important}html:not(.portrait-phone) article[data-work-category="paper"] .paper-copy{grid-column:1!important;grid-row:2!important}html:not(.portrait-phone) .paper-affiliations{grid-row:3}}
 html.portrait-phone article[data-work-category="paper"]{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html.portrait-phone .paper-copy h2{font-size:12px;line-height:1.3}
-html.portrait-phone .paper-title-logo{flex-basis:18px;width:18px;height:26px}
 html.portrait-phone article[data-work-category="paper"] .cover-zoom-hint{width:calc(18px / var(--portrait-ui-scale));height:calc(18px / var(--portrait-ui-scale))}
 html.portrait-phone .paper-authors,html.portrait-phone .paper-venue{font-size:11px;line-height:1.4}
 html.portrait-phone .paper-authors{margin:5px 0 4px}

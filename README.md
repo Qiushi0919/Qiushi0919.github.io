@@ -46,8 +46,9 @@ them. The displayed author order still follows the newer user-provided manuscrip
 The single arXiv venue line reads "In arXiv, 2026.07" in English.
 
 The battery-paper resource tag
-retains the DOI publisher destination, with a labelled SPIE entrance; no public
-direct PDF URL is invented. VaseMuseum retains the small pottery icon immediately to the left of its title.
+retains the DOI publisher destination, with a PDF-labelled entrance; no public
+direct PDF URL is invented. VaseMuseum omits the small pottery title icon at the
+user's request; the original icon asset is preserved for later reuse.
 The VaseMuseum author order follows the
 user-supplied current manuscript: Qiushi Xie, Jiazi Wang, Nonghai Zhang, Zeyu
 Zhang, Yang Zhao, Ling Shao, Hao Tang. The first four retain the manuscript's
@@ -55,7 +56,7 @@ co-first-author daggers. Its structured data uses that same visible author list;
 No NMI submission status is shown in the paper entry. Battery RUL lists Qiushi Xie,
 matching the publisher's Crossref record (DOI 10.1117/12.3122481).
 The VaseMuseum card omits the former co-first-author/advisor explanatory row.
-The battery card uses the single venue line "In Proc. SPIE, 2026.09 · EECS 2026",
+The battery card uses the single venue line "In Proc. SPIE, 2026.09",
 omitting the former month/volume/article-number/DOI explanatory row. Author
 superscripts remain visible, and the battery DOI is retained in its PDF link
 and BibTeX.
