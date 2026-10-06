@@ -611,3 +611,8 @@ The EECS list thumbnail has no play/replay button and no reserved control strip.
 It still automatically plays once after full visibility and resets to the
 landscape framework poster. Its expanded gallery retains manual replay.
 Playback code also supports previews that intentionally have no control.
+
+The Chinese homepage title is `浙江大学2027级直博生-谢秋实（Qiushi Xie）`.
+The generated title, og:title and ProfilePage name use the same title. This
+change is limited to the Chinese homepage on both portfolio origins; deployment
+and verified title metadata are recorded in `docs/homepage-title-order-20261006/`.
