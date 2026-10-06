@@ -463,7 +463,7 @@ set `FONTCONFIG_FILE` if the renderer cannot discover installed fonts. C-topic
 uses the complete integrated hardware and unchanged running interface selected
 by the user. Embedded uses the supplied RA6M5 board photograph on the left and
 the original prediction plot on the right. Students and advisors share one
-cover-name line, with small raised ‡ and * marks. No demo values become metrics.
+cover-name line. The latest renderer uses a plain Arial ‡ and a small raised * mark. No demo values become metrics.
 
 Run `python3 prepend_competition_covers.py` after rendering. It composes the
 complete original Intel clips and C figures directly, with a 1.5-second cover
@@ -484,3 +484,32 @@ scroll restoration before checking visibility. No global viewport is modified.
 
 Build and check with `python3 build_site.py` and `python3 check_site.py`.
 Release, verification and preview records: `docs/large-preview-covers-20261006/`.
+
+### One-shot previews, replay controls and expanded videos (2026-10-06)
+
+All views, including desktop and Overview, now initially display their cover.
+Each animated preview plays once after the whole video enters the viewport below
+sticky navigation. Completion resets playback to zero and shows the static cover;
+scrolling, reopening and view changes do not replay a completed preview. Each
+preview has a separate, labeled Play/Replay button. Reduced motion requires
+manual playback, and hidden tabs/offscreen previews pause.
+
+The original thumbnail click still opens the gallery, which now starts with the
+same full preview video and its independent Play/Replay control. All original
+figures and experiments remain below. Background thumbnails pause during gallery
+use. List and featured gallery previews share the one-shot controller; original
+experiment videos retain their existing controls.
+
+Competition covers now show the full existing work title and a single combined
+student/advisor name line, without the small English event caption. Qiushi Xie is
+underlined. Literal ‡ uses Arial to avoid Times New Roman's ornamental double
+dagger; † remains equal contribution and * remains advisor/correspondence.
+The page's English and Chinese font choices otherwise stay unchanged. Longer
+full titles naturally wrap. Original images, sequence timings and fades remain.
+
+Build and check: `python3 build_site.py`, `python3 check_site.py`, and
+`node tests/preview-playback.cjs` (18 behavior scenarios). Rebuild covers first
+with `render_competition_covers.cjs`, then compose the four videos with
+`prepend_competition_covers.py`; Intel duration is 17.9583s and C-topic is 11s.
+Current release, exact-byte checks and browser evidence:
+`docs/preview-replay-covers-20261006/`.

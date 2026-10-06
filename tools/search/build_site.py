@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'large-preview-covers-20261006'
+VERSION = 'preview-replay-covers-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -115,7 +115,8 @@ def format_competition_team(card, language):
         else: author.text = person[language]
         if role in ('leader','advisor'):
             meaning = {'leader':('队长','Team lead'),'advisor':('指导教师','Advisor')}[role][0 if language == 'zh' else 1]
-            author.append(element('sup', '‡' if role == 'leader' else '*', title=meaning, aria_label=meaning))
+            author.append(element('sup', '‡' if role == 'leader' else '*', title=meaning, aria_label=meaning,
+                                  **{'class':'role-lead' if role == 'leader' else 'role-advisor'}))
         if index < len(all_people)-1: author.tail = ', '
         roster.append(author)
     meta.append(roster)
@@ -144,7 +145,7 @@ def format_vase_contributions(tree, language, is_detail):
             mark.set('title', meaning); mark.set('aria-label', meaning)
         if name == 'Zeyu Zhang':
             meaning = '项目负责人' if language == 'zh' else 'Project lead'
-            author.append(element('sup', '‡', title=meaning, aria_label=meaning))
+            author.append(element('sup', '‡', title=meaning, aria_label=meaning, **{'class':'role-lead'}))
     if is_detail:
         affiliations = card.xpath('.//div[@class="paper-affiliations"]')[0]
         affiliations.insert(0, element('p', '† 共同第一作者 · ‡ 项目负责人 · * 通讯作者' if language == 'zh' else '† Equal contribution · ‡ Project lead · * Corresponding author', **{'class':'paper-symbol-note'}))
@@ -420,6 +421,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             code = re.sub(r"    const runWhenIdle =.*?    const hydrateOverlay", '    const hydrateOverlay', code, flags=re.S)
             code = re.sub(r'    const preloadAllProjectMedia =.*?    const setOpen', '    const setOpen', code, flags=re.S)
             code = code.replace("    window.addEventListener('portfolio:ready', preloadAllProjectMedia, {once:true});\n", '')
+            code = code.replace("project.overlay.querySelectorAll('video').forEach(video => {\n        if (open", "project.overlay.querySelectorAll('video:not([data-preview-auto])').forEach(video => {\n        if (open")
         scripts.append(code)
     scripts.append("requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });")
     scripts.append((SOURCE / 'preview-playback.js').read_text())
@@ -746,18 +748,54 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         copy.append(details)
                 for video in tree.xpath('//article[@data-work-category]/button/video[@data-preview-auto]'):
                     button = video.getparent()
-                    button.set('data-preview-motion', '')
-                    button.set('data-preview-state', 'poster')
+                    video.attrib.pop('loop', None)
+                    video.attrib.pop('autoplay', None)
+                    video_id = button.get('id') + '-video'
+                    video.set('id', video_id)
+                    wrapper = element('div', **{'class':button.get('class', '') + ' preview-media',
+                                                'data-preview-motion':'','data-preview-state':'poster'})
+                    button.addprevious(wrapper)
+                    wrapper.append(button)
+                    button.set('class', 'preview-open')
                     poster = element('img', src=video.get('poster'), alt='', **{'class':'preview-poster', 'aria-hidden':'true'})
                     button.insert(button.index(video)+1, poster)
+                    control = element('button', type='button', aria_label='播放视频' if language == 'zh' else 'Play video',
+                                      aria_controls=video_id, **{'class':'preview-play-control','data-preview-play':''})
+                    control.append(element('span', '▶', **{'class':'preview-play-icon','aria-hidden':'true'}))
+                    control.append(element('span', '播放' if language == 'zh' else 'Play', **{'class':'preview-play-label'}))
+                    wrapper.append(control)
+                    # Clicking the original thumbnail still opens its full gallery.
+                    # A separate control avoids nested buttons and accidental opens.
+                    overlay_id = button.get('aria-controls')
+                    overlay = tree.xpath('//*[@id=$id]', id=overlay_id) if overlay_id else []
+                    if overlay:
+                        featured = deepcopy(wrapper)
+                        featured.set('class', 'preview-media gallery-preview-media')
+                        featured.set('data-preview-popup', '')
+                        featured_button = featured.find('button')
+                        # Gallery playback is not another gallery-open button.
+                        featured_button.tag = 'div'
+                        featured_button.attrib.clear()
+                        featured_button.set('class', 'preview-open')
+                        featured_video = featured_button.find('video')
+                        featured_video.set('id', video_id + '-expanded')
+                        featured_video.set('data-preview-popup', '')
+                        featured_video.set('data-src', video.get('data-src'))
+                        featured_control = featured.find('button')
+                        featured_control.set('aria-controls', video_id + '-expanded')
+                        for zoom_hint in featured.xpath('.//*[contains(concat(" ",@class," ")," cover-zoom-hint ")]'):
+                            zoom_hint.getparent().remove(zoom_hint)
+                        overlay[0][0].addnext(featured)
                 sizes = json.loads((SOURCE / 'work-media-sizes.json').read_text())
-                for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video'):
+                for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video | //div[@data-preview-motion]//img | //div[@data-preview-motion]//video'):
                     src = (media.get('src') or media.get('data-src') or '').lstrip('/')
                     dimensions = sizes.get(src)
                     if media.tag == 'video' and dimensions is None:
                         dimensions = [1920,1080]
                     if dimensions:
                         media.set('width', str(dimensions[0])); media.set('height', str(dimensions[1]))
+                        if media.tag == 'video' and 'data-preview-auto' in media.attrib:
+                            media.getparent().getparent().set('style', f'--preview-ratio:{dimensions[0]}/{dimensions[1]}')
                 if route == '' or category:
                     collection = element('section', **{'class':'work-collection', 'data-work-view':'overview', 'aria-label':'作品' if language == 'zh' else 'Works'})
                     works_head = tree.xpath('//*[@class="works-head"]')[0]
@@ -796,6 +834,13 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     footer.append(filing)
                 main.append(footer)
                 body.append(element('script', src=asset_prefix + 'js/portfolio-runtime.js?v=' + VERSION))
+                # Refresh covers and their video opening frames together even
+                # when a visitor has the prior release in the media cache.
+                for media in tree.iter():
+                    for attribute in ('src', 'data-src', 'poster'):
+                        value = media.get(attribute, '')
+                        if re.search(r'/portfolio-cover/(intelcup-2026|nuedc-c|embedded-2025)/(cover-(zh|en)\.jpg|preview-with-cover-(zh|en)\.mp4)$', value):
+                            media.set(attribute, value + '?v=' + VERSION)
                 target = destination / lang_prefix / route / 'index.html'
                 write(target, '<!doctype html>\n' + etree.tostring(tree, encoding='unicode', method='html') + '\n')
         # The standalone paper project has its own repository for the international site.

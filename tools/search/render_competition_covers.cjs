@@ -38,26 +38,33 @@ const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&
     const team = teams[intel?'projectCard':c?'nuedcProjectCard':'embeddedProjectCard'];
     const content = [`<rect width="1080" height="${height}" fill="white"/>`];
     const text = (value,x,y,size=26,opts='') => {
-      const chunks = String(value).split(/([†‡*])/);
       let restore = false;
-      const spans = chunks.map(chunk => {
-        if (/^[†‡*]$/.test(chunk)) { restore=true; return `<tspan dy="${-size*.32}" font-family="Times New Roman" font-size="${size*.65}">${esc(chunk)}</tspan>`; }
-        const dy=restore?size*.32:0;restore=false;
-        return `<tspan dy="${dy}" font-size="${size}">${esc(chunk)}</tspan>`;
-      }).join('');
+      const runs = Array.isArray(value) ? value : [{value:String(value)}];
+      const spans = runs.map(run => String(run.value).split(/([†‡*])/).filter(Boolean).map(chunk => {
+        const dy=restore?size*.32:0; restore=false;
+        if (chunk==='*') { restore=true; return `<tspan dy="${dy-size*.32}" font-family="Times New Roman" font-size="${size*.65}">*</tspan>`; }
+        const mark = /^[†‡]$/.test(chunk);
+        return `<tspan dy="${dy}" font-size="${size}" ${mark?'font-family="Arial" font-weight="400"':''} ${run.underline&&!mark?'text-decoration="underline"':''}>${esc(chunk)}</tspan>`;
+      }).join('')).join('');
       content.push(`<text x="${x}" y="${y}" font-size="${size}" ${opts}>${spans}</text>`);
     };
     const image = (name,x,y,w,h) => content.push(`<image href="${images[name]}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet"/>`);
     image('hust',40,30,250,72);
     image(intel?'intel-logo':c?'nuedc-logo':'embedded-logo',intel?935:918,28,intel?95:122,76);
     if (!intel && !c) image('renesas',768,38,122,54);
-    text(intel?'2026 Intel Cup':c?'2026 NUEDC · C':'2025 Embedded Competition',intel?911:c?902:736,124,20,'text-anchor="end" fill="#65727d"');
-    const titles = intel ? (zh?['智驭低空枢纽']:['Multimodal UAV Ground Station']) : c ? (zh?['无线通信数字钥匙实验系统']:['Wireless Digital Key Experimental System']) : (zh?['智能烟雾检测与预测系统']:['Intelligent Smoke Detection and Prediction']);
-    text(titles[0],40,170,zh?45:(intel?42:39),'font-weight="700"');
-    text(intel?(zh?'面向低空巡检的多模态地面站':'A ground station for low-altitude patrol'):c?(zh?'UWB 定位 · 身份验证 · 门锁控制':'UWB positioning · Identity verification · Door lock control'):(zh?'Renesas RA6M5 · 时序预测与自适应阈值':'Renesas RA6M5 · Time-series prediction and adaptive thresholds'),40,212,25,'fill="#63717d"');
-    const roster = team.members.map(person => person[lang]+(person.zh===team.leader?'‡':'')).join(' · ');
-    const advisors = team.advisors.map(person=>person[lang]+'*').join(' · ');
-    text(roster+' · '+advisors,40,259,zh?26:24);
+    const titles = intel ? (zh?['智驭低空枢纽（无人机地面站系统）']:['Intelligent Low-Altitude Hub','(UAV Ground Station System)']) :
+      c ? (zh?['基于无线通信的数字钥匙实验系统']:['Wireless Digital Key Experimental System']) :
+      (zh?['基于 RA MCU 嵌入式处理平台的智能烟雾检测系统','与自适应 AI 阈值优化算法']:
+      ['Intelligent Smoke Detection System and Adaptive AI','Threshold Optimization on an RA MCU Embedded Platform']);
+    const titleSize = (!intel&&!c) ? (zh?36:34) : (zh?45:(intel?42:39));
+    titles.forEach((line,index)=>text(line,40,titles.length===1?190:166+index*49,titleSize,'font-weight="700"'));
+    const roster=[];
+    [...team.members,...team.advisors].forEach((person,index)=>{
+      if(index) roster.push({value:' · '});
+      roster.push({value:person[lang],underline:person.zh==='谢秋实'});
+      roster.push({value:person.zh===team.leader?'‡':team.advisors.includes(person)?'*':''});
+    });
+    text(roster,40,270,zh?26:24);
     content.push('<path d="M40 320H1040" stroke="#dce3e7" stroke-width="1.5"/>');
     if (intel) {
       image('dk2500',50,346,285,220);

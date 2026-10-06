@@ -43,4 +43,4 @@ for project in ['intelcup-2026','nuedc-c']:
    'scene_seconds':durations,'cover_hold':1.5,'crossfade':FADE,'duration_seconds':duration,
    'retiming':'Full original clips; speed adjusted; no trimming of content'})
   print(json.dumps(records[-1]),flush=True)
-(ROOT/'docs/large-preview-covers-20261006/media-build.json').write_text(json.dumps(records,indent=2)+'\n')
+(ROOT/'docs/preview-replay-covers-20261006/media-build.json').write_text(json.dumps(records,indent=2)+'\n')

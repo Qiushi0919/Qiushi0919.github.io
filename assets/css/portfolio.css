@@ -405,13 +405,26 @@ html.portrait-phone .feature-overlay .close::before{font-size:calc(33px / var(--
 
 /* Keep the event/date row and integrate the source-confirmed award into it. */
 .work-list-card .competition-award{color:#945a2d;font-weight:600}
-/* This poster layer also restores a still after a preview has played in Overview. */
-[data-preview-motion]{position:relative}
-[data-preview-motion]>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:1}
-[data-preview-motion][data-preview-state="playing"]>.preview-poster{visibility:hidden}
-[data-preview-motion]>.cover-zoom-hint{z-index:2}
-
-html.work-mobile .work-collection[data-work-view="large"] [data-preview-motion]>img.preview-poster{height:100%!important}
+/* Render the standard double dagger directly, without shrinking or raising it. */
+.paper-authors sup.role-lead{font-family:Arial,sans-serif;font-size:1em;vertical-align:baseline;line-height:inherit;font-weight:400}
+/* Separate siblings keep playback independent from the original gallery button. */
+.preview-media{position:relative;min-width:0}
+.preview-media>.preview-open{position:relative;display:block;appearance:none;width:100%;height:auto;aspect-ratio:var(--preview-ratio);padding:0;margin:0;border:0;border-radius:0;background:#fff;overflow:hidden;cursor:zoom-in;line-height:0}
+.preview-open>video{display:block;width:100%;height:auto;aspect-ratio:var(--preview-ratio);object-fit:contain;background:#fff;pointer-events:none}
+.preview-open>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:1}
+.preview-media[data-preview-state="playing"] .preview-poster{visibility:hidden}
+.preview-open>.cover-zoom-hint{z-index:2}
+.preview-media>.preview-play-control{position:absolute;z-index:3;left:8px;bottom:8px;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:30px;padding:4px 9px;border:1px solid #718695;border-radius:5px;background:rgba(255,255,255,.96);color:#203c4e;font:12px/1.2 var(--site-font);font-weight:600;box-shadow:0 1px 3px #0001;cursor:pointer}
+.preview-play-control:hover{background:#e9f1f7;border-color:#315e7d}
+.preview-play-control:focus-visible{outline:2px solid #1772d0;outline-offset:3px}
+.preview-play-icon{font-family:Arial,sans-serif;font-size:17px;line-height:1;min-width:16px}
+html.portrait-phone .preview-media>.preview-play-control{left:calc(5px / var(--portrait-ui-scale));bottom:calc(5px / var(--portrait-ui-scale));min-height:calc(28px / var(--portrait-ui-scale));padding:calc(3px / var(--portrait-ui-scale)) calc(7px / var(--portrait-ui-scale));gap:calc(4px / var(--portrait-ui-scale));font-size:calc(11px / var(--portrait-ui-scale));border-radius:calc(4px / var(--portrait-ui-scale))}
+html.portrait-phone .preview-play-icon{font-size:calc(15px / var(--portrait-ui-scale));min-width:calc(14px / var(--portrait-ui-scale))}
+.gallery-preview-media{display:block;width:100%;margin:0 0 16px;grid-column:1/-1;background:#fff}
+.gallery-preview-media>.preview-open{cursor:default;aspect-ratio:auto}
+.gallery-preview-media>.preview-open>video{width:100%;height:auto;max-height:52vh;min-height:0;object-fit:contain}
+html.work-mobile .work-collection[data-work-view="large"] .preview-open>.preview-poster{height:100%!important}
+@media print{.preview-play-control{display:none!important}.preview-poster{visibility:visible!important}}
 /* Latin glyphs use Times New Roman; CJK glyphs fall through to Microsoft YaHei.
    System fallbacks cover devices that do not have these fonts installed. */
 :root{--site-font:"Times New Roman",Times,"Microsoft YaHei","微软雅黑","Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",serif}

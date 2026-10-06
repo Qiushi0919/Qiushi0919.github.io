@@ -67,7 +67,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         battery = tree.xpath('//*[@id="eecsCoverTrigger"]')
         if battery:
             if origin == 'cn':
-                preview = battery[0].xpath('./video[@muted and @loop and @playsinline and @data-preview-auto]')
+                preview = battery[0].xpath('./video[@muted and not(@loop) and @playsinline and @data-preview-auto]')
                 assert len(preview) == 1 and preview[0].get('data-src') == '/assets/portfolio-cover/eecs-2026/method-preview.mp4'
                 assert (directory / preview[0].get('data-src').lstrip('/')).is_file()
             else:
@@ -105,14 +105,26 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
                 assert len(card.xpath('.//span[@class="competition-award"]')) == 1, str(p)
         for trigger, project, dimensions in [('coverTrigger','intelcup-2026',['1080','720']), ('nuedcCoverTrigger','nuedc-c',['1280','960'])]:
             for video in tree.xpath(f'//*[@id="{trigger}"]/video'):
-                assert video.get('data-src') == f'/assets/portfolio-cover/{project}/preview-with-cover-{language}.mp4', str(p)
+                assert urlsplit(video.get('data-src')).path == f'/assets/portfolio-cover/{project}/preview-with-cover-{language}.mp4', str(p)
+                assert urlsplit(video.get('data-src')).query.startswith('v='), str(p)
                 assert [video.get('width'),video.get('height')] == dimensions, str(p)
-                assert all(attribute in video.attrib for attribute in ('muted','loop','playsinline','data-preview-auto')), str(p)
-                assert video.get('poster') == f'/assets/portfolio-cover/{project}/cover-{language}.jpg', str(p)
+                assert all(attribute in video.attrib for attribute in ('muted','playsinline','data-preview-auto')), str(p)
+                assert 'loop' not in video.attrib and 'autoplay' not in video.attrib, str(p)
+                assert urlsplit(video.get('poster')).path == f'/assets/portfolio-cover/{project}/cover-{language}.jpg', str(p)
+                assert urlsplit(video.get('poster')).query == urlsplit(video.get('data-src')).query, str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Zeyu Zhang"]'):
             assert author.xpath('./sup/text()') == ['†','‡'], str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Hao Tang"]'):
             assert author.xpath('./sup/text()') == ['*'], str(p)
+        assert not tree.xpath('//button//button'), str(p)
+        for wrapper in tree.xpath('//div[@data-preview-motion]'):
+            assert len(wrapper.xpath('./button[@data-preview-play]')) == 1, str(p)
+            assert len(wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/img[@class="preview-poster"]')) == 1, str(p)
+            assert len(wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/video[not(@loop) and not(@autoplay)]')) == 1, str(p)
+            if 'data-preview-popup' in wrapper.attrib:
+                assert wrapper.getprevious().get('class') == 'overlay-head', str(p)
+        for leader in tree.xpath('//sup[text()="‡"]'):
+            assert leader.get('class') == 'role-lead', str(p)
         if urlsplit(canonical).path in ('/', '/about/'):
             assert len(tree.xpath('//section[@class="profile-section"]')) == 1
         else:
