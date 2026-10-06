@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN" data-default-language="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <title>主页设备预览 · 谢秋实</title>
+  <link rel="stylesheet" href="styles.css?v=work-views-times-yahei-20261006">
+  <link rel="stylesheet" href="/assets/css/site-typography.css?v=work-views-times-yahei-20261006">
+</head>
+<body>
+  <header class="preview-tools">
+    <a class="preview-back" href="/nav/">← 网址导航</a>
+    <h1>主页设备预览</h1>
+    <fieldset class="device-modes">
+      <legend>设备模式</legend>
+      <label><input type="radio" name="device" value="tablet"><span>平板模式</span></label>
+      <label><input type="radio" name="device" value="phone" checked><span>手机模式</span></label>
+      <label><input type="radio" name="device" value="desktop"><span>电脑模式</span></label>
+    </fieldset>
+    <label class="preview-language">语言 <select id="previewLanguage"><option value="zh">中文</option><option value="en">English</option></select></label>
+    <a id="openPage" href="/" target="_blank" rel="noopener">打开原网页 ↗</a>
+  </header>
+  <main class="preview-stage">
+    <div id="deviceWindow"><iframe id="deviceFrame" title="个人主页设备预览"></iframe></div>
+    <p id="deviceDescription" aria-live="polite">手机 · 390 × 844</p>
+  </main>
+  <script src="preview.js?v=work-views-times-yahei-20261006"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "layout": "2 rows x 3 columns",
+  "dimensions": [
+    1080,
+    480
+  ],
+  "duration_seconds": 12,
+  "fps": 20,
+  "sound": false,
+  "fit": "contain; original aspect ratios, no cropping",
+  "inputs": [
+    {
+      "url": "https://qiushi0919.cn/assets/portfolio-cover/flight-summary.mp4",
+      "name": "flight-summary.mp4",
+      "sha256": "ca204e647fc3608d73568e2fb3803a8b446847ecd1358089a8574a25effa7af5"
+    },
+    {
+      "url": "https://qiushi0919.cn/assets/nationals/demos/self-check.mp4",
+      "name": "self-check.mp4",
+      "sha256": "6501c92ea8a40c548ab9085602d6f3069dfb4552a4763482cb85bb6cc4cc9a31"
+    },
+    {
+      "url": "https://qiushi0919.cn/assets/portfolio-cover/simulation.mp4",
+      "name": "simulation.mp4",
+      "sha256": "9ea5248adaa22c2344b2f47889217181d52d8833cebf8e8c0f3bc93b8347560e"
+    },
+    {
+      "url": "https://qiushi0919.cn/assets/portfolio-cover/free-route.mp4",
+      "name": "free-route.mp4",
+      "sha256": "cdd98e5c62c0791d467691c0c14a5ced667f9c0807fc46f3b085be8e5c1e8e28"
+    },
+    {
+      "url": "https://qiushi0919.cn/assets/portfolio-cover/gesture-gaze.mp4",
+      "name": "gesture-gaze.mp4",
+      "sha256": "db94c2b96d4875f73fd7403676047cc012352b48e5de8a9671ef58498111ede1"
+    },
+    {
+      "url": "https://qiushi0919.cn/assets/portfolio-cover/text-recognition.mp4",
+      "name": "text-recognition.mp4",
+      "sha256": "e6ce56b0df118c8c43bed8276ca0f4c4c4a2afc595362a1a4bb1aa68a993c6d1"
+    }
+  ]
+}

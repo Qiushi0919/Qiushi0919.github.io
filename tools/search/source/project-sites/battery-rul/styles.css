@@ -1,7 +1,7 @@
 :root{--ink:#191b1e;--muted:#5f6870;--accent:#305a75;--line:#dce2e6;--soft:#f7f9fa}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:80px}
-body{margin:0;color:var(--ink);background:#fff;font-family:"Times New Roman",Times,serif;font-size:19px;line-height:1.6}
+body{margin:0;color:var(--ink);background:#fff;font-family:"Times New Roman",Times,"Microsoft YaHei","微软雅黑","Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",serif;font-size:19px;line-height:1.6}
 button,input,select,textarea,pre,code{font:inherit}
 a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
 a:hover{color:#122f45}

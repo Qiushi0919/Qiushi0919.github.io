@@ -10,6 +10,12 @@ Two public entrances serve the same portfolio. The CN origin defaults to Chinese
 GitHub Pages defaults to English. Both offer a language switch and an origin
 switch. There is no IP-based redirect.
 
+The portfolio toolbar stays at the top during scrolling, with an opaque white
+background and a stacking order below project dialogs. Horizontal clipping does
+not create an extra scrolling ancestor. Portrait-phone checks use the established
+980px canvas and its physical display scale, rather than treating it as a narrow
+desktop iframe.
+
 ## Search-friendly static pages
 
 Each language has a homepage, a biography page, three category pages, and ten project pages. All
@@ -91,6 +97,50 @@ text occupy explicit consecutive grid rows, preventing the former overlap. Portr
 phones retain their established canvas and paper-sized typography. The digital-key
 and smoke-detector entries show an existing full-system photograph, with the complete
 methods, interfaces, and results still available in their preview overlays.
+
+The Intel Cup cover now arranges six existing public demonstration clips in two
+rows and three columns. It preserves complete frames and source playback speed
+with white letterboxing: 1080×480, 20fps, 12 seconds, silent MP4. Regenerate it
+with `tools/search/render_intel_preview.py`; the six source URLs and hashes are
+recorded beside the assets in `source/project-previews/intelcup-2026/sources.json`.
+The former montage and all full demonstrations remain available.
+
+## Mobile work reading and device preview
+
+List pages in both languages reuse one set of project cards. Mobile readers can
+select Overview or Large view in a works-only sticky toolbar. Overview keeps the
+compact image/text pair; Large view presents title → image/video → author,
+metadata, description, and resource links. The title-first order applies to all
+papers, competitions, and small projects. Desktop and the personal introduction
+retain their existing layout.
+
+The original 980px portrait-phone viewport remains unchanged. Controls and large
+view typography compensate only for its initial canvas scale, not user pinch
+zoom. A stable card ID preserves the project during switching. A guarded
+`sessionStorage` value retains the view and dismissed hint across refreshes and
+category pages within the same tab/origin; a new session starts in Overview.
+
+Maintain the shared behavior in `source/work-view.css`, `source/work-view.js`,
+and `source/work-media-sizes.json`. The generator injects these into all list
+pages. The local `/device-preview/` page offers tablet, phone, and desktop modes
+using the actual site in one iframe. Its entry is added to the local `/nav/`
+page, whose source was imported from the current public navigation rather than
+the stale separate Android-project copy. Both preview pages are excluded from
+the portfolio sitemap. Device simulation is not a real-device test.
+
+The C-task cover uses the approved complete-system photograph; all original
+figures remain in the overlay/detail page. See
+`docs/mobile-work-views-20261006/README.md` for verification and local previews.
+The October 6 release adds these mobile views, Intel 2×3 cover, sticky navigation,
+and the device-preview navigation entry. Shared text uses Times New Roman for
+Latin glyphs and Microsoft YaHei for Chinese glyphs, with system fallbacks on
+devices where either font is unavailable. The project does not redistribute
+proprietary font files. Maintain the stack in `source/site-typography.css`.
+The tablet preview uses a 648 CSS-pixel viewport inferred from the supplied
+1080px screenshot: the existing 132px portrait appears about 220px wide and the
+20px content inset about 33px. This triggers the original responsive profile
+layout; no extra tablet-profile CSS or device-specific DOM is added. Desktop
+and the established portrait-phone profile layout remain unchanged.
 
 The battery method overlay uses the locally exported 16:9 horizontal pipeline,
 with the original Visio topology and Times New Roman labels. The method figure

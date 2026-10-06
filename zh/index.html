@@ -7,8 +7,11 @@
     (() => {
       
       const viewport = document.querySelector('meta[name="viewport"]');
-      const screenWidth = Math.min(window.innerWidth, window.screen.width, window.screen.height);
-      const portraitPhone = screenWidth <= 600 && window.innerHeight > window.innerWidth;
+      const previewQuery = new URLSearchParams(location.search);
+      const previewPhone = window.parent !== window && previewQuery.get('preview-device') === 'phone';
+      const previewWidth = Number(previewQuery.get('preview-width')) || 390;
+      const screenWidth = previewPhone ? Math.max(320,Math.min(600,previewWidth)) : Math.min(window.innerWidth, window.screen.width, window.screen.height);
+      const portraitPhone = previewPhone || (screenWidth <= 600 && window.innerHeight > window.innerWidth);
       if (portraitPhone) {
         const portraitCanvasWidth = 980;
         const initialScale = Math.min(0.48, screenWidth / portraitCanvasWidth).toFixed(3);
@@ -22,7 +25,7 @@
   <link rel="icon" href="/assets/contact/qiushi-favicon.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/assets/contact/apple-touch-icon.png" sizes="180x180">
   <title>谢秋实（Qiushi Xie）— 浙江大学2027级直博生</title>
-  <meta name="robots" content="max-image-preview:large"><meta name="google-site-verification" content="DQWknuAUWHyLiXz3In7oY4WEeImcGE7x_mxJnuypLFw"><meta name="msvalidate.01" content="0801ACE4F9D3CBEB35E5396D9A8AA49F"><link rel="stylesheet" href="/assets/css/portfolio.css?v=work-list-tablet-20261006"><link rel="canonical" href="https://qiushi0919.cn/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/"><meta property="og:title" content="谢秋实（Qiushi Xie）— 浙江大学2027级直博生"><meta property="og:description" content="谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta property="og:image:alt" content="谢秋实 / Qiushi Xie"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta name="twitter:image:alt" content="谢秋实 / Qiushi Xie"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/", "https://scholar.google.com/citations?user=TkPyZ-UAAAAJ"], "subjectOf": [{"@id": "https://qiushi0919.cn/about/#page"}, {"@id": "https://qiushi0919.github.io/about/#page"}], "knowsAbout": ["Intelligent electromagnetic wave manipulation", "Trustworthy AI", "Wireless communication systems", "Metasurfaces", "Multimodal AI", "Intelligent information systems"]}, {"@type": "ProfilePage", "@id": "https://qiushi0919.cn/#page", "url": "https://qiushi0919.cn/", "name": "谢秋实（Qiushi Xie）— 浙江大学2027级直博生", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}, "primaryImageOfPage": {"@id": "https://qiushi0919.cn/#portrait"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}, {"@type": "ImageObject", "@id": "https://qiushi0919.cn/#portrait", "contentUrl": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "url": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "caption": "谢秋实 / Qiushi Xie"}]}</script></head>
+  <meta name="robots" content="max-image-preview:large"><meta name="google-site-verification" content="DQWknuAUWHyLiXz3In7oY4WEeImcGE7x_mxJnuypLFw"><meta name="msvalidate.01" content="0801ACE4F9D3CBEB35E5396D9A8AA49F"><link rel="stylesheet" href="/assets/css/portfolio.css?v=work-views-times-yahei-20261006"><link rel="canonical" href="https://qiushi0919.cn/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/"><meta property="og:title" content="谢秋实（Qiushi Xie）— 浙江大学2027级直博生"><meta property="og:description" content="谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta property="og:image:alt" content="谢秋实 / Qiushi Xie"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta name="twitter:image:alt" content="谢秋实 / Qiushi Xie"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/", "https://scholar.google.com/citations?user=TkPyZ-UAAAAJ"], "subjectOf": [{"@id": "https://qiushi0919.cn/about/#page"}, {"@id": "https://qiushi0919.github.io/about/#page"}], "knowsAbout": ["Intelligent electromagnetic wave manipulation", "Trustworthy AI", "Wireless communication systems", "Metasurfaces", "Multimodal AI", "Intelligent information systems"]}, {"@type": "ProfilePage", "@id": "https://qiushi0919.cn/#page", "url": "https://qiushi0919.cn/", "name": "谢秋实（Qiushi Xie）— 浙江大学2027级直博生", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}, "primaryImageOfPage": {"@id": "https://qiushi0919.cn/#portrait"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}, {"@type": "ImageObject", "@id": "https://qiushi0919.cn/#portrait", "contentUrl": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "url": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "caption": "谢秋实 / Qiushi Xie"}]}</script></head>
 <body>
   <a href="#main-content" class="skip-link">跳到作品</a><main class="page" id="main-content">
     <div class="site-toolbar" data-no-i18n>
@@ -47,24 +50,24 @@
     </section>
 
 
-    <header class="works-head">
-      <h2>作品</h2>
-      <p><span class="screen-only-copy">科研论文、竞赛项目与独立小项目；单击左侧缩略图查看详情，单击作品标题或下方链接访问对应页面。</span><span class="print-only-copy">科研论文、竞赛项目与独立小项目；单击作品标题或下方链接可访问对应网站。</span></p>
-    </header>
+    <section class="work-collection" data-work-view="overview" aria-label="作品"><header class="works-head">
+      <div class="work-readingbar"><h2>作品</h2>
+      <fieldset class="work-view-controls"><legend>作品阅读方式</legend><label class="work-view-option"><input type="radio" name="work-view" value="overview" checked><span><svg viewbox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="7" height="14" rx="1"></rect><path d="M12 4h6M12 8h6M12 12h6M12 16h6"></path></svg><span>紧凑总览</span></span></label><label class="work-view-option"><input type="radio" name="work-view" value="large"><span><svg viewbox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="2" width="16" height="9" rx="1"></rect><path d="M2 14h16M2 18h12"></path></svg><span>大图浏览</span></span></label></fieldset></div><p class="work-list-description"><span class="screen-only-copy">科研论文、竞赛项目与独立小项目；单击左侧缩略图查看详情，单击作品标题或下方链接访问对应页面。</span><span class="print-only-copy">科研论文、竞赛项目与独立小项目；单击作品标题或下方链接可访问对应网站。</span></p>
+    <p class="work-view-hint">点「大图浏览」，放大图片与文字。</p></header>
 
     
 
     <div class="homepage-project-context" data-nosnippet=""><article class="project-card vase-card" id="vaseProjectCard" data-work-category="paper">
       <button class="paper-preview vase-cover-trigger" id="vaseCoverTrigger" type="button" aria-expanded="false" aria-controls="vaseFeatureOverlay" aria-label="展开 VaseMuseum 论文关键流程与实验结果">
         <span class="paper-preview-stack">
-          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程">
-          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/reliability-clean.webp" alt="VaseAgent 可靠性框架">
+          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程" width="1355" height="572">
+          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/reliability-clean.webp" alt="VaseAgent 可靠性框架" width="1350" height="358">
         </span>
         <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
       <div class="vase-copy project-copy paper-copy">
         <h2 class="paper-title"><a class="title-link" href="/zh/papers/vasemuseum/" rel="noopener">VaseMuseum: Digital Intelligent Museum for Ancient Greek Pottery</a></h2>
-        <p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Jiazi Wang">Jiazi Wang<sup>†</sup></span>, <span class="paper-author" data-author-name="Nonghai Zhang">Nonghai Zhang<sup>†</sup></span>, <span class="paper-author" data-author-name="Zeyu Zhang"><a href="https://steve-zeyu-zhang.github.io/" target="_blank" rel="noopener noreferrer">Zeyu Zhang</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Yang Zhao"><a href="https://yangyangkiki.github.io/" target="_blank" rel="noopener noreferrer">Yang Zhao</a></span>, <span class="paper-author" data-author-name="Ling Shao"><a href="https://ling-shao.github.io/" target="_blank" rel="noopener noreferrer">Ling Shao</a></span>, <span class="paper-author" data-author-name="Hao Tang"><a href="https://ha0tang.github.io/" target="_blank" rel="noopener noreferrer">Hao Tang</a><sup>*</sup></span></p>
+        <div class="work-reading-details"><p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Jiazi Wang">Jiazi Wang<sup>†</sup></span>, <span class="paper-author" data-author-name="Nonghai Zhang">Nonghai Zhang<sup>†</sup></span>, <span class="paper-author" data-author-name="Zeyu Zhang"><a href="https://steve-zeyu-zhang.github.io/" target="_blank" rel="noopener noreferrer">Zeyu Zhang</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Yang Zhao"><a href="https://yangyangkiki.github.io/" target="_blank" rel="noopener noreferrer">Yang Zhao</a></span>, <span class="paper-author" data-author-name="Ling Shao"><a href="https://ling-shao.github.io/" target="_blank" rel="noopener noreferrer">Ling Shao</a></span>, <span class="paper-author" data-author-name="Hao Tang"><a href="https://ha0tang.github.io/" target="_blank" rel="noopener noreferrer">Hao Tang</a><sup>*</sup></span></p>
         <p class="paper-venue">In <em>arXiv</em>, 2026.07</p>
         <p class="vase-summary">面向古希腊陶器的数字智能博物馆，融合多模态感知、三维推理、外部知识检索与推理时可靠性控制，为文化遗产问答提供更可信、可验证的解释。</p>
         <div class="links paper-links"><a href="https://arxiv.org/pdf/2607.06374" target="_blank" rel="noopener" aria-label="VaseMuseum 论文 PDF" class="paper-resource resource-arxiv"><span class="resource-label"><svg class="resource-icon" viewbox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 3l15 18M20 3L5 21M4 7l11 14M19 4L8 18"></path></svg>arXiv</span><span class="resource-value">2607.06374</span></a><a href="https://github.com/AIGeeksGroup/VaseMuseum" target="_blank" rel="noopener" aria-label="VaseMuseum 项目代码" class="paper-resource resource-code"><span class="resource-label"><svg class="resource-icon" viewbox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.23c-3.34.72-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.8 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.3c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"></path></svg>GitHub</span><span class="resource-value">CODE</span></a><a href="https://aigeeksgroup.github.io/VaseMuseum/" target="_blank" rel="noopener" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Paper</span></a><a class="paper-cite paper-resource resource-cite" data-citation-key="vasemuseum" href="/assets/citations/vasemuseum.bib" download="vasemuseum.bib" aria-label="VaseMuseum BibTeX" aria-haspopup="dialog" aria-controls="citationDialog" data-citation-text="@misc{xie2026vasemuseum,
@@ -76,7 +79,7 @@
   url = {https://arxiv.org/abs/2607.06374}
 }
 "><span class="resource-label">Cite</span><span class="resource-value">BibTeX</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay vase-feature-overlay" id="vaseFeatureOverlay" aria-label="VaseMuseum 论文关键流程与实验结果">
         <div class="overlay-head">
@@ -97,13 +100,13 @@
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card eecs-card" id="eecsProjectCard" data-work-category="paper">
 
       <button class="paper-preview eecs-cover-trigger" id="eecsCoverTrigger" type="button" aria-expanded="false" aria-controls="eecsFeatureOverlay" aria-label="展开 EECS 2026 电池剩余寿命预测论文方法与实验结果">
-        <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/eecs-2026/nasa-results.webp" alt="NASA B0005 电池容量与剩余寿命预测结果">
+        <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/eecs-2026/nasa-results.webp" alt="NASA B0005 电池容量与剩余寿命预测结果" width="1400" height="833">
         <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy eecs-copy paper-copy">
         <h2><a class="title-link" href="/zh/papers/battery-rul/" rel="noopener">Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model</a></h2>
-        <p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a></span></p>
+        <div class="work-reading-details"><p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a></span></p>
         <p class="paper-venue">In <em>Proc. SPIE</em>, 2026.09</p>
         <p class="summary">面向锂离子电池剩余寿命预测，以 ALA 自适应优化 VMD 分解参数，并结合双向时序卷积与注意力机制建模容量退化，在 NASA 与 CALCE 数据集上完成跨数据源验证。</p>
         <div class="links paper-links"><a href="https://doi.org/10.1117/12.3122481" target="_blank" rel="noopener" aria-label="电池寿命预测论文 PDF（SPIE 出版社入口）" class="paper-resource resource-pdf"><span class="resource-label">PDF</span><span class="resource-value">Vol. 14327</span></a><a href="https://github.com/Qiushi0919/ALA-VMD-BiTCN-AM" target="_blank" rel="noopener" aria-label="电池寿命预测项目代码与数据" class="paper-resource resource-code"><span class="resource-label"><svg class="resource-icon" viewbox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.23c-3.34.72-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.8 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.3c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"></path></svg>GitHub</span><span class="resource-value">CODE</span></a><a href="https://qiushi0919.github.io/ALA-VMD-BiTCN-AM/" target="_blank" rel="noopener" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Paper</span></a><a class="paper-cite paper-resource resource-cite" data-citation-key="battery-rul" href="/assets/citations/battery-rul.bib" download="battery-rul.bib" aria-label="电池论文 BibTeX" aria-haspopup="dialog" aria-controls="citationDialog" data-citation-text="@inproceedings{xie2026batteryrul,
@@ -117,7 +120,7 @@
   url = {https://doi.org/10.1117/12.3122481}
 }
 "><span class="resource-label">Cite</span><span class="resource-value">BibTeX</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay eecs-feature-overlay" id="eecsFeatureOverlay" aria-label="EECS 2026 电池剩余寿命预测论文方法与实验结果">
         <div class="overlay-head">
@@ -138,12 +141,12 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card work-list-card" id="projectCard" data-work-category="competition">
       <button class="cover-trigger work-preview" id="coverTrigger" type="button" aria-expanded="false" aria-controls="featureOverlay" aria-label="展开智驭低空枢纽完整功能汇总">
-          <video autoplay muted loop playsinline preload="none" poster="/assets/portfolio-cover/portfolio-cover-poster.jpg" src="/assets/portfolio-cover/portfolio-cover.mp4"></video>
+          <video autoplay muted loop playsinline preload="none" poster="/assets/portfolio-cover/intelcup-2026/preview-2x3.jpg" src="/assets/portfolio-cover/intelcup-2026/preview-2x3.mp4" width="1080" height="480"></video>
         <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
       <div class="project-copy intel-copy  work-copy">
         <h2><a class="title-link" href="/zh/competitions/intelcup-2026/" rel="noopener">智驭低空枢纽（无人机地面站系统）</a></h2>
-        <div class="project-meta"><p>全国二等奖 · 前 7.83%</p><p>项目队长</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>全国二等奖 · 前 7.83%</p><p>项目队长</p></div>
         <span class="project-kicker">2026年4月—7月 · 2026年英特尔杯大学生电子设计竞赛嵌入式AI专题赛</span>
         <div class="project-bottom">
           <div>
@@ -151,7 +154,7 @@
             <div class="links paper-links work-links"><a href="https://qiushi0919.github.io/IntelCup-2026/" target="_blank" rel="noopener" aria-label="项目主页" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Project</span></a><a href="https://github.com/Qiushi0919/IntelCup-2026" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a></div>
           </div>
         </div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay" id="featureOverlay" aria-label="智驭低空枢纽功能汇总">
         <div class="overlay-head">
@@ -172,17 +175,17 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card nuedc-card work-list-card" id="nuedcProjectCard" data-work-category="competition">
       <button class="nuedc-cover-trigger work-preview" id="nuedcCoverTrigger" type="button" aria-expanded="false" aria-controls="nuedcFeatureOverlay" aria-label="展开数字钥匙实验系统的原理、实现与测试汇总">
-        <img src="/assets/portfolio-cover/nuedc-c/test-integrated.webp" alt="数字钥匙实验系统完整实物" loading="lazy" decoding="async"><span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
+        <img src="/assets/portfolio-cover/nuedc-c/test-integrated.webp" alt="数字钥匙实验系统完整实物" loading="lazy" decoding="async" width="1920" height="1440"><span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy nuedc-copy  work-copy">
         <h2><a class="title-link" href="/zh/competitions/nuedc-c/" rel="noopener">基于无线通信的数字钥匙实验系统</a></h2>
-        <div class="project-meta"><p>湖北赛区一等奖 · 华中科技大学该题目唯一省一队伍</p><p>项目队长</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>湖北赛区一等奖 · 华中科技大学该题目唯一省一队伍</p><p>项目队长</p></div>
         <span class="project-kicker">2026年7月—8月 · 2026年全国大学生电子设计竞赛（湖北赛区）</span>
         <p class="summary">基于 UWB ToF 测距、四天线 PDoA 测角和卡尔曼滤波，完成 4 位身份验证、三区域实时判定、迎宾声光提示与自动开闭锁。</p>
         <p class="nuedc-note">2026 年为全国大学生电子设计竞赛省赛年，当届不设置全国赛；湖北赛区一等奖为该年度赛事的最高奖项。</p>
         <div class="links paper-links work-links"><a href="https://qiushi0919.github.io/2026-NUEDC-C/" target="_blank" rel="noopener" aria-label="项目主页" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Project</span></a><a href="https://github.com/Qiushi0919/2026-NUEDC-C" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay nuedc-feature-overlay" id="nuedcFeatureOverlay" aria-label="数字钥匙实验系统原理、实现与测试汇总">
         <div class="overlay-head">
@@ -208,20 +211,20 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card lowcom-card work-list-card" id="lowcomProjectCard" data-work-category="competition">
       <button class="lowcom-cover-trigger work-preview" id="lowcomCoverTrigger" type="button" aria-expanded="false" aria-controls="lowcomFeatureOverlay" aria-label="展开低空通信信号增强项目技术方案与支撑条件">
-        <img loading="lazy" decoding="async" src="/assets/portfolio-cover/low-altitude-communication/page-11.webp" alt="低空通信信号增强系统三项核心技术总览">
+        <img loading="lazy" decoding="async" src="/assets/portfolio-cover/low-altitude-communication/page-11.webp" alt="低空通信信号增强系统三项核心技术总览" width="1392" height="770">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy lowcom-copy  work-copy">
         <h2><a class="title-link" href="/zh/competitions/lowcom/" rel="noopener">凌云睿通：基于波束跟踪的低空通信信号增强系统</a></h2>
-        <div class="project-meta"><p>主要团队成员</p><p>指导教师：尹海帆、谭力</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>主要团队成员</p><p>指导教师：尹海帆、谭力</p></div>
         <span class="project-kicker kicker-lines">
           <span>2024年11月—2025年6月 · 中国国际大学生创新大赛（2026）</span>
           <span>2025年4月—2026年4月 · 2项省级大学生创新创业训练计划项目</span>
         </span>
         <p class="summary">面向低空无人机通信覆盖与稳定性问题，采用动态可重构超表面接收阵列、信道感知与波束追踪技术，并结合干扰抑制算法，实现波束生成、快速切换和定向信号增强。</p>
         <div class="links paper-links work-links"><a href="https://haifanyin.cn/" target="_blank" rel="noopener" aria-label="MCSP Lab" class="paper-resource resource-lab"><span class="resource-label">MCSP</span><span class="resource-value">Lab</span></a><a href="https://cy.ncss.cn/" target="_blank" rel="noopener" aria-label="赛事页面" class="paper-resource resource-event"><span class="resource-label">Contest</span><span class="resource-value">Website</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay lowcom-feature-overlay" id="lowcomFeatureOverlay" aria-label="低空通信信号增强项目技术方案与支撑条件">
         <div class="overlay-head">
@@ -240,16 +243,16 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card embedded-card work-list-card" id="embeddedProjectCard" data-work-category="competition">
       <button class="embedded-cover-trigger work-preview" id="embeddedCoverTrigger" type="button" aria-expanded="false" aria-controls="embeddedFeatureOverlay" aria-label="展开智能烟雾检测系统的 AI 算法、双板卡对照与工程实现">
-        <img src="/assets/portfolio-cover/embedded-2025/finals-dual-board.webp" alt="全国总决赛双板卡演示实物" loading="lazy" decoding="async"><span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
+        <img src="/assets/portfolio-cover/embedded-2025/finals-dual-board.webp" alt="全国总决赛双板卡演示实物" loading="lazy" decoding="async" width="1600" height="1026"><span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy embedded-copy  work-copy">
         <h2><a class="title-link" href="/zh/competitions/embedded-2025/" rel="noopener">基于 RA MCU 嵌入式处理平台的智能烟雾检测系统与自适应 AI 阈值优化算法</a></h2>
-        <div class="project-meta"><p>全国总决赛二等奖 · 中部赛区一等奖 · 全国前3.97%</p><p>项目队长</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>全国总决赛二等奖 · 中部赛区一等奖 · 全国前3.97%</p><p>项目队长</p></div>
         <span class="project-kicker">2025年4月—8月 · 第八届（2025）全国大学生嵌入式芯片与系统设计竞赛芯片应用赛道</span>
         <p class="summary">在瑞萨 RA6M5 上部署轻量化烟雾时序预测网络，以双板卡分别运行 AI 预测与传统固定阈值方案进行现场对照，可提前 3–5 秒预警并将误报率控制在 0.5% 以下。系统采用低成本光学粉尘传感器与 MCU 本地推理，无需云端或高算力平台，兼顾预测性能、部署成本与离线可靠性。</p>
         <div class="links paper-links work-links"><a href="https://www.socchina.net/details?id=8a9b099de40642f48e40bdeb04649df1" target="_blank" rel="noopener" aria-label="赛事页面" class="paper-resource resource-event"><span class="resource-label">Contest</span><span class="resource-value">Website</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay embedded-feature-overlay" id="embeddedFeatureOverlay" aria-label="智能烟雾检测系统算法、双板卡对照与工程实现">
         <div class="overlay-head">
@@ -274,17 +277,17 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card side-project-card codex-tidy-card work-list-card" id="codexTidyProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="codexTidyCoverTrigger" type="button" aria-expanded="false" aria-controls="codexTidyFeatureOverlay" aria-label="展开 Codex Tidy 功能详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/codex-tidy/cover.webp" alt="Codex Tidy 产品封面：对话、文件、空间，一眼理清">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/codex-tidy/cover.webp" alt="Codex Tidy 产品封面：对话、文件、空间，一眼理清" width="1200" height="676">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/codex-tidy/" rel="noopener">Codex Tidy</a></h2>
-        <div class="project-meta"><p>对话、文件、空间，一眼理清。</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>对话、文件、空间，一眼理清。</p></div>
         <span class="project-kicker">2026年8月 · macOS 开源小工具</span>
       <p class="summary">查看 Codex 对话文件、项目工作目录与常见构建缓存，以保守规则清理可重建缓存；支持定位日志、在 Finder 中显示文件，并通过 Codex App Server 归档或删除对话。</p>
         <div class="links paper-links work-links"><a href="https://github.com/Qiushi0919/Codex-Tidy" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/Qiushi0919/Codex-Tidy/releases/tag/v0.1.0-beta.1" target="_blank" rel="noopener" aria-label="公开测试版" class="paper-resource resource-release"><span class="resource-label">Release</span><span class="resource-value">Beta</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="codexTidyFeatureOverlay" aria-label="Codex Tidy 功能详情">
         <div class="overlay-head">
@@ -311,17 +314,17 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card side-project-card work-list-card" id="sideProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="sideProjectCoverTrigger" type="button" aria-expanded="false" aria-controls="sideProjectFeatureOverlay" aria-label="展开 Boring Notch Focus 功能详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/boring-notch/thumbnail.webp" alt="Boring Notch Focus 宣传封面">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/boring-notch/thumbnail.webp" alt="Boring Notch Focus 宣传封面" width="1672" height="941">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/boring-notch-focus/" rel="noopener">Boring Notch Focus</a></h2>
-        <div class="project-meta"><p>独立维护 · 开源二次开发</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>独立维护 · 开源二次开发</p></div>
         <span class="project-kicker">2026年8月 · macOS 开源小项目</span>
       <p class="summary">基于 GPLv3 开源项目 Boring Notch 的功能增强版，把 MacBook 刘海区域扩展为音乐控制、文件暂存与番茄钟，并完善中文界面、权限引导和应用内更新体验。</p>
         <div class="links paper-links work-links"><a href="https://qiushi0919.github.io/boring-notch-focus/" target="_blank" rel="noopener" aria-label="项目主页" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Project</span></a><a href="https://github.com/Qiushi0919/boring-notch-focus" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/Qiushi0919/boring-notch-focus/releases/tag/v1.1.0" target="_blank" rel="noopener" aria-label="下载" class="paper-resource resource-release"><span class="resource-label">Release</span><span class="resource-value">Download</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="sideProjectFeatureOverlay" aria-label="Boring Notch Focus 功能详情">
         <div class="overlay-head">
@@ -348,17 +351,17 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card side-project-card alttab-card work-list-card" id="altTabProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="altTabCoverTrigger" type="button" aria-expanded="false" aria-controls="altTabFeatureOverlay" aria-label="展开 AltTab 多显示器窗口切换实际运行详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/alttab/concept.webp" alt="AltTab 多显示器窗口切换概念图">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/alttab/concept.webp" alt="AltTab 多显示器窗口切换概念图" width="1200" height="900">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/alttab/" rel="noopener">AltTab · 多显示器窗口切换</a></h2>
-        <div class="project-meta"><p>开源二次开发 · 多显示器功能实现</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>开源二次开发 · 多显示器功能实现</p></div>
         <span class="project-kicker">2026年8月 · macOS 开源小项目</span>
       <p class="summary">基于 AltTab for macOS 实现“所有屏幕”模式：快捷键触发后，每台显示器同步显示窗口切换界面，并按窗口所在屏幕分组；对于禁止窗口截图的微信等应用，自动回退显示应用图标。</p>
         <div class="links paper-links work-links"><a href="https://github.com/Qiushi0919/alt-tab-macos" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/lwouis/alt-tab-macos" target="_blank" rel="noopener" aria-label="上游项目" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">Upstream</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="altTabFeatureOverlay" aria-label="AltTab 多显示器窗口切换实际运行详情">
         <div class="overlay-head">
@@ -385,17 +388,17 @@
 
     </div><div class="homepage-project-context" data-nosnippet=""><article class="project-card side-project-card mindmap-card work-list-card" id="mindMapProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="mindMapCoverTrigger" type="button" aria-expanded="false" aria-controls="mindMapFeatureOverlay" aria-label="展开 MindMap 思维导图编辑器功能详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/mindmap/cover.webp" alt="MindMap 思维导图编辑器产品封面">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/mindmap/cover.webp" alt="MindMap 思维导图编辑器产品封面" width="1200" height="1200">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/mindmap/" rel="noopener">MindMap · 思维导图编辑器</a></h2>
-        <div class="project-meta"><p>华中科技大学软件课程设计 · 小组项目</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>华中科技大学软件课程设计 · 小组项目</p></div>
         <span class="project-kicker">2026年1月 · Python / PyQt5 课程设计</span>
       <p class="summary">基于 Python 和 PyQt5 的桌面思维导图编辑器，支持多层级节点、连接线管理、撤销重做、批注、链接、待办事项、Markdown 导入及 PNG / PDF 导出，并提供多主题与中英文界面。</p>
         <div class="links paper-links work-links"><a href="https://github.com/Qiushi0919/Mindmap-by-Python-and-PyQt" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/Qiushi0919/Mindmap-by-Python-and-PyQt/blob/main/%E8%AF%BE%E7%A8%8B%E8%AE%BE%E8%AE%A1%E6%8A%A5%E5%91%8A-%E8%B0%A2%E7%A7%8B%E5%AE%9E.pdf" target="_blank" rel="noopener" aria-label="课程报告" class="paper-resource resource-report"><span class="resource-label">Report</span><span class="resource-value">PDF</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="mindMapFeatureOverlay" aria-label="MindMap 思维导图编辑器功能详情">
         <div class="overlay-head">
@@ -419,7 +422,7 @@
         <div class="overlay-foot"><span>Python</span><span>PyQt5</span><span>Markdown</span><span>PNG / PDF</span></div>
       </section>
     </article>
-  </div><footer class="site-footer"><p>国内入口 / China: qiushi0919.cn · International: GitHub Pages</p><a href="https://qiushi0919.cn/">国内 · cn</a><a href="https://qiushi0919.github.io/">International · GitHub</a><a href="/zh/about/">个人介绍</a><a href="https://scholar.google.com/citations?user=TkPyZ-UAAAAJ">Google Scholar</a><a href="/zh/papers/">论文 / Papers</a><a href="/zh/competitions/">竞赛 / Competitions</a></footer></main>
+  </div></section><footer class="site-footer"><p>国内入口 / China: qiushi0919.cn · International: GitHub Pages</p><a href="https://qiushi0919.cn/">国内 · cn</a><a href="https://qiushi0919.github.io/">International · GitHub</a><a href="/zh/about/">个人介绍</a><a href="https://scholar.google.com/citations?user=TkPyZ-UAAAAJ">Google Scholar</a><a href="/zh/papers/">论文 / Papers</a><a href="/zh/competitions/">竞赛 / Competitions</a></footer></main>
 
   <dialog class="contact-dialog" id="contactDialog" aria-labelledby="contactDialogTitle">
     <div class="contact-dialog-card">
@@ -464,5 +467,5 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/portfolio-runtime.js?v=work-list-tablet-20261006"></script></body>
+  <script src="/assets/js/portfolio-runtime.js?v=work-views-times-yahei-20261006"></script></body>
 </html>

@@ -1,0 +1,6 @@
+/* Latin glyphs use Times New Roman; CJK glyphs fall through to Microsoft YaHei.
+   System fallbacks cover devices that do not have these fonts installed. */
+:root{--site-font:"Times New Roman",Times,"Microsoft YaHei","微软雅黑","Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",serif}
+body,button,input,select,textarea{font-family:var(--site-font)}
+.citation-text,.spie-wordmark,.renesas-wordmark,.profile-contact-icon::after,.profile-links .profile-origin-badge{font-family:var(--site-font)}
+.profile-contact-icon .cv-mark,.contact-preview-mark .cv-mark{font-family:"Times New Roman",Times,serif}

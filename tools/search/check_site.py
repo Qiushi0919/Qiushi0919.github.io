@@ -23,6 +23,20 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert not robots.can_fetch(agent, f'https://{host}/{path}')
     for p in directory.rglob('index.html'):
         tree = html.fromstring(p.read_text())
+        relative = p.relative_to(directory).as_posix()
+        if relative == 'device-preview/index.html':
+            assert tree.xpath('//meta[@name="robots"]/@content') == ['noindex,follow']
+            assert tree.xpath('//input[@name="device"]/@value') == ['tablet','phone','desktop']
+            assert tree.xpath('//input[@name="device" and @checked]/@value') == ['phone']
+            assert len(tree.xpath('//iframe[@id="deviceFrame"]')) == 1
+            for path in tree.xpath('//script/@src | //link[@rel="stylesheet"]/@href'):
+                clean = urlsplit(path).path
+                assert ((directory / clean.lstrip('/')) if clean.startswith('/') else (p.parent / clean)).is_file(), path
+            continue
+        if relative == 'nav/index.html':
+            assert origin == 'cn'
+            assert 'title: "主页设备预览"' in p.read_text() and 'url: "/device-preview/"' in p.read_text()
+            continue
         if p.relative_to(directory).as_posix() == 'battery-rul/index.html':
             assert origin == 'cn'
             assert tree.xpath('//link[@rel="canonical"]/@href') == ['https://qiushi0919.cn/battery-rul/']
@@ -30,7 +44,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert len(tree.xpath('//div[@class="method-grid"]/figure')) == 4
             assert len(tree.xpath('//video/source[@type="video/mp4"]')) == 1
             for src in tree.xpath('//img/@src | //video/@poster | //source/@src | //script/@src | //link[@rel="stylesheet"]/@href'):
-                assert (p.parent / src).is_file(), src
+                assert (p.parent / urlsplit(src).path).is_file(), src
             styles = (p.parent / 'styles.css').read_text()
             assert 'grid-template-columns:1fr' in styles
             assert 'position:sticky;top:0' in styles and 'Times New Roman' in styles
@@ -65,6 +79,20 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert 'https://scholar.google.com/citations?user=TkPyZ-UAAAAJ' in person['sameAs']
         assert not tree.xpath('//a[starts-with(@href,"https://scholar.google.com/scholar?")]')
         assert len(tree.xpath('//div[@class="site-toolbar"]/nav[@class="work-category-nav"]')) == 1
+        route = urlsplit(canonical).path
+        collections = tree.xpath('//section[@class="work-collection"]')
+        if route in ('/','/papers/','/competitions/','/projects/'):
+            assert len(collections) == 1, str(p)
+            assert collections[0].xpath('.//input[@name="work-view"]/@value') == ['overview','large']
+            assert collections[0].xpath('.//input[@name="work-view" and @checked]/@value') == ['overview']
+            assert len(collections[0].xpath('.//article[@data-work-category]')) == len(tree.xpath('//article[@data-work-category]'))
+            assert len(collections[0].xpath('.//div[@class="work-reading-details"]')) == len(tree.xpath('//article[@data-work-category]'))
+            assert len(collections[0].xpath('.//fieldset/legend')) == 1
+        else:
+            assert not collections
+        c_thumbnail = tree.xpath('//*[@id="nuedcCoverTrigger"]/img/@src')
+        if c_thumbnail:
+            assert c_thumbnail == ['/assets/portfolio-cover/nuedc-c/test-integrated.webp']
         if urlsplit(canonical).path == '/':
             assert len(tree.xpath('//section[@class="profile-section"]')) == 1
         else:

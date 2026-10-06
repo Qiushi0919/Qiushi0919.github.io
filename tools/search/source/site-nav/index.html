@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4056d6">
+  <meta name="description" content="谢秋实的个人主页、项目网站、服务器工具与互动页面导航。">
+  <meta name="application-name" content="站点导航">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="站点导航">
+  <link rel="manifest" href="manifest.webmanifest?v=20260827">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png?v=20260827">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=20260827">
+  <title>站点导航 · 谢秋实</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6fa;
+      --panel: #ffffff;
+      --panel-soft: #eef0ff;
+      --text: #172033;
+      --muted: #697386;
+      --faint: #9aa3b2;
+      --line: #e0e4ee;
+      --accent: #4056d6;
+      --accent-2: #118e97;
+      --accent-soft: #edf0ff;
+      --shadow: 0 12px 32px rgba(32, 43, 74, 0.08);
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #111522;
+      --panel: #191f30;
+      --panel-soft: #222944;
+      --text: #f0f2f8;
+      --muted: #aab2c4;
+      --faint: #7d879c;
+      --line: #2d354b;
+      --accent: #91a0ff;
+      --accent-2: #55c4ca;
+      --accent-soft: #252d53;
+      --shadow: 0 10px 32px rgba(0, 0, 0, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-width: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      transition: background-color 180ms ease, color 180ms ease;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      content: "";
+      opacity: .34;
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--accent) 7%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--accent) 7%, transparent) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 58rem);
+    }
+
+    button, input { font: inherit; }
+
+    a { color: inherit; }
+
+    .shell {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      border-top: 3px solid var(--accent);
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 91%, transparent);
+      box-shadow: 0 7px 24px rgba(32, 43, 74, .055);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-inner {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      background: var(--panel);
+      color: var(--accent);
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .brand-mark::after {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      right: -1px;
+      bottom: 1px;
+      border: 2px solid var(--panel);
+      border-radius: 50%;
+      background: var(--accent-2);
+      content: "";
+    }
+
+    .brand-copy { min-width: 0; }
+
+    .brand-copy strong,
+    .brand-copy small {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-copy strong { font-size: 15px; }
+    .brand-copy small { color: var(--muted); font-size: 11px; letter-spacing: 0.05em; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .time {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .icon-button:hover,
+    .icon-button:focus-visible {
+      border-color: var(--accent);
+      color: var(--accent);
+      outline: none;
+    }
+
+    main { padding: 16px 0 48px; }
+
+    .toolbar {
+      padding: 0 0 15px;
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--faint);
+      pointer-events: none;
+    }
+
+    #search {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 45px 9px 40px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      outline: none;
+      background: var(--panel);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    #search:focus { border-color: var(--accent); }
+
+    .shortcut {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 1px solid var(--line);
+      color: var(--faint);
+      background: var(--panel-soft);
+      border-radius: 6px;
+      padding: 1px 7px;
+      font-size: 12px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .filters::-webkit-scrollbar { display: none; }
+
+    .filter {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      padding: 7px 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter:hover,
+    .filter:focus-visible,
+    .filter.is-active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      outline: none;
+    }
+
+    .groups { display: grid; gap: 24px; }
+
+    .group { --group-accent: var(--accent); }
+    .group[data-group="service"] { --group-accent: #118e97; }
+    .group[data-group="tool"] { --group-accent: #7a5bc7; }
+    .group[data-group="play"] { --group-accent: #c56a2b; }
+
+    .group[hidden] { display: none; }
+
+    .group-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 9px;
+    }
+
+    .group-heading h2 {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .group-heading h2::before {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--group-accent);
+      content: "";
+    }
+
+    .group-heading span {
+      color: var(--faint);
+      font-size: 12px;
+    }
+
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .nav-card {
+      min-width: 0;
+      min-height: 88px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 12px 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+      text-decoration: none;
+      transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .nav-card:hover,
+    .nav-card:focus-visible {
+      border-color: color-mix(in srgb, var(--group-accent) 60%, var(--line));
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      outline: none;
+    }
+
+    .card-top {
+      display: grid;
+      grid-template-columns: 27px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-mark {
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--group-accent) 10%, var(--panel));
+      color: var(--group-accent);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .card-title {
+      min-width: 0;
+      padding-top: 0;
+      font-weight: 720;
+      line-height: 1.32;
+      font-size: 13px;
+    }
+
+    .arrow {
+      width: 23px;
+      height: 23px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--faint);
+      font-size: 14px;
+      line-height: 1;
+    }
+    .nav-card:hover .arrow { border-color: var(--group-accent); color: var(--group-accent); }
+
+    .nav-card--preview {
+      min-height: 0;
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .card-preview {
+      position: relative;
+      height: 112px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--group-accent) 18%, transparent), transparent 34%),
+        linear-gradient(135deg, color-mix(in srgb, var(--group-accent) 10%, var(--panel)), var(--panel-soft));
+      isolation: isolate;
+    }
+
+    .card-preview::after {
+      position: absolute;
+      inset: auto 0 0;
+      z-index: 2;
+      height: 34%;
+      pointer-events: none;
+      background: linear-gradient(to top, rgba(17, 24, 39, .13), transparent);
+      content: "";
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+
+    .card-preview::before {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(105deg, transparent 30%, color-mix(in srgb, var(--panel) 78%, transparent) 48%, transparent 66%);
+      background-size: 220% 100%;
+      content: "";
+      animation: preview-shimmer 1.15s ease-in-out infinite;
+      transition: opacity 180ms ease;
+    }
+
+    .card-preview.is-loaded::before,
+    .card-preview.is-error::before { opacity: 0; animation: none; }
+
+    @keyframes preview-shimmer {
+      from { background-position: 120% 0; }
+      to { background-position: -120% 0; }
+    }
+
+    .card-preview img {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      opacity: 0;
+      transform: scale(1.002);
+      transition: opacity 220ms ease, transform 320ms ease;
+    }
+
+    .card-preview.is-loaded img { opacity: 1; }
+    .nav-card--preview:hover .card-preview::after { opacity: 1; }
+    .nav-card--preview:hover .card-preview img { transform: scale(1.025); }
+
+    .preview-placeholder {
+      position: relative;
+      z-index: 0;
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+      color: var(--group-accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+
+    .card-preview:not(.card-preview--placeholder) .preview-placeholder { visibility: hidden; }
+    .card-preview.is-error .preview-placeholder { visibility: visible; }
+
+    .preview-placeholder strong {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--group-accent) 30%, var(--line));
+      border-radius: 15px;
+      background: color-mix(in srgb, var(--group-accent) 11%, var(--panel));
+      font-size: 14px;
+      box-shadow: 0 9px 22px color-mix(in srgb, var(--group-accent) 10%, transparent);
+    }
+
+    .card-content {
+      min-height: 72px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 10px 8px;
+    }
+
+    .nav-card:not(.nav-card--preview) .card-content {
+      min-height: 0;
+      display: contents;
+    }
+
+    .card-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 10.5px;
+    }
+
+    .card-description {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-destination {
+      flex: 0 0 auto;
+      color: var(--faint);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .empty {
+      display: none;
+      padding: 48px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty.is-visible { display: block; }
+
+    footer {
+      padding: 21px 0 34px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 980px) {
+      .link-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .toolbar { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      .link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 16px, 1200px); }
+      .header-inner { min-height: 52px; }
+      .brand-copy small, .time { display: none; }
+      main { padding: 10px 0 32px; }
+      .toolbar { padding-bottom: 11px; gap: 8px; }
+      #search { min-height: 39px; }
+      .filter { padding: 5px 9px; font-size: 12px; }
+      .link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .nav-card { min-height: 82px; border-radius: 11px; }
+      .nav-card--preview { min-height: 0; }
+      .card-preview { height: 91px; }
+      .card-content { min-height: 68px; padding: 7px 8px 7px; }
+      .card-top { grid-template-columns: 23px minmax(0, 1fr) 20px; gap: 5px; }
+      .card-mark { width: 23px; height: 23px; border-radius: 7px; font-size: 8px; }
+      .card-title { font-size: 12px; line-height: 1.24; }
+      .arrow { width: 20px; height: 20px; font-size: 11px; }
+      .card-bottom { font-size: 9.5px; }
+      .card-destination { display: none; }
+      .card-description { white-space: nowrap; }
+      .group-heading { align-items: center; }
+      .group-heading h2 { font-size: 15px; }
+      .group-heading span { font-size: 10px; }
+      .groups { gap: 21px; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/assets/css/site-typography.css?v=work-views-times-yahei-20261006">
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="https://qiushi0919.cn/" aria-label="返回谢秋实个人主页">
+        <span class="brand-mark" aria-hidden="true">←</span>
+        <span class="brand-copy"><strong>站点导航</strong><small>QIUSHI0919.CN</small></span>
+      </a>
+      <div class="header-actions">
+        <time class="time" id="clock" aria-label="当前时间"></time>
+        <button class="icon-button" id="headerSearchButton" type="button" aria-label="搜索站点" title="搜索站点">⌕</button>
+        <button class="icon-button" id="themeButton" type="button" aria-label="切换深色或浅色主题" title="切换主题">◐</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="toolbar" aria-label="搜索与分类筛选">
+      <label class="search-wrap" for="search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="search" type="search" autocomplete="off" placeholder="搜索站点、项目或工具……">
+        <span class="shortcut" aria-hidden="true">/</span>
+      </label>
+      <div class="filters" id="filters" aria-label="分类">
+        <button class="filter is-active" type="button" data-filter="all" aria-pressed="true">全部</button>
+        <button class="filter" type="button" data-filter="home" aria-pressed="false">主页与作品</button>
+        <button class="filter" type="button" data-filter="service" aria-pressed="false">学习与服务</button>
+        <button class="filter" type="button" data-filter="tool" aria-pressed="false">服务器工具</button>
+        <button class="filter" type="button" data-filter="play" aria-pressed="false">互动与游戏</button>
+      </div>
+    </section>
+
+    <div class="groups" id="groups" aria-live="polite"></div>
+    <p class="empty" id="empty">没有找到匹配的站点，请尝试其他关键词。</p>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <span>© 2026 谢秋实 · 个人站点导航</span>
+      <span><a href="https://qiushi0919.cn/">qiushi0919.cn</a> · <span id="linkCount">0</span> 个入口</span>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const host = window.location.hostname || "qiushi0919.cn";
+      const httpHost = `http://${host}`;
+
+      const groups = [
+        {
+          id: "home",
+          title: "主页与作品",
+          subtitle: "Profiles & Projects",
+          showPreviews: true,
+          links: [
+            { title: "谢秋实 · 个人主页", mark: "XQS", description: "科研论文与竞赛项目作品集", url: "https://qiushi0919.cn/", destination: "主页", preview: "https://qiushi0919.cn/nav/previews/home.webp" },
+            { title: "主页设备预览", mark: "VIEW", description: "平板、手机与电脑三种阅读预览", url: "/device-preview/", destination: "布局预览", preview: "https://qiushi0919.cn/nav/previews/home.webp" },
+            { title: "李梓昕 · 个人主页", mark: "LZX", description: "个人简介与科研经历", url: "https://qiushi0919.cn/lzx/", destination: "/lzx/", preview: "https://qiushi0919.cn/nav/previews/lzx.webp" },
+            { title: "智驭低空枢纽", mark: "IC", description: "2026 Intel Cup 无人机地面站", url: "https://qiushi0919.cn/intelcup-2026/", destination: "项目主页", preview: "https://qiushi0919.cn/nav/previews/intelcup.webp" },
+            { title: "数字钥匙实验系统", mark: "C", description: "2026 全国大学生电子设计竞赛 C 题", url: "https://qiushi0919.cn/nuedc-c/", destination: "项目主页", preview: "https://qiushi0919.cn/nav/previews/nuedc.webp" },
+            { title: "VaseMuseum", mark: "VM", description: "古希腊陶器数字智能博物馆", url: "https://qiushi0919.cn/vasemuseum/", destination: "项目主页", preview: "https://qiushi0919.cn/nav/previews/vasemuseum.webp" },
+            { title: "EECS 2026", mark: "P", description: "锂离子电池剩余寿命预测 · Proc. SPIE 14327", url: "https://doi.org/10.1117/12.3122481", destination: "SPIE 论文", preview: "https://qiushi0919.cn/nav/previews/eecs.webp" },
+            { title: "2025 嵌入式芯片赛", mark: "RA", description: "智能烟雾检测与自适应 AI 阈值", url: "https://qiushi0919.cn/embedded-2025/", destination: "项目页面", preview: "https://qiushi0919.cn/nav/previews/embedded.webp" }
+          ]
+        },
+        {
+          id: "service",
+          title: "学习与服务",
+          subtitle: "Study & Services",
+          showPreviews: true,
+          links: [
+            { title: "保研站", mark: "研", description: "保研信息与资料入口", url: "https://qiushi0919.cn/baoyan/", destination: "/baoyan/" },
+            { title: "物尽其用", mark: "¥/D", description: "电子用品使用时间与日均成本", url: "https://qiushi0919.cn/cost-per-day/", destination: "/cost-per-day/", preview: "https://qiushi0919.cn/nav/previews/cost.webp?v=20260821-1312" },
+            { title: "网站数据统计", mark: "数", description: "总访问、热门页面与近两周趋势", url: "https://qiushi0919.cn/stats/", destination: "简明统计", preview: "https://qiushi0919.cn/nav/previews/stats.webp" }
+          ]
+        },
+        {
+          id: "tool",
+          title: "服务器工具",
+          subtitle: "Server Tools",
+          links: [
+            { title: "矿业加仓盯盘", mark: "01", description: "行情与仓位辅助工具", url: `${httpHost}:8501/`, destination: ":8501" },
+            { title: "示例页面", mark: "02", description: "服务器页面示例", url: `${httpHost}:8502/`, destination: ":8502" },
+            { title: "ETF 底部涨幅回测", mark: "08", description: "ETF 策略回测工具", url: `${httpHost}:8508/`, destination: ":8508" },
+            { title: "低价盯盘", mark: "09", description: "低价标的监测工具", url: `${httpHost}:8509/`, destination: ":8509" }
+          ]
+        },
+        {
+          id: "play",
+          title: "互动与游戏",
+          subtitle: "Interactive & Games",
+          links: [
+            { title: "粉丝留言", mark: "MSG", description: "留言与互动页面", url: `${httpHost}:8504/`, destination: ":8504" },
+            { title: "VaseMuseum 展示站", mark: "3D", description: "数字博物馆交互演示", url: `${httpHost}:8510/`, destination: ":8510" },
+            { title: "贪吃蛇", mark: "S", description: "经典小游戏", url: `${httpHost}:8503/`, destination: ":8503" },
+            { title: "打地鼠", mark: "M", description: "反应力小游戏", url: `${httpHost}:8505/`, destination: ":8505" },
+            { title: "机场大厨", mark: "C1", description: "经营模拟小游戏", url: `${httpHost}:8506/`, destination: ":8506" },
+            { title: "机场大厨 · 新版", mark: "C2", description: "新版经营模拟小游戏", url: `${httpHost}:8507/`, destination: ":8507" }
+          ]
+        }
+      ];
+
+      const groupsEl = document.getElementById("groups");
+      const searchEl = document.getElementById("search");
+      const emptyEl = document.getElementById("empty");
+      const filtersEl = document.getElementById("filters");
+      const totalLinks = groups.reduce((count, group) => count + group.links.length, 0);
+      let activeFilter = "all";
+
+      document.getElementById("linkCount").textContent = String(totalLinks);
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>'"]/g, character => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+        })[character]);
+      }
+
+      function render() {
+        const query = searchEl.value.trim().toLocaleLowerCase("zh-CN");
+        let visibleLinks = 0;
+
+        groupsEl.innerHTML = groups.map(group => {
+          if (activeFilter !== "all" && group.id !== activeFilter) return "";
+
+          const links = group.links.filter(link => {
+            const haystack = `${link.title} ${link.description} ${group.title} ${group.subtitle}`.toLocaleLowerCase("zh-CN");
+            return !query || haystack.includes(query);
+          });
+
+          if (!links.length) return "";
+          visibleLinks += links.length;
+
+          return `
+            <section class="group" data-group="${escapeHtml(group.id)}">
+              <div class="group-heading">
+                <h2>${escapeHtml(group.title)}</h2>
+                <span>${escapeHtml(group.subtitle)} · ${links.length}</span>
+              </div>
+              <div class="link-grid">
+                ${links.map(link => `
+                  <a class="nav-card${group.showPreviews ? " nav-card--preview" : ""}" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
+                    ${group.showPreviews ? `
+                      <span class="card-preview${link.preview ? "" : " card-preview--placeholder"}" aria-hidden="true">
+                        <span class="preview-placeholder"><strong>${escapeHtml(link.mark)}</strong><span>${escapeHtml(link.description)}</span></span>
+                        ${link.preview ? `<img src="${escapeHtml(link.preview)}" alt="" loading="${group.id === "home" ? "eager" : "lazy"}" decoding="async">` : ""}
+                      </span>
+                    ` : ""}
+                    <span class="card-content">
+                      <span class="card-top">
+                        <span class="card-mark" aria-hidden="true">${escapeHtml(link.mark)}</span>
+                        <span class="card-title">${escapeHtml(link.title)}</span>
+                        <span class="arrow" aria-hidden="true">↗</span>
+                      </span>
+                      <span class="card-bottom">
+                        <span class="card-description">${escapeHtml(link.description)}</span>
+                        <span class="card-destination">${escapeHtml(link.destination)}</span>
+                      </span>
+                    </span>
+                  </a>
+                `).join("")}
+              </div>
+            </section>
+          `;
+        }).join("");
+
+        groupsEl.querySelectorAll(".card-preview img").forEach(image => {
+          const preview = image.closest(".card-preview");
+          const markLoaded = () => preview.classList.add("is-loaded");
+          if (image.complete && image.naturalWidth) markLoaded();
+          else image.addEventListener("load", markLoaded, { once: true });
+          image.addEventListener("error", () => preview.classList.add("is-error"), { once: true });
+        });
+
+        emptyEl.classList.toggle("is-visible", visibleLinks === 0);
+      }
+
+      filtersEl.addEventListener("click", event => {
+        const button = event.target.closest("[data-filter]");
+        if (!button) return;
+        activeFilter = button.dataset.filter;
+        filtersEl.querySelectorAll("[data-filter]").forEach(item => {
+          const active = item === button;
+          item.classList.toggle("is-active", active);
+          item.setAttribute("aria-pressed", String(active));
+        });
+        render();
+      });
+
+      searchEl.addEventListener("input", render);
+      document.getElementById("headerSearchButton").addEventListener("click", () => {
+        searchEl.focus({ preventScroll: false });
+        searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+      document.addEventListener("keydown", event => {
+        if (event.key === "/" && document.activeElement !== searchEl) {
+          event.preventDefault();
+          searchEl.focus();
+        }
+        if (event.key === "Escape" && document.activeElement === searchEl) {
+          searchEl.value = "";
+          searchEl.blur();
+          render();
+        }
+      });
+
+      const root = document.documentElement;
+      const themeButton = document.getElementById("themeButton");
+      const storedTheme = localStorage.getItem("nav-theme");
+      const initialTheme = storedTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      root.dataset.theme = initialTheme;
+
+      themeButton.addEventListener("click", () => {
+        const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+        root.dataset.theme = nextTheme;
+        localStorage.setItem("nav-theme", nextTheme);
+      });
+
+      const clock = document.getElementById("clock");
+      function updateClock() {
+        const now = new Date();
+        clock.dateTime = now.toISOString();
+        clock.textContent = now.toLocaleString("zh-CN", {
+          month: "2-digit", day: "2-digit", weekday: "short", hour: "2-digit", minute: "2-digit"
+        });
+      }
+      updateClock();
+      setInterval(updateClock, 30000);
+      render();
+    })();
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
+      });
+    }
+  </script>
+  <script async src="https://qiushi0919.cn/analytics/script.js" data-website-id="79fcfef2-7cfd-4cbd-93c4-3986ecef05f7" data-domains="qiushi0919.cn,qiushi0919.github.io"></script>
+</body>
+</html>

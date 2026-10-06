@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'work-list-tablet-20261006'
+VERSION = 'work-views-times-yahei-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -116,6 +116,9 @@ def format_project_list(card, is_detail):
         preview = wrapper.find('button')
         wrapper.addprevious(preview)
         card.remove(wrapper)
+        video = preview.find('video')
+        video.set('src', 'assets/portfolio-cover/intelcup-2026/preview-2x3.mp4')
+        video.set('poster', 'assets/portfolio-cover/intelcup-2026/preview-2x3.jpg')
     else:
         preview = card.find('button')
         # Dense carousels remain in the full preview; the list shows one clear work image.
@@ -159,6 +162,10 @@ def build():
     viewport_script = next(s.text for s in template.xpath('//head/script')
                            if 'portraitCanvasWidth' in (s.text or ''))
     viewport_script = viewport_script.replace("document.documentElement.classList.add('portfolio-loading');", '')
+    viewport_script = viewport_script.replace(
+        'const screenWidth = Math.min(window.innerWidth, window.screen.width, window.screen.height);',
+        "const previewQuery = new URLSearchParams(location.search);\n      const previewPhone = window.parent !== window && previewQuery.get('preview-device') === 'phone';\n      const previewWidth = Number(previewQuery.get('preview-width')) || 390;\n      const screenWidth = previewPhone ? Math.max(320,Math.min(600,previewWidth)) : Math.min(window.innerWidth, window.screen.width, window.screen.height);")
+    viewport_script = viewport_script.replace('const portraitPhone = screenWidth <= 600 && window.innerHeight > window.innerWidth;', 'const portraitPhone = previewPhone || (screenWidth <= 600 && window.innerHeight > window.innerWidth);')
     css = template.find('head/style').text.replace('url("assets/', 'url("../')
     # The browser never hides content while images load.
     css = re.sub(r'html\.portfolio-loading[^}]*}', '', css)
@@ -173,6 +180,9 @@ def build():
 .site-toolbar{gap:18px;padding-bottom:14px;margin-bottom:24px;border-bottom:1px solid var(--line)}
 .site-toolbar .work-category-nav{margin:0;max-width:none;justify-content:flex-end}
 .site-toolbar .language-switch{flex-shrink:0}
+body{overflow-x:clip}
+.site-toolbar{position:sticky;top:0;z-index:20;background:#fff;padding-top:10px}
+.project-card,.works-head{scroll-margin-top:80px}
 .nav-label-compact{display:none}
 .profile-mobile-summary{display:none}
 .profile-biography{display:contents}
@@ -326,6 +336,9 @@ html.portrait-phone .work-copy .summary{font-size:12px!important;line-height:1.4
 html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--portrait-ui-scale));height:calc(18px / var(--portrait-ui-scale))}
 
 '''
+    css += (SOURCE / 'work-view.css').read_text()
+    typography = (SOURCE / 'site-typography.css').read_text()
+    css += typography
     scripts = []
     for s in template.xpath('//script[not(@src)]'):
         code = s.text or ''
@@ -364,15 +377,26 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
       document.addEventListener('visibilitychange', () => videos.forEach(sync));
       motion.addEventListener('change', () => videos.forEach(sync));
     })();''')
+    scripts.append((SOURCE / 'work-view.js').read_text())
+    scripts.append((SOURCE / 'device-preview/frame-context.js').read_text())
     runtime = '\n'.join(scripts)
     cards = {e.get('id'): e for e in template.xpath('//article[@data-work-category]')}
 
     manifest = {'version': VERSION, 'origins': {}}
     for origin, base, default_lang in [('cn', CN, 'zh'), ('github', GH, 'en')]:
         destination = BUILD / origin
+        for preview_file in (SOURCE / 'device-preview').glob('*'):
+            if preview_file.name == 'frame-context.js': continue
+            content = preview_file.read_text()
+            if origin == 'github' and preview_file.name == 'index.html':
+                content = content.replace('data-default-language="zh"', 'data-default-language="en"')
+            write(destination / 'device-preview' / preview_file.name, content)
+        if origin == 'cn':
+            write(destination / 'nav/index.html', (SOURCE / 'site-nav/index.html').read_text())
         asset_prefix = '/assets/'
         path_prefix = '/'
         write(destination / 'assets/css/portfolio.css', css)
+        write(destination / 'assets/css/site-typography.css', typography)
         write(destination / 'assets/js/portfolio-runtime.js', runtime)
         for source_file in (SOURCE / 'fonts').glob('*'):
             if source_file.is_file():
@@ -399,6 +423,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         for source_file in figures.rglob('*'):
             if source_file.is_file():
                 target = destination / 'assets/portfolio-cover' / source_file.relative_to(figures)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(source_file.read_bytes())
+        for source_file in (SOURCE / 'project-previews').rglob('*'):
+            if source_file.is_file() and source_file.suffix in ('.mp4', '.jpg', '.webp', '.svg'):
+                target = destination / 'assets/portfolio-cover' / source_file.relative_to(SOURCE/'project-previews')
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
         for source_file in (SOURCE / 'citations').glob('*.bib'):
@@ -657,6 +686,46 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     if e.tag == 'video': e.set('preload', 'none')
                 main = tree.xpath('//*[contains(concat(" ",@class," ")," page ")]')[0]
                 main.set('id', 'main-content')
+                if route == '' or category:
+                    for copy in tree.xpath('//article[@data-work-category]//div[contains(concat(" ",@class," ")," paper-copy ") or contains(concat(" ",@class," ")," work-copy ")]'):
+                        details = element('div', **{'class':'work-reading-details'})
+                        for child in list(copy):
+                            if child.tag != 'h2': details.append(child)
+                        copy.append(details)
+                sizes = json.loads((SOURCE / 'work-media-sizes.json').read_text())
+                for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video'):
+                    src = (media.get('src') or media.get('data-src') or '').lstrip('/')
+                    dimensions = sizes.get(src)
+                    if media.tag == 'video':
+                        dimensions = [1080,480] if 'intelcup-2026' in src else [1920,1080]
+                    if dimensions:
+                        media.set('width', str(dimensions[0])); media.set('height', str(dimensions[1]))
+                if route == '' or category:
+                    collection = element('section', **{'class':'work-collection', 'data-work-view':'overview', 'aria-label':'作品' if language == 'zh' else 'Works'})
+                    works_head = tree.xpath('//*[@class="works-head"]')[0]
+                    main.insert(main.index(works_head), collection)
+                    collection.append(works_head)
+                    readingbar = element('div', **{'class':'work-readingbar'})
+                    works_head.insert(0, readingbar)
+                    readingbar.append(heading)
+                    controls = element('fieldset', **{'class':'work-view-controls'})
+                    controls.append(element('legend', '作品阅读方式' if language == 'zh' else 'Work reading view'))
+                    for value, label, icon in [('overview', '紧凑总览' if language == 'zh' else 'Overview', '<rect x="2" y="3" width="7" height="14" rx="1"/><path d="M12 4h6M12 8h6M12 12h6M12 16h6"/>'), ('large', '大图浏览' if language == 'zh' else 'Large view', '<rect x="2" y="2" width="16" height="9" rx="1"/><path d="M2 14h16M2 18h12"/>')]:
+                        option = element('label', **{'class':'work-view-option'})
+                        radio = element('input', type='radio', name='work-view', value=value)
+                        if value == 'overview': radio.set('checked', '')
+                        option.append(radio)
+                        content = element('span')
+                        content.append(html.fromstring('<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">'+icon+'</svg>'))
+                        content.append(element('span', label))
+                        option.append(content)
+                        controls.append(option)
+                    readingbar.append(controls)
+                    works_head.find('p').set('class', 'work-list-description')
+                    works_head.append(element('p', '点「大图浏览」，放大图片与文字。' if language == 'zh' else 'Switch to Large view for bigger images and text.', **{'class':'work-view-hint'}))
+                    for card in list(main):
+                        if (card.tag == 'article' and card.get('data-work-category')) or card.get('class') == 'homepage-project-context':
+                            collection.append(card)
                 skip = element('a', '跳到作品' if language == 'zh' else 'Skip to content', href='#main-content', **{'class':'skip-link'})
                 body.insert(0, skip)
                 footer = element('footer', **{'class':'site-footer'})
@@ -703,7 +772,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         write(destination / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n' + etree.tostring(sitemap, encoding='unicode', pretty_print=True))
         alias = f'<!doctype html><html lang="{default_lang}"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url={base}"><link rel="canonical" href="{base}"><title>Qiushi Xie / 谢秋实</title></head><body><a href="{base}">Qiushi Xie / 谢秋实 · Homepage</a></body></html>\n'
         write(destination / 'portfolio-cover.html', alias)
-        write(destination / '404.html', f'<!doctype html><html lang="{default_lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>404 · Qiushi Xie</title><style>body{{font:16px system-ui;max-width:600px;margin:12vh auto;padding:24px;line-height:1.8}}a{{color:#1772d0}}</style></head><body><h1>404</h1><p>页面不存在 / Page not found.</p><a href="{path_prefix}">返回主页 / Homepage</a></body></html>\n')
+        write(destination / '404.html', f'<!doctype html><html lang="{default_lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>404 · Qiushi Xie</title><link rel="stylesheet" href="/assets/css/site-typography.css"><style>body{{font-size:16px;max-width:600px;margin:12vh auto;padding:24px;line-height:1.8}}a{{color:#1772d0}}</style></head><body><h1>404</h1><p>页面不存在 / Page not found.</p><a href="{path_prefix}">返回主页 / Homepage</a></body></html>\n')
         manifest['origins'][origin] = {str(p.relative_to(destination)): hashlib.sha256(p.read_bytes()).hexdigest() for p in destination.rglob('*') if p.is_file()}
     # Preserve each existing project URL while moving the portfolio to the root.
     legacy = BUILD / 'github-legacy'

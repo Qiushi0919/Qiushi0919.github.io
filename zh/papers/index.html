@@ -7,8 +7,11 @@
     (() => {
       
       const viewport = document.querySelector('meta[name="viewport"]');
-      const screenWidth = Math.min(window.innerWidth, window.screen.width, window.screen.height);
-      const portraitPhone = screenWidth <= 600 && window.innerHeight > window.innerWidth;
+      const previewQuery = new URLSearchParams(location.search);
+      const previewPhone = window.parent !== window && previewQuery.get('preview-device') === 'phone';
+      const previewWidth = Number(previewQuery.get('preview-width')) || 390;
+      const screenWidth = previewPhone ? Math.max(320,Math.min(600,previewWidth)) : Math.min(window.innerWidth, window.screen.width, window.screen.height);
+      const portraitPhone = previewPhone || (screenWidth <= 600 && window.innerHeight > window.innerWidth);
       if (portraitPhone) {
         const portraitCanvasWidth = 980;
         const initialScale = Math.min(0.48, screenWidth / portraitCanvasWidth).toFixed(3);
@@ -22,29 +25,29 @@
   <link rel="icon" href="/assets/contact/qiushi-favicon.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/assets/contact/apple-touch-icon.png" sizes="180x180">
   <title>论文 | 谢秋实 Qiushi Xie</title>
-  <link rel="stylesheet" href="/assets/css/portfolio.css?v=work-list-tablet-20261006"><link rel="canonical" href="https://qiushi0919.cn/papers/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/papers/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/papers/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/papers/"><meta property="og:title" content="论文 | 谢秋实 Qiushi Xie"><meta property="og:description" content="谢秋实的论文：VaseMuseum: Digital Intelligent Museum for Ancient Greek Pottery, Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/papers/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta property="og:image:alt" content="谢秋实 / Qiushi Xie"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta name="twitter:image:alt" content="谢秋实 / Qiushi Xie"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/", "https://scholar.google.com/citations?user=TkPyZ-UAAAAJ"], "subjectOf": [{"@id": "https://qiushi0919.cn/about/#page"}, {"@id": "https://qiushi0919.github.io/about/#page"}], "knowsAbout": ["Intelligent electromagnetic wave manipulation", "Trustworthy AI", "Wireless communication systems", "Metasurfaces", "Multimodal AI", "Intelligent information systems"]}, {"@type": "CollectionPage", "@id": "https://qiushi0919.cn/papers/#page", "url": "https://qiushi0919.cn/papers/", "name": "论文 | 谢秋实 Qiushi Xie", "description": "谢秋实的论文：VaseMuseum: Digital Intelligent Museum for Ancient Greek Pottery, Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}]}</script></head>
+  <link rel="stylesheet" href="/assets/css/portfolio.css?v=work-views-times-yahei-20261006"><link rel="canonical" href="https://qiushi0919.cn/papers/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/papers/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/papers/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/papers/"><meta property="og:title" content="论文 | 谢秋实 Qiushi Xie"><meta property="og:description" content="谢秋实的论文：VaseMuseum: Digital Intelligent Museum for Ancient Greek Pottery, Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/papers/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta property="og:image:alt" content="谢秋实 / Qiushi Xie"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta name="twitter:image:alt" content="谢秋实 / Qiushi Xie"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/", "https://scholar.google.com/citations?user=TkPyZ-UAAAAJ"], "subjectOf": [{"@id": "https://qiushi0919.cn/about/#page"}, {"@id": "https://qiushi0919.github.io/about/#page"}], "knowsAbout": ["Intelligent electromagnetic wave manipulation", "Trustworthy AI", "Wireless communication systems", "Metasurfaces", "Multimodal AI", "Intelligent information systems"]}, {"@type": "CollectionPage", "@id": "https://qiushi0919.cn/papers/#page", "url": "https://qiushi0919.cn/papers/", "name": "论文 | 谢秋实 Qiushi Xie", "description": "谢秋实的论文：VaseMuseum: Digital Intelligent Museum for Ancient Greek Pottery, Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}]}</script></head>
 <body>
   <a href="#main-content" class="skip-link">跳到作品</a><main class="page" id="main-content">
     <div class="site-toolbar" data-no-i18n>
       <nav class="work-category-nav" aria-label="作品分类"><a href="/zh/" class="work-category-tab"><span class="nav-label">全部</span></a><a href="/zh/papers/" class="work-category-tab is-active" aria-current="page"><span class="nav-label">论文</span></a><a href="/zh/competitions/" class="work-category-tab"><span class="nav-label">比赛</span></a><a href="/zh/projects/" class="work-category-tab"><span class="nav-label">小项目</span></a><a href="/zh/about/" class="work-category-tab"><span class="nav-label">关于我</span></a></nav><div class="language-switch" aria-label="Language / 语言"><a href="/zh/papers/" lang="zh-CN" class="is-active" aria-current="page">中文</a><a href="/papers/" lang="en">EN</a></div></div>
-    <header class="works-head">
-      <h1>论文</h1>
-      <p><span class="screen-only-copy">科研论文、竞赛项目与独立小项目；单击左侧缩略图查看详情，单击作品标题或下方链接访问对应页面。</span><span class="print-only-copy">科研论文、竞赛项目与独立小项目；单击作品标题或下方链接可访问对应网站。</span></p>
-    </header>
+    <section class="work-collection" data-work-view="overview" aria-label="作品"><header class="works-head">
+      <div class="work-readingbar"><h1>论文</h1>
+      <fieldset class="work-view-controls"><legend>作品阅读方式</legend><label class="work-view-option"><input type="radio" name="work-view" value="overview" checked><span><svg viewbox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="7" height="14" rx="1"></rect><path d="M12 4h6M12 8h6M12 12h6M12 16h6"></path></svg><span>紧凑总览</span></span></label><label class="work-view-option"><input type="radio" name="work-view" value="large"><span><svg viewbox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="2" width="16" height="9" rx="1"></rect><path d="M2 14h16M2 18h12"></path></svg><span>大图浏览</span></span></label></fieldset></div><p class="work-list-description"><span class="screen-only-copy">科研论文、竞赛项目与独立小项目；单击左侧缩略图查看详情，单击作品标题或下方链接访问对应页面。</span><span class="print-only-copy">科研论文、竞赛项目与独立小项目；单击作品标题或下方链接可访问对应网站。</span></p>
+    <p class="work-view-hint">点「大图浏览」，放大图片与文字。</p></header>
 
     
 
     <article class="project-card vase-card" id="vaseProjectCard" data-work-category="paper">
       <button class="paper-preview vase-cover-trigger" id="vaseCoverTrigger" type="button" aria-expanded="false" aria-controls="vaseFeatureOverlay" aria-label="展开 VaseMuseum 论文关键流程与实验结果">
         <span class="paper-preview-stack">
-          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程">
-          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/reliability-clean.webp" alt="VaseAgent 可靠性框架">
+          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程" width="1355" height="572">
+          <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/vase-paper-preview/reliability-clean.webp" alt="VaseAgent 可靠性框架" width="1350" height="358">
         </span>
         <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
       <div class="vase-copy project-copy paper-copy">
         <h2 class="paper-title"><a class="title-link" href="/zh/papers/vasemuseum/" rel="noopener">VaseMuseum: Digital Intelligent Museum for Ancient Greek Pottery</a></h2>
-        <p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Jiazi Wang">Jiazi Wang<sup>†</sup></span>, <span class="paper-author" data-author-name="Nonghai Zhang">Nonghai Zhang<sup>†</sup></span>, <span class="paper-author" data-author-name="Zeyu Zhang"><a href="https://steve-zeyu-zhang.github.io/" target="_blank" rel="noopener noreferrer">Zeyu Zhang</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Yang Zhao"><a href="https://yangyangkiki.github.io/" target="_blank" rel="noopener noreferrer">Yang Zhao</a></span>, <span class="paper-author" data-author-name="Ling Shao"><a href="https://ling-shao.github.io/" target="_blank" rel="noopener noreferrer">Ling Shao</a></span>, <span class="paper-author" data-author-name="Hao Tang"><a href="https://ha0tang.github.io/" target="_blank" rel="noopener noreferrer">Hao Tang</a><sup>*</sup></span></p>
+        <div class="work-reading-details"><p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Jiazi Wang">Jiazi Wang<sup>†</sup></span>, <span class="paper-author" data-author-name="Nonghai Zhang">Nonghai Zhang<sup>†</sup></span>, <span class="paper-author" data-author-name="Zeyu Zhang"><a href="https://steve-zeyu-zhang.github.io/" target="_blank" rel="noopener noreferrer">Zeyu Zhang</a><sup>†</sup></span>, <span class="paper-author" data-author-name="Yang Zhao"><a href="https://yangyangkiki.github.io/" target="_blank" rel="noopener noreferrer">Yang Zhao</a></span>, <span class="paper-author" data-author-name="Ling Shao"><a href="https://ling-shao.github.io/" target="_blank" rel="noopener noreferrer">Ling Shao</a></span>, <span class="paper-author" data-author-name="Hao Tang"><a href="https://ha0tang.github.io/" target="_blank" rel="noopener noreferrer">Hao Tang</a><sup>*</sup></span></p>
         <p class="paper-venue">In <em>arXiv</em>, 2026.07</p>
         <p class="vase-summary">面向古希腊陶器的数字智能博物馆，融合多模态感知、三维推理、外部知识检索与推理时可靠性控制，为文化遗产问答提供更可信、可验证的解释。</p>
         <div class="links paper-links"><a href="https://arxiv.org/pdf/2607.06374" target="_blank" rel="noopener" aria-label="VaseMuseum 论文 PDF" class="paper-resource resource-arxiv"><span class="resource-label"><svg class="resource-icon" viewbox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 3l15 18M20 3L5 21M4 7l11 14M19 4L8 18"></path></svg>arXiv</span><span class="resource-value">2607.06374</span></a><a href="https://github.com/AIGeeksGroup/VaseMuseum" target="_blank" rel="noopener" aria-label="VaseMuseum 项目代码" class="paper-resource resource-code"><span class="resource-label"><svg class="resource-icon" viewbox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.23c-3.34.72-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.8 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.3c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"></path></svg>GitHub</span><span class="resource-value">CODE</span></a><a href="https://aigeeksgroup.github.io/VaseMuseum/" target="_blank" rel="noopener" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Paper</span></a><a class="paper-cite paper-resource resource-cite" data-citation-key="vasemuseum" href="/assets/citations/vasemuseum.bib" download="vasemuseum.bib" aria-label="VaseMuseum BibTeX" aria-haspopup="dialog" aria-controls="citationDialog" data-citation-text="@misc{xie2026vasemuseum,
@@ -56,7 +59,7 @@
   url = {https://arxiv.org/abs/2607.06374}
 }
 "><span class="resource-label">Cite</span><span class="resource-value">BibTeX</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay vase-feature-overlay" id="vaseFeatureOverlay" aria-label="VaseMuseum 论文关键流程与实验结果">
         <div class="overlay-head">
@@ -77,13 +80,13 @@
     <article class="project-card eecs-card" id="eecsProjectCard" data-work-category="paper">
 
       <button class="paper-preview eecs-cover-trigger" id="eecsCoverTrigger" type="button" aria-expanded="false" aria-controls="eecsFeatureOverlay" aria-label="展开 EECS 2026 电池剩余寿命预测论文方法与实验结果">
-        <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/eecs-2026/nasa-results.webp" alt="NASA B0005 电池容量与剩余寿命预测结果">
+        <img class="paper-preview-image" loading="lazy" decoding="async" src="/assets/portfolio-cover/eecs-2026/nasa-results.webp" alt="NASA B0005 电池容量与剩余寿命预测结果" width="1400" height="833">
         <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy eecs-copy paper-copy">
         <h2><a class="title-link" href="/zh/papers/battery-rul/" rel="noopener">Optical-sensing-oriented remaining useful life estimation of lithium-ion batteries using ALA-tuned VMD and a BiTCN-AM model</a></h2>
-        <p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a></span></p>
+        <div class="work-reading-details"><p class="paper-authors"><span class="paper-author paper-author-self" data-author-name="Qiushi Xie"><a class="paper-author-name" data-author-home="self" href="/zh/">Qiushi Xie</a></span></p>
         <p class="paper-venue">In <em>Proc. SPIE</em>, 2026.09</p>
         <p class="summary">面向锂离子电池剩余寿命预测，以 ALA 自适应优化 VMD 分解参数，并结合双向时序卷积与注意力机制建模容量退化，在 NASA 与 CALCE 数据集上完成跨数据源验证。</p>
         <div class="links paper-links"><a href="https://doi.org/10.1117/12.3122481" target="_blank" rel="noopener" aria-label="电池寿命预测论文 PDF（SPIE 出版社入口）" class="paper-resource resource-pdf"><span class="resource-label">PDF</span><span class="resource-value">Vol. 14327</span></a><a href="https://github.com/Qiushi0919/ALA-VMD-BiTCN-AM" target="_blank" rel="noopener" aria-label="电池寿命预测项目代码与数据" class="paper-resource resource-code"><span class="resource-label"><svg class="resource-icon" viewbox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.23c-3.34.72-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.85 1.24 1.85 1.24 1.07 1.84 2.8 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.6-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.3c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"></path></svg>GitHub</span><span class="resource-value">CODE</span></a><a href="https://qiushi0919.github.io/ALA-VMD-BiTCN-AM/" target="_blank" rel="noopener" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Paper</span></a><a class="paper-cite paper-resource resource-cite" data-citation-key="battery-rul" href="/assets/citations/battery-rul.bib" download="battery-rul.bib" aria-label="电池论文 BibTeX" aria-haspopup="dialog" aria-controls="citationDialog" data-citation-text="@inproceedings{xie2026batteryrul,
@@ -97,7 +100,7 @@
   url = {https://doi.org/10.1117/12.3122481}
 }
 "><span class="resource-label">Cite</span><span class="resource-value">BibTeX</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay eecs-feature-overlay" id="eecsFeatureOverlay" aria-label="EECS 2026 电池剩余寿命预测论文方法与实验结果">
         <div class="overlay-head">
@@ -116,7 +119,7 @@
       </section>
     </article>
 
-    <footer class="site-footer"><p>国内入口 / China: qiushi0919.cn · International: GitHub Pages</p><a href="https://qiushi0919.cn/papers/">国内 · cn</a><a href="https://qiushi0919.github.io/papers/">International · GitHub</a><a href="/zh/about/">个人介绍</a><a href="https://scholar.google.com/citations?user=TkPyZ-UAAAAJ">Google Scholar</a><a href="/zh/papers/">论文 / Papers</a><a href="/zh/competitions/">竞赛 / Competitions</a></footer></main>
+    </section><footer class="site-footer"><p>国内入口 / China: qiushi0919.cn · International: GitHub Pages</p><a href="https://qiushi0919.cn/papers/">国内 · cn</a><a href="https://qiushi0919.github.io/papers/">International · GitHub</a><a href="/zh/about/">个人介绍</a><a href="https://scholar.google.com/citations?user=TkPyZ-UAAAAJ">Google Scholar</a><a href="/zh/papers/">论文 / Papers</a><a href="/zh/competitions/">竞赛 / Competitions</a></footer></main>
 
   <dialog class="contact-dialog" id="contactDialog" aria-labelledby="contactDialogTitle">
     <div class="contact-dialog-card">
@@ -161,5 +164,5 @@
     </div>
   </dialog>
 
-  <script src="/assets/js/portfolio-runtime.js?v=work-list-tablet-20261006"></script></body>
+  <script src="/assets/js/portfolio-runtime.js?v=work-views-times-yahei-20261006"></script></body>
 </html>

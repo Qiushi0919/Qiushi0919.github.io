@@ -7,8 +7,11 @@
     (() => {
       
       const viewport = document.querySelector('meta[name="viewport"]');
-      const screenWidth = Math.min(window.innerWidth, window.screen.width, window.screen.height);
-      const portraitPhone = screenWidth <= 600 && window.innerHeight > window.innerWidth;
+      const previewQuery = new URLSearchParams(location.search);
+      const previewPhone = window.parent !== window && previewQuery.get('preview-device') === 'phone';
+      const previewWidth = Number(previewQuery.get('preview-width')) || 390;
+      const screenWidth = previewPhone ? Math.max(320,Math.min(600,previewWidth)) : Math.min(window.innerWidth, window.screen.width, window.screen.height);
+      const portraitPhone = previewPhone || (screenWidth <= 600 && window.innerHeight > window.innerWidth);
       if (portraitPhone) {
         const portraitCanvasWidth = 980;
         const initialScale = Math.min(0.48, screenWidth / portraitCanvasWidth).toFixed(3);
@@ -22,31 +25,31 @@
   <link rel="icon" href="/assets/contact/qiushi-favicon.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/assets/contact/apple-touch-icon.png" sizes="180x180">
   <title>个人作品 | 谢秋实 Qiushi Xie</title>
-  <link rel="stylesheet" href="/assets/css/portfolio.css?v=work-list-tablet-20261006"><link rel="canonical" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/"><meta property="og:title" content="个人作品 | 谢秋实 Qiushi Xie"><meta property="og:description" content="谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/projects/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta property="og:image:alt" content="谢秋实 / Qiushi Xie"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta name="twitter:image:alt" content="谢秋实 / Qiushi Xie"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/", "https://scholar.google.com/citations?user=TkPyZ-UAAAAJ"], "subjectOf": [{"@id": "https://qiushi0919.cn/about/#page"}, {"@id": "https://qiushi0919.github.io/about/#page"}], "knowsAbout": ["Intelligent electromagnetic wave manipulation", "Trustworthy AI", "Wireless communication systems", "Metasurfaces", "Multimodal AI", "Intelligent information systems"]}, {"@type": "CollectionPage", "@id": "https://qiushi0919.cn/projects/#page", "url": "https://qiushi0919.cn/projects/", "name": "个人作品 | 谢秋实 Qiushi Xie", "description": "谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}]}</script></head>
+  <link rel="stylesheet" href="/assets/css/portfolio.css?v=work-views-times-yahei-20261006"><link rel="canonical" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/"><link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/"><link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/"><meta property="og:title" content="个人作品 | 谢秋实 Qiushi Xie"><meta property="og:description" content="谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器"><meta property="og:type" content="website"><meta property="og:url" content="https://qiushi0919.cn/projects/"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta property="og:image:alt" content="谢秋实 / Qiushi Xie"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf"><meta name="twitter:image:alt" content="谢秋实 / Qiushi Xie"><script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Person", "@id": "https://qiushi0919.cn/#person", "name": "谢秋实", "alternateName": "Qiushi Xie", "url": "https://qiushi0919.cn/", "description": "谢秋实（Qiushi Xie），华中科技大学通信工程专业本科生，已推免至浙江大学信息与电子工程学院，拟于2027年在赵纪伟研究员指导下攻读博士学位。研究兴趣包括智能电磁调控、可信人工智能与无线通信系统；主页收录科研论文、竞赛项目与个人作品。", "image": "https://qiushi0919.cn/assets/contact/profile-photo.jpg?v=7456e26d3edf", "affiliation": {"@type": "CollegeOrUniversity", "name": "Huazhong University of Science and Technology"}, "sameAs": ["https://github.com/Qiushi0919", "https://qiushi0919.cn/", "https://qiushi0919.github.io/", "https://scholar.google.com/citations?user=TkPyZ-UAAAAJ"], "subjectOf": [{"@id": "https://qiushi0919.cn/about/#page"}, {"@id": "https://qiushi0919.github.io/about/#page"}], "knowsAbout": ["Intelligent electromagnetic wave manipulation", "Trustworthy AI", "Wireless communication systems", "Metasurfaces", "Multimodal AI", "Intelligent information systems"]}, {"@type": "CollectionPage", "@id": "https://qiushi0919.cn/projects/#page", "url": "https://qiushi0919.cn/projects/", "name": "个人作品 | 谢秋实 Qiushi Xie", "description": "谢秋实的个人作品：Codex Tidy, Boring Notch Focus, AltTab · 多显示器窗口切换, MindMap · 思维导图编辑器", "inLanguage": "zh-CN", "mainEntity": {"@id": "https://qiushi0919.cn/#person"}, "isPartOf": {"@id": "https://qiushi0919.cn/#website"}}, {"@type": "WebSite", "@id": "https://qiushi0919.cn/#website", "url": "https://qiushi0919.cn/", "name": "Qiushi Xie / 谢秋实"}]}</script></head>
 <body>
   <a href="#main-content" class="skip-link">跳到作品</a><main class="page" id="main-content">
     <div class="site-toolbar" data-no-i18n>
       <nav class="work-category-nav" aria-label="作品分类"><a href="/zh/" class="work-category-tab"><span class="nav-label">全部</span></a><a href="/zh/papers/" class="work-category-tab"><span class="nav-label">论文</span></a><a href="/zh/competitions/" class="work-category-tab"><span class="nav-label">比赛</span></a><a href="/zh/projects/" class="work-category-tab is-active" aria-current="page"><span class="nav-label">小项目</span></a><a href="/zh/about/" class="work-category-tab"><span class="nav-label">关于我</span></a></nav><div class="language-switch" aria-label="Language / 语言"><a href="/zh/projects/" lang="zh-CN" class="is-active" aria-current="page">中文</a><a href="/projects/" lang="en">EN</a></div></div>
-    <header class="works-head">
-      <h1>个人作品</h1>
-      <p><span class="screen-only-copy">科研论文、竞赛项目与独立小项目；单击左侧缩略图查看详情，单击作品标题或下方链接访问对应页面。</span><span class="print-only-copy">科研论文、竞赛项目与独立小项目；单击作品标题或下方链接可访问对应网站。</span></p>
-    </header>
+    <section class="work-collection" data-work-view="overview" aria-label="作品"><header class="works-head">
+      <div class="work-readingbar"><h1>个人作品</h1>
+      <fieldset class="work-view-controls"><legend>作品阅读方式</legend><label class="work-view-option"><input type="radio" name="work-view" value="overview" checked><span><svg viewbox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="3" width="7" height="14" rx="1"></rect><path d="M12 4h6M12 8h6M12 12h6M12 16h6"></path></svg><span>紧凑总览</span></span></label><label class="work-view-option"><input type="radio" name="work-view" value="large"><span><svg viewbox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="2" width="16" height="9" rx="1"></rect><path d="M2 14h16M2 18h12"></path></svg><span>大图浏览</span></span></label></fieldset></div><p class="work-list-description"><span class="screen-only-copy">科研论文、竞赛项目与独立小项目；单击左侧缩略图查看详情，单击作品标题或下方链接访问对应页面。</span><span class="print-only-copy">科研论文、竞赛项目与独立小项目；单击作品标题或下方链接可访问对应网站。</span></p>
+    <p class="work-view-hint">点「大图浏览」，放大图片与文字。</p></header>
 
     
 
     <article class="project-card side-project-card codex-tidy-card work-list-card" id="codexTidyProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="codexTidyCoverTrigger" type="button" aria-expanded="false" aria-controls="codexTidyFeatureOverlay" aria-label="展开 Codex Tidy 功能详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/codex-tidy/cover.webp" alt="Codex Tidy 产品封面：对话、文件、空间，一眼理清">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/codex-tidy/cover.webp" alt="Codex Tidy 产品封面：对话、文件、空间，一眼理清" width="1200" height="676">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/codex-tidy/" rel="noopener">Codex Tidy</a></h2>
-        <div class="project-meta"><p>对话、文件、空间，一眼理清。</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>对话、文件、空间，一眼理清。</p></div>
         <span class="project-kicker">2026年8月 · macOS 开源小工具</span>
       <p class="summary">查看 Codex 对话文件、项目工作目录与常见构建缓存，以保守规则清理可重建缓存；支持定位日志、在 Finder 中显示文件，并通过 Codex App Server 归档或删除对话。</p>
         <div class="links paper-links work-links"><a href="https://github.com/Qiushi0919/Codex-Tidy" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/Qiushi0919/Codex-Tidy/releases/tag/v0.1.0-beta.1" target="_blank" rel="noopener" aria-label="公开测试版" class="paper-resource resource-release"><span class="resource-label">Release</span><span class="resource-value">Beta</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="codexTidyFeatureOverlay" aria-label="Codex Tidy 功能详情">
         <div class="overlay-head">
@@ -73,17 +76,17 @@
 
     <article class="project-card side-project-card work-list-card" id="sideProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="sideProjectCoverTrigger" type="button" aria-expanded="false" aria-controls="sideProjectFeatureOverlay" aria-label="展开 Boring Notch Focus 功能详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/boring-notch/thumbnail.webp" alt="Boring Notch Focus 宣传封面">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/boring-notch/thumbnail.webp" alt="Boring Notch Focus 宣传封面" width="1672" height="941">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/boring-notch-focus/" rel="noopener">Boring Notch Focus</a></h2>
-        <div class="project-meta"><p>独立维护 · 开源二次开发</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>独立维护 · 开源二次开发</p></div>
         <span class="project-kicker">2026年8月 · macOS 开源小项目</span>
       <p class="summary">基于 GPLv3 开源项目 Boring Notch 的功能增强版，把 MacBook 刘海区域扩展为音乐控制、文件暂存与番茄钟，并完善中文界面、权限引导和应用内更新体验。</p>
         <div class="links paper-links work-links"><a href="https://qiushi0919.github.io/boring-notch-focus/" target="_blank" rel="noopener" aria-label="项目主页" class="paper-resource resource-website"><span class="resource-label">Website</span><span class="resource-value">Project</span></a><a href="https://github.com/Qiushi0919/boring-notch-focus" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/Qiushi0919/boring-notch-focus/releases/tag/v1.1.0" target="_blank" rel="noopener" aria-label="下载" class="paper-resource resource-release"><span class="resource-label">Release</span><span class="resource-value">Download</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="sideProjectFeatureOverlay" aria-label="Boring Notch Focus 功能详情">
         <div class="overlay-head">
@@ -110,17 +113,17 @@
 
     <article class="project-card side-project-card alttab-card work-list-card" id="altTabProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="altTabCoverTrigger" type="button" aria-expanded="false" aria-controls="altTabFeatureOverlay" aria-label="展开 AltTab 多显示器窗口切换实际运行详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/alttab/concept.webp" alt="AltTab 多显示器窗口切换概念图">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/alttab/concept.webp" alt="AltTab 多显示器窗口切换概念图" width="1200" height="900">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/alttab/" rel="noopener">AltTab · 多显示器窗口切换</a></h2>
-        <div class="project-meta"><p>开源二次开发 · 多显示器功能实现</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>开源二次开发 · 多显示器功能实现</p></div>
         <span class="project-kicker">2026年8月 · macOS 开源小项目</span>
       <p class="summary">基于 AltTab for macOS 实现“所有屏幕”模式：快捷键触发后，每台显示器同步显示窗口切换界面，并按窗口所在屏幕分组；对于禁止窗口截图的微信等应用，自动回退显示应用图标。</p>
         <div class="links paper-links work-links"><a href="https://github.com/Qiushi0919/alt-tab-macos" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/lwouis/alt-tab-macos" target="_blank" rel="noopener" aria-label="上游项目" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">Upstream</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="altTabFeatureOverlay" aria-label="AltTab 多显示器窗口切换实际运行详情">
         <div class="overlay-head">
@@ -147,17 +150,17 @@
 
     <article class="project-card side-project-card mindmap-card work-list-card" id="mindMapProjectCard" data-work-category="side">
       <button class="side-project-cover work-preview" id="mindMapCoverTrigger" type="button" aria-expanded="false" aria-controls="mindMapFeatureOverlay" aria-label="展开 MindMap 思维导图编辑器功能详情">
-        <img loading="lazy" decoding="async" src="/assets/side-projects/mindmap/cover.webp" alt="MindMap 思维导图编辑器产品封面">
+        <img loading="lazy" decoding="async" src="/assets/side-projects/mindmap/cover.webp" alt="MindMap 思维导图编辑器产品封面" width="1200" height="1200">
       <span class="cover-zoom-hint" aria-hidden="true"><svg viewbox="0 0 24 24"><circle cx="10" cy="10" r="6.5"></circle><path d="M15 15l6 6M10 7v6M7 10h6"></path></svg></span>
       </button>
 
       <div class="project-copy side-project-copy  work-copy">
         <h2><a class="title-link" href="/zh/projects/mindmap/" rel="noopener">MindMap · 思维导图编辑器</a></h2>
-        <div class="project-meta"><p>华中科技大学软件课程设计 · 小组项目</p></div>
+        <div class="work-reading-details"><div class="project-meta"><p>华中科技大学软件课程设计 · 小组项目</p></div>
         <span class="project-kicker">2026年1月 · Python / PyQt5 课程设计</span>
       <p class="summary">基于 Python 和 PyQt5 的桌面思维导图编辑器，支持多层级节点、连接线管理、撤销重做、批注、链接、待办事项、Markdown 导入及 PNG / PDF 导出，并提供多主题与中英文界面。</p>
         <div class="links paper-links work-links"><a href="https://github.com/Qiushi0919/Mindmap-by-Python-and-PyQt" target="_blank" rel="noopener" aria-label="项目仓库" class="paper-resource resource-code"><span class="resource-label">GitHub</span><span class="resource-value">CODE</span></a><a href="https://github.com/Qiushi0919/Mindmap-by-Python-and-PyQt/blob/main/%E8%AF%BE%E7%A8%8B%E8%AE%BE%E8%AE%A1%E6%8A%A5%E5%91%8A-%E8%B0%A2%E7%A7%8B%E5%AE%9E.pdf" target="_blank" rel="noopener" aria-label="课程报告" class="paper-resource resource-report"><span class="resource-label">Report</span><span class="resource-value">PDF</span></a></div>
-      </div>
+      </div></div>
 
       <section class="feature-overlay side-project-feature-overlay" id="mindMapFeatureOverlay" aria-label="MindMap 思维导图编辑器功能详情">
         <div class="overlay-head">
@@ -181,7 +184,7 @@
         <div class="overlay-foot"><span>Python</span><span>PyQt5</span><span>Markdown</span><span>PNG / PDF</span></div>
       </section>
     </article>
-  <footer class="site-footer"><p>国内入口 / China: qiushi0919.cn · International: GitHub Pages</p><a href="https://qiushi0919.cn/projects/">国内 · cn</a><a href="https://qiushi0919.github.io/projects/">International · GitHub</a><a href="/zh/about/">个人介绍</a><a href="https://scholar.google.com/citations?user=TkPyZ-UAAAAJ">Google Scholar</a><a href="/zh/papers/">论文 / Papers</a><a href="/zh/competitions/">竞赛 / Competitions</a></footer></main>
+  </section><footer class="site-footer"><p>国内入口 / China: qiushi0919.cn · International: GitHub Pages</p><a href="https://qiushi0919.cn/projects/">国内 · cn</a><a href="https://qiushi0919.github.io/projects/">International · GitHub</a><a href="/zh/about/">个人介绍</a><a href="https://scholar.google.com/citations?user=TkPyZ-UAAAAJ">Google Scholar</a><a href="/zh/papers/">论文 / Papers</a><a href="/zh/competitions/">竞赛 / Competitions</a></footer></main>
 
   <dialog class="contact-dialog" id="contactDialog" aria-labelledby="contactDialogTitle">
     <div class="contact-dialog-card">
@@ -211,5 +214,5 @@
 
   <div class="overlay-backdrop" aria-hidden="true"></div>
 
-  <script src="/assets/js/portfolio-runtime.js?v=work-list-tablet-20261006"></script></body>
+  <script src="/assets/js/portfolio-runtime.js?v=work-views-times-yahei-20261006"></script></body>
 </html>
