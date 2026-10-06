@@ -389,6 +389,19 @@ html.work-mobile .work-collection[data-work-view="large"] .paper-resource :is(.r
 html.work-mobile .work-collection[data-work-view="large"] .paper-resource .resource-icon{width:calc(11 * var(--wu));height:calc(11 * var(--wu));flex-basis:calc(11 * var(--wu))}
 html.work-mobile .work-collection[data-work-view="large"] .cover-zoom-hint{width:calc(24 * var(--wu));height:calc(24 * var(--wu))}
 @media print{.work-view-controls,.work-view-hint{display:none!important}.work-readingbar{position:static!important}}
+/* Preserve the compact publication typography for member/advisor lines. */
+.work-list-card[data-work-category="competition"] .competition-team p.project-authors{color:#282e33;font-weight:400}
+.competition-team .paper-author-name{color:inherit}
+.team-symbol-note,.paper-symbol-note{margin:0;color:#687985;font-size:11px;line-height:1.5;font-weight:400}
+.team-symbol-note{flex-basis:100%}
+/* Enlarge the gallery close glyph by 50%; contact dialogs keep their own size. */
+.feature-overlay .close{font-size:42px}
+@media(max-width:760px),(pointer:coarse){
+ .feature-overlay .close{font-size:0}
+ .feature-overlay .close::before{font-size:33px}
+}
+html.portrait-phone .feature-overlay .close{font-size:0}
+html.portrait-phone .feature-overlay .close::before{font-size:calc(33px / var(--portrait-ui-scale))}
 /* Latin glyphs use Times New Roman; CJK glyphs fall through to Microsoft YaHei.
    System fallbacks cover devices that do not have these fonts installed. */
 :root{--site-font:"Times New Roman",Times,"Microsoft YaHei","微软雅黑","Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",serif}

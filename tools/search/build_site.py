@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'work-type-compact-20261006'
+VERSION = 'competition-sequences-teams-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -45,6 +45,7 @@ ROUTES = ['', 'about', *CATEGORIES, *DETAILS.values()]
 TRANSLATIONS = json.loads((SOURCE / 'translations.json').read_text())
 AUTHOR = json.loads((SOURCE / 'author-profile.json').read_text())
 PROJECT_PAGES = json.loads((SOURCE / 'project-pages.json').read_text())
+COMPETITION_TEAMS = json.loads((SOURCE / 'competition-teams.json').read_text())
 VERIFICATION = json.loads((SOURCE / 'search-verification.json').read_text()) if (SOURCE / 'search-verification.json').exists() else {}
 PORTRAIT_PATH = 'assets/contact/profile-photo.jpg'
 PORTRAIT_VERSION = hashlib.sha256((SOURCE / 'contact/profile-photo.jpg').read_bytes()).hexdigest()[:12]
@@ -96,6 +97,56 @@ def author_paragraphs(language):
             for paragraph in AUTHOR['biography'][language]]
 
 
+def format_competition_team(card, language):
+    team = COMPETITION_TEAMS[card.get('id')]
+    copy = card.xpath('.//div[contains(concat(" ",@class," ")," work-copy ")]')[0]
+    meta = copy.xpath('./div[@class="project-meta"]')[0]
+    meta.set('class', 'project-meta competition-team')
+    for child in list(meta): meta.remove(child)
+    roster = element('p', **{'class':'paper-authors project-authors'})
+    all_people = [(person, 'leader' if person['zh'] == team['leader'] else 'member') for person in team['members']]
+    all_people += [(person, 'advisor') for person in team['advisors']]
+    for index, (person, role) in enumerate(all_people):
+        author = element('span', **{'class':'paper-author' + (' paper-author-self' if person['zh'] == '谢秋实' else ''),
+                                  'data-author-name':person['zh'],'data-team-role':role})
+        if person['zh'] == '谢秋实':
+            author.append(element('a', person[language], **{'class':'paper-author-name','data-author-home':'self','href':'/'}))
+        else: author.text = person[language]
+        if role in ('leader','advisor'):
+            meaning = {'leader':('队长','Team lead'),'advisor':('指导教师','Advisor')}[role][0 if language == 'zh' else 1]
+            author.append(element('sup', '†' if role == 'leader' else '‡', title=meaning, aria_label=meaning))
+        if index < len(all_people)-1: author.tail = ', '
+        roster.append(author)
+    meta.append(roster)
+    for kicker in copy.xpath('./*[contains(concat(" ",@class," ")," project-kicker ")]'):
+        copy.remove(kicker)
+    if card.xpath('./div[@class="work-detail-media"]'):
+        note = element('p', '† 队长 · ‡ 指导教师' if language == 'zh' else '† Team lead · ‡ Advisor', **{'class':'team-symbol-note'})
+        card.xpath('./div[@class="work-detail-media"]')[0].insert(0, note)
+
+
+def format_vase_contributions(tree, language, is_detail):
+    cards = tree.xpath('//*[@id="vaseProjectCard"]')
+    if not cards: return
+    card = cards[0]
+    for author in card.xpath('.//p[@class="paper-authors"]/span[@data-author-name]'):
+        name = author.get('data-author-name')
+        for mark in author.findall('sup'):
+            if name == 'Hao Tang':
+                mark.text = '‡'
+                meaning = '通讯作者' if language == 'zh' else 'Corresponding author'
+            else:
+                mark.text = '*'
+                meaning = '共同第一作者' if language == 'zh' else 'Equal contribution'
+            mark.set('title', meaning); mark.set('aria-label', meaning)
+        if name == 'Zeyu Zhang':
+            meaning = '项目负责人' if language == 'zh' else 'Project lead'
+            author.append(element('sup', '†', title=meaning, aria_label=meaning))
+    if is_detail:
+        affiliations = card.xpath('.//div[@class="paper-affiliations"]')[0]
+        affiliations.insert(0, element('p', '* 共同第一作者 · † 项目负责人 · ‡ 通讯作者' if language == 'zh' else '* Equal contribution · † Project lead · ‡ Corresponding author', **{'class':'paper-symbol-note'}))
+
+
 def format_project_list(card, is_detail):
     """Use the publication layout while retaining original content and destinations."""
     card.set('class', card.get('class', '') + ' work-list-card')
@@ -117,13 +168,25 @@ def format_project_list(card, is_detail):
         wrapper.addprevious(preview)
         card.remove(wrapper)
         video = preview.find('video')
-        video.set('src', 'assets/portfolio-cover/intelcup-2026/preview-2x3.mp4')
-        video.set('poster', 'assets/portfolio-cover/intelcup-2026/preview-2x3.jpg')
+        video.attrib.pop('src', None)
+        video.attrib.pop('autoplay', None)
+        video.set('class', 'competition-preview-video')
+        video.set('data-src', 'assets/portfolio-cover/intelcup-2026/preview-sequence.mp4')
+        video.set('data-preview-auto', '')
+        video.set('aria-label', 'Intel Cup sequential demo preview')
+        video.set('poster', 'assets/portfolio-cover/intelcup-2026/preview-sequence.jpg')
     else:
         preview = card.find('button')
         # Dense carousels remain in the full preview; the list shows one clear work image.
+        if card.get('id') == 'nuedcProjectCard':
+            for child in list(preview):
+                if 'cover-zoom-hint' not in child.get('class', ''):
+                    preview.remove(child)
+            preview.insert(0, element('video', **{'class':'competition-preview-video', 'muted':'', 'loop':'',
+                'playsinline':'', 'preload':'none', 'poster':'assets/portfolio-cover/nuedc-c/preview-sequence.jpg',
+                'data-src':'assets/portfolio-cover/nuedc-c/preview-sequence.mp4', 'data-preview-auto':'',
+                'aria-label':'数字钥匙实验系统循环演示'}))
         chosen = {
-            'nuedcProjectCard': ('assets/portfolio-cover/nuedc-c/test-integrated.webp', '数字钥匙实验系统完整实物'),
             'embeddedProjectCard': ('assets/portfolio-cover/embedded-2025/finals-dual-board.webp', '全国总决赛双板卡演示实物'),
         }.get(card.get('id'))
         if chosen:
@@ -338,6 +401,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
 
 '''
     css += (SOURCE / 'work-view.css').read_text()
+    css += (SOURCE / 'competition-presentation.css').read_text()
     typography = (SOURCE / 'site-typography.css').read_text()
     css += typography
     scripts = []
@@ -427,7 +491,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
         for source_file in (SOURCE / 'project-previews').rglob('*'):
-            if source_file.is_file() and source_file.suffix in ('.mp4', '.jpg', '.webp', '.svg'):
+            if source_file.is_file() and 'inputs' not in source_file.parts and source_file.suffix in ('.mp4', '.jpg', '.webp', '.svg'):
                 target = destination / 'assets/portfolio-cover' / source_file.relative_to(SOURCE/'project-previews')
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
@@ -469,6 +533,9 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     format_project_list(card, bool(detail_id))
                 if language == 'en':
                     translate_tree(tree)
+                for competition in tree.xpath('//article[@data-work-category="competition"]'):
+                    format_competition_team(competition, language)
+                format_vase_contributions(tree, language, detail_id == 'vaseProjectCard')
                 for cite in tree.xpath('//*[@data-citation-key]'):
                     cite.set('data-citation-text', (SOURCE / 'citations' / (cite.get('data-citation-key') + '.bib')).read_text())
                 if not tree.xpath('//*[@data-citation-key]'):
@@ -700,8 +767,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video'):
                     src = (media.get('src') or media.get('data-src') or '').lstrip('/')
                     dimensions = sizes.get(src)
-                    if media.tag == 'video':
-                        dimensions = [1080,480] if 'intelcup-2026' in src else [1920,1080]
+                    if media.tag == 'video' and dimensions is None:
+                        dimensions = [1920,1080]
                     if dimensions:
                         media.set('width', str(dimensions[0])); media.set('height', str(dimensions[1]))
                 if route == '' or category:

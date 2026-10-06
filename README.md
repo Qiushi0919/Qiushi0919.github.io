@@ -33,7 +33,7 @@ inferred or added by the generator.
 
 Paper cards use an academic publication layout: title, ordered author list,
 venue/month, a brief summary, and compact flat two-part resource labels. Qiushi
-Xie is underlined in the author line; its dagger is outside the underlined name.
+Xie is underlined in the author line; contribution markers sit outside the underlined name.
 VaseMuseum provides paper, code, project website and citation tags in that order;
 the battery paper provides paper, code, project website and citation tags. Cite opens an accessible dialog with a readonly BibTeX field, copy feedback,
 and a `.bib` download. Escape, backdrop dismissal and the established close
@@ -416,3 +416,33 @@ About pages reuse the homepage portrait, bilingual identity summary and all
 nine contact links with the same contact dialog. The home biography and
 device layouts remain unchanged. Source: `build_site.py`, `source/work-view.css`,
 `check_site.py`.
+
+### Competition sequences and teams (2026-10-06)
+
+Intel Cup now plays six original demos sequentially in a silent 1080×720,
+24fps video (32.5s). C-topic uses a silent 1280×960 video (10.5s): complete
+hardware, unlock interface, then the original PDoA principle on the left and
+program control loop on the right. Both use 0.5s crossfades, including the loop
+boundary, with original aspect ratios retained. Posters remain visible before
+playback and for reduced motion; the shared preview observer plays videos only
+while visible. Expanded galleries retain all original figures and demos.
+
+`render_competition_previews.py` rebuilds both sequences with ffmpeg/ffprobe.
+Intel inputs live in `source/project-previews/intelcup-2026/inputs/`; their public
+URLs and hashes are recorded in `docs/project-list-tablet-20261006/intel_input_sources.json`.
+C inputs are the maintained originals under `../project-sites/nuedc-c/website/public/`.
+Each sequence has a `sequence-sources.json` provenance record. The build excludes
+input caches and copies only the output videos/posters and existing public assets.
+
+Competition card and portfolio detail headers use the user-confirmed roster in
+`source/competition-teams.json`, with † for team leads and ‡ for advisors; former
+award, role and event/date header lines are removed. Challenge Cup follows the
+two supplied slides in order, led by Tianyang Lu. Embedded members are Qiushi Xie,
+Yutong Bai and Jinghuan Xiao; Yujiang Zeng is their advisor. VaseMuseum uses * for
+equal contribution, † for project lead Zeyu Zhang and ‡ for correspondence,
+retaining the established author order. Detail pages explain the markers.
+
+`source/competition-presentation.css` increases the expanded-gallery close
+glyph by 50% on desktop, tablets and portrait phones, retaining its existing
+48px touch target and leaving contact dialogs unchanged. Validation and release
+records are in `docs/competition-sequences-teams-20261006/`.

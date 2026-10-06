@@ -1,0 +1,138 @@
+{
+  "projectCard": {
+    "members": [
+      {
+        "zh": "谢秋实",
+        "en": "Qiushi Xie"
+      },
+      {
+        "zh": "朱拓源",
+        "en": "Tuoyuan Zhu"
+      },
+      {
+        "zh": "庞亚宸",
+        "en": "Yachen Pang"
+      }
+    ],
+    "leader": "谢秋实",
+    "advisors": [
+      {
+        "zh": "夏景圆",
+        "en": "Jingyuan Xia"
+      }
+    ],
+    "evidence": "Existing Intel project page; user confirmed on 2026-10-06"
+  },
+  "nuedcProjectCard": {
+    "members": [
+      {
+        "zh": "谢秋实",
+        "en": "Qiushi Xie"
+      },
+      {
+        "zh": "朱拓源",
+        "en": "Tuoyuan Zhu"
+      },
+      {
+        "zh": "庞亚宸",
+        "en": "Yachen Pang"
+      }
+    ],
+    "leader": "谢秋实",
+    "advisors": [
+      {
+        "zh": "夏景圆",
+        "en": "Jingyuan Xia"
+      },
+      {
+        "zh": "肖看",
+        "en": "Kan Xiao"
+      }
+    ],
+    "evidence": "Existing C-topic team; user supplied advisors on 2026-10-06"
+  },
+  "embeddedProjectCard": {
+    "members": [
+      {
+        "zh": "谢秋实",
+        "en": "Qiushi Xie"
+      },
+      {
+        "zh": "柏昱彤",
+        "en": "Yutong Bai"
+      },
+      {
+        "zh": "肖靖桓",
+        "en": "Jinghuan Xiao"
+      }
+    ],
+    "leader": "谢秋实",
+    "advisors": [
+      {
+        "zh": "曾喻江",
+        "en": "Yujiang Zeng"
+      }
+    ],
+    "evidence": "User supplied member list and clarified advisor on 2026-10-06"
+  },
+  "lowcomProjectCard": {
+    "members": [
+      {
+        "zh": "陆天洋",
+        "en": "Tianyang Lu"
+      },
+      {
+        "zh": "彭震凯",
+        "en": "Zhenkai Peng"
+      },
+      {
+        "zh": "吴雨垚",
+        "en": "Yuyao Wu"
+      },
+      {
+        "zh": "张顺",
+        "en": "Shun Zhang"
+      },
+      {
+        "zh": "董浩",
+        "en": "Hao Dong"
+      },
+      {
+        "zh": "杨胜策",
+        "en": "Shengce Yang"
+      },
+      {
+        "zh": "韩羽璇",
+        "en": "Yuxuan Han"
+      },
+      {
+        "zh": "谢秋实",
+        "en": "Qiushi Xie"
+      },
+      {
+        "zh": "刘思绪",
+        "en": "Sixu Liu"
+      },
+      {
+        "zh": "方怡玥",
+        "en": "Yiyue Fang"
+      },
+      {
+        "zh": "黄麓斐",
+        "en": "Lufei Huang"
+      }
+    ],
+    "leader": "陆天洋",
+    "advisors": [
+      {
+        "zh": "尹海帆",
+        "en": "Haifan Yin"
+      },
+      {
+        "zh": "谭力",
+        "en": "Li Tan"
+      }
+    ],
+    "evidence": "User supplied two team slides and confirmed Tianyang Lu as team lead on 2026-10-06"
+  }
+}

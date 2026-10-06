@@ -1,0 +1,45 @@
+{
+  "dimensions": [
+    1080,
+    720
+  ],
+  "fps": 24,
+  "fade_seconds": 0.5,
+  "duration_seconds": 32.5,
+  "sound": false,
+  "fit": "contain with white padding; no cropping or stretching",
+  "order": [
+    "flight-summary.mp4",
+    "self-check.mp4",
+    "simulation.mp4",
+    "free-route.mp4",
+    "gesture-gaze.mp4",
+    "text-recognition.mp4"
+  ],
+  "inputs": [
+    {
+      "path": "homepage/source/project-previews/intelcup-2026/inputs/flight-summary.mp4",
+      "sha256": "ca204e647fc3608d73568e2fb3803a8b446847ecd1358089a8574a25effa7af5"
+    },
+    {
+      "path": "homepage/source/project-previews/intelcup-2026/inputs/self-check.mp4",
+      "sha256": "6501c92ea8a40c548ab9085602d6f3069dfb4552a4763482cb85bb6cc4cc9a31"
+    },
+    {
+      "path": "homepage/source/project-previews/intelcup-2026/inputs/simulation.mp4",
+      "sha256": "9ea5248adaa22c2344b2f47889217181d52d8833cebf8e8c0f3bc93b8347560e"
+    },
+    {
+      "path": "homepage/source/project-previews/intelcup-2026/inputs/free-route.mp4",
+      "sha256": "cdd98e5c62c0791d467691c0c14a5ced667f9c0807fc46f3b085be8e5c1e8e28"
+    },
+    {
+      "path": "homepage/source/project-previews/intelcup-2026/inputs/gesture-gaze.mp4",
+      "sha256": "db94c2b96d4875f73fd7403676047cc012352b48e5de8a9671ef58498111ede1"
+    },
+    {
+      "path": "homepage/source/project-previews/intelcup-2026/inputs/text-recognition.mp4",
+      "sha256": "e6ce56b0df118c8c43bed8276ca0f4c4c4a2afc595362a1a4bb1aa68a993c6d1"
+    }
+  ]
+}

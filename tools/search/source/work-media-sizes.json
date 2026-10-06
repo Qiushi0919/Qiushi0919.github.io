@@ -38,5 +38,13 @@
   "assets/portfolio-cover/eecs-2026/nasa-results.webp": [
     1400,
     833
+  ],
+  "assets/portfolio-cover/intelcup-2026/preview-sequence.mp4": [
+    1080,
+    720
+  ],
+  "assets/portfolio-cover/nuedc-c/preview-sequence.mp4": [
+    1280,
+    960
   ]
 }

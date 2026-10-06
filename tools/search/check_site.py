@@ -6,6 +6,7 @@ import json
 from lxml import html, etree
 
 ROOT = Path(__file__).resolve().parent / 'build'
+teams = json.loads((ROOT.parent / 'source/competition-teams.json').read_text())
 count = 0
 for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919.github.io', '')]:
     directory = ROOT / origin
@@ -90,9 +91,24 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert len(collections[0].xpath('.//fieldset/legend')) == 1
         else:
             assert not collections
-        c_thumbnail = tree.xpath('//*[@id="nuedcCoverTrigger"]/img/@src')
-        if c_thumbnail:
-            assert c_thumbnail == ['/assets/portfolio-cover/nuedc-c/test-integrated.webp']
+        for card in tree.xpath('//article[@data-work-category="competition"]'):
+            team = teams[card.get('id')]
+            members = card.xpath('.//div[contains(@class,"competition-team")]//span[@data-author-name]')
+            assert [a.get('data-author-name') for a in members] == [person['zh'] for person in team['members'] + team['advisors']], str(p)
+            assert [a.get('data-author-name') for a in members if a.get('data-team-role') == 'leader'] == [team['leader']], str(p)
+            assert len(card.xpath('.//sup[text()="†"]')) == 1, str(p)
+            assert len(card.xpath('.//sup[text()="‡"]')) == len(team['advisors']), str(p)
+            assert not card.xpath('.//*[contains(concat(" ",@class," ")," project-kicker ")]'), str(p)
+        for trigger, project, dimensions in [('coverTrigger','intelcup-2026',['1080','720']), ('nuedcCoverTrigger','nuedc-c',['1280','960'])]:
+            for video in tree.xpath(f'//*[@id="{trigger}"]/video'):
+                assert video.get('data-src') == f'/assets/portfolio-cover/{project}/preview-sequence.mp4', str(p)
+                assert [video.get('width'),video.get('height')] == dimensions, str(p)
+                assert all(attribute in video.attrib for attribute in ('muted','loop','playsinline','data-preview-auto')), str(p)
+                assert video.get('poster') == f'/assets/portfolio-cover/{project}/preview-sequence.jpg', str(p)
+        for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Zeyu Zhang"]'):
+            assert author.xpath('./sup/text()') == ['*','†'], str(p)
+        for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Hao Tang"]'):
+            assert author.xpath('./sup/text()') == ['‡'], str(p)
         if urlsplit(canonical).path in ('/', '/about/'):
             assert len(tree.xpath('//section[@class="profile-section"]')) == 1
         else:
@@ -141,4 +157,4 @@ for p in (ROOT / 'github-legacy').rglob('index.html'):
     assert tree.xpath('//a/@href') == [target], str(p)
     legacy_count += 1
 assert legacy_count == 30
-print(json.dumps({'status':'passed','static_pages':count,'paper_project_pages':1,'sitemap_urls':31,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, visible content, root migration redirects, paper project assets'}))
+print(json.dumps({'status':'passed','static_pages':count,'paper_project_pages':1,'sitemap_urls':31,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, confirmed team rosters and roles, contribution marks, preview videos and dimensions, root migration redirects, paper project assets'}))
