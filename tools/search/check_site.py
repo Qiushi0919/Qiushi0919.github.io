@@ -63,6 +63,8 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert not urlsplit(canonical).path.startswith('/Qiushi-Portfolio/'), str(p)
         assert set(tree.xpath('//link[@rel="alternate"]/@hreflang')) == {'zh-CN','en','x-default'}
         assert not tree.xpath('//article[@hidden]')
+        for image in tree.xpath('//section[contains(concat(" ",@class," ")," feature-overlay ")]//figure/img'):
+            assert int(image.get('width', '0')) > 0 and int(image.get('height', '0')) > 0, 'Unreserved gallery image: ' + str(p)
         assert not tree.xpath('//*[contains(@class,"profile-mobile-summary") and contains(string(.),"（拟入学）")]')
         battery = tree.xpath('//*[@id="eecsCoverTrigger"]')
         if battery:

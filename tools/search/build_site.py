@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'preview-gallery-smooth-20261006'
+VERSION = 'preview-gallery-smooth-v2-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -422,6 +422,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             code = code.replace('    ];\n    const anyOpen',
                                 '    ].filter(project => project.card && project.trigger && project.overlay && project.close);\n    const anyOpen')
             code = re.sub(r"    const runWhenIdle =.*?    const hydrateOverlay", '    const hydrateOverlay', code, flags=re.S)
+            code = code.replace("if (media.tagName === 'IMG') media.fetchPriority = priority;",
+                                "if (media.tagName === 'IMG') { media.loading = 'eager'; media.fetchPriority = priority; }")
             code = re.sub(r'    const preloadAllProjectMedia =.*?    const setOpen', '    const setOpen', code, flags=re.S)
             code = code.replace("    window.addEventListener('portfolio:ready', preloadAllProjectMedia, {once:true});\n", '')
             # Original experiment videos are an explicit user choice; merely
@@ -822,6 +824,12 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         wrapper.remove(control)
                         wrapper.set('class', wrapper.get('class') + ' no-preview-control')
                 sizes = json.loads((SOURCE / 'work-media-sizes.json').read_text())
+                gallery_sizes = json.loads((SOURCE / 'gallery-media-sizes.json').read_text())
+                for image in tree.xpath('//section[contains(concat(" ",@class," ")," feature-overlay ")]//img'):
+                    path = (image.get('data-src') or image.get('src') or '').lstrip('/')
+                    if path in gallery_sizes:
+                        image.set('width', str(gallery_sizes[path][0]))
+                        image.set('height', str(gallery_sizes[path][1]))
                 for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video | //div[@data-preview-motion]//img | //div[@data-preview-motion]//video'):
                     src = (media.get('src') or media.get('data-src') or '').lstrip('/')
                     dimensions = sizes.get(src)

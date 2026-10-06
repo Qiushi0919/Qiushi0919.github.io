@@ -1,0 +1,178 @@
+{
+  "assets/portfolio-cover/eecs-2026/calce-results.webp": [
+    1400,
+    834
+  ],
+  "assets/portfolio-cover/eecs-2026/decomposition.webp": [
+    1400,
+    1184
+  ],
+  "assets/portfolio-cover/eecs-2026/framework-landscape.webp": [
+    2400,
+    1350
+  ],
+  "assets/portfolio-cover/eecs-2026/nasa-results.webp": [
+    1400,
+    833
+  ],
+  "assets/portfolio-cover/embedded-2025/compact-internal.webp": [
+    1600,
+    1199
+  ],
+  "assets/portfolio-cover/embedded-2025/compact-prototype.webp": [
+    1600,
+    1199
+  ],
+  "assets/portfolio-cover/embedded-2025/data-display.jpg": [
+    506,
+    900
+  ],
+  "assets/portfolio-cover/embedded-2025/finals-dual-board.webp": [
+    1600,
+    1026
+  ],
+  "assets/portfolio-cover/embedded-2025/model-memory.png": [
+    1062,
+    685
+  ],
+  "assets/portfolio-cover/embedded-2025/prediction-curve.png": [
+    972,
+    495
+  ],
+  "assets/portfolio-cover/embedded-2025/software-flow.png": [
+    1265,
+    714
+  ],
+  "assets/portfolio-cover/embedded-2025/system-block.png": [
+    1920,
+    1080
+  ],
+  "assets/portfolio-cover/low-altitude-communication/core-tech-1.webp": [
+    1300,
+    726
+  ],
+  "assets/portfolio-cover/low-altitude-communication/core-tech-2.webp": [
+    1296,
+    718
+  ],
+  "assets/portfolio-cover/low-altitude-communication/core-tech-3.webp": [
+    1298,
+    720
+  ],
+  "assets/portfolio-cover/low-altitude-communication/page-08.webp": [
+    1600,
+    900
+  ],
+  "assets/portfolio-cover/low-altitude-communication/page-11.webp": [
+    1392,
+    770
+  ],
+  "assets/portfolio-cover/nuedc-c/digital-key.jpg": [
+    1280,
+    1700
+  ],
+  "assets/portfolio-cover/nuedc-c/pdoa-principle.png": [
+    531,
+    401
+  ],
+  "assets/portfolio-cover/nuedc-c/program-flow.png": [
+    426,
+    531
+  ],
+  "assets/portfolio-cover/nuedc-c/receiver-structure.png": [
+    791,
+    326
+  ],
+  "assets/portfolio-cover/nuedc-c/smart-lock.webp": [
+    1440,
+    1920
+  ],
+  "assets/portfolio-cover/nuedc-c/software-unlock.png": [
+    1280,
+    720
+  ],
+  "assets/portfolio-cover/nuedc-c/system-block.png": [
+    591,
+    416
+  ],
+  "assets/portfolio-cover/nuedc-c/test-integrated.webp": [
+    1920,
+    1440
+  ],
+  "assets/portfolio-cover/nuedc-c/test-results.png": [
+    856,
+    601
+  ],
+  "assets/portfolio-cover/vase-paper-preview/architecture-clean.webp": [
+    1355,
+    617
+  ],
+  "assets/portfolio-cover/vase-paper-preview/evaluation-clean.webp": [
+    1345,
+    438
+  ],
+  "assets/portfolio-cover/vase-paper-preview/interaction-clean.webp": [
+    1355,
+    572
+  ],
+  "assets/portfolio-cover/vase-paper-preview/interface-clean.webp": [
+    620,
+    336
+  ],
+  "assets/portfolio-cover/vase-paper-preview/reliability-clean.webp": [
+    1350,
+    358
+  ],
+  "assets/portfolio-cover/vase-paper-preview/results-clean.webp": [
+    680,
+    455
+  ],
+  "assets/side-projects/alttab/runtime-main.webp": [
+    1311,
+    674
+  ],
+  "assets/side-projects/alttab/runtime-secondary.webp": [
+    1600,
+    1043
+  ],
+  "assets/side-projects/alttab/settings-all-displays.webp": [
+    1001,
+    638
+  ],
+  "assets/side-projects/boring-notch/detail-files.gif": [
+    420,
+    236
+  ],
+  "assets/side-projects/boring-notch/detail-music.gif": [
+    420,
+    236
+  ],
+  "assets/side-projects/boring-notch/detail-pomodoro.gif": [
+    420,
+    236
+  ],
+  "assets/side-projects/codex-tidy/overview.webp": [
+    1180,
+    780
+  ],
+  "assets/side-projects/codex-tidy/safe-cleanup.webp": [
+    260,
+    139
+  ],
+  "assets/side-projects/codex-tidy/thread-delete.webp": [
+    260,
+    155
+  ],
+  "assets/side-projects/mindmap/content-tools.webp": [
+    1400,
+    894
+  ],
+  "assets/side-projects/mindmap/editor.webp": [
+    1200,
+    748
+  ],
+  "assets/side-projects/mindmap/themes-language.webp": [
+    1400,
+    584
+  ]
+}

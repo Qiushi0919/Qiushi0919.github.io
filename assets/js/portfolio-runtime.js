@@ -254,7 +254,7 @@
       project.overlay.querySelectorAll('[data-src]').forEach(media => {
         const source = media.dataset.src;
         if (!source) return;
-        if (media.tagName === 'IMG') media.fetchPriority = priority;
+        if (media.tagName === 'IMG') { media.loading = 'eager'; media.fetchPriority = priority; }
         media.src = source;
         media.removeAttribute('data-src');
         if (media.tagName === 'VIDEO') {

@@ -648,3 +648,8 @@ timelines and Replay behavior remain independent.
 
 The EECS Canvas preview and loop are shared by Chinese and international builds.
 Local legacy-asset preview now uses the canonical GitHub root asset URLs.
+
+Every gallery image has intrinsic width/height in `source/gallery-media-sizes.json`.
+Opening a gallery makes only its images eager; other galleries remain lazy.
+This reserves natural-ratio space before image decoding and avoids collapsed rows.
+Final loading patch: `docs/gallery-loading-final-20261006/`.
