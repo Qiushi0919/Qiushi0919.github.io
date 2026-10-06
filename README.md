@@ -77,7 +77,9 @@ their proportions and remain uncropped. VaseMuseum displays the existing museum 
 and VaseAgent reliability framework as a compact vertical pair that uses the
 full image column; the CN battery-paper thumbnail plays the method video as a silent loop; the international thumbnail retains the NASA B0005 prediction result. All images retain their original aspect ratios. The arXiv venue/month
 line is bold; the SPIE venue line and colored resource-tag values are also bold. Venue names
-retain italic styling with an explicit 700 weight and a locally hosted Lato bold-italic font, with its SIL OFL license. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
+retain italic styling with an explicit 700 weight. The current typeface stack
+uses Times New Roman and Microsoft YaHei; the previous Lato asset and its SIL OFL
+license remain archived for compatibility. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
 Clicking still opens all original full method/result figures. These cover images
 are selected from existing assets, not cropped, redrawn, stretched, or overwritten.
 The compact split resource tags use a gray label and a colored value; all existing
