@@ -240,9 +240,8 @@
       project.card.classList.toggle('is-open', open);
       project.trigger.setAttribute('aria-expanded', String(open));
       project.overlay.setAttribute('aria-hidden', String(!open));
-      project.overlay.querySelectorAll('video:not([data-preview-auto])').forEach(video => {
-        if (open && !reduceMotion) video.play().catch(() => {});
-        else video.pause();
+      project.overlay.querySelectorAll('video').forEach(video => {
+        if (!open) video.pause();
       });
       syncBackdrop();
     };
@@ -269,6 +268,7 @@
     backdrop.addEventListener('click', closeOpenProject);
     document.addEventListener('keydown', event => {
       if (!anyOpen() || (event.key !== 'Escape' && event.key !== ' ')) return;
+      if (event.key === ' ' && event.target.closest('button,a,input,summary,video,select,textarea')) return;
       event.preventDefault();
       closeOpenProject();
     });
@@ -334,16 +334,160 @@
     })();
   
 requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });
+/* Raster frames only: thumbnail playback never creates an HTML video player. */
+(() => {
+  class PreviewFramePlayer {
+    constructor(canvas, url, callbacks) {
+      this.canvas = canvas;
+      this.url = new URL(url, document.baseURI);
+      this.callbacks = callbacks;
+      this.context = canvas.getContext('2d', {alpha:false});
+      this.images = new Map();
+      this.pending = new Map();
+      this.elapsed = 0;
+      this.running = false;
+      this.epoch = 0;
+      this.raf = 0;
+      this.last = null;
+      this.tile = -1;
+      this.drawn = false;
+    }
+    async manifest() {
+      if (this.data) return this.data;
+      if (!this.loading) this.loading = fetch(this.url).then(response => {
+        if (!response.ok) throw new Error('Preview manifest unavailable');
+        return response.json();
+      }).then(data => {
+        if (!(data.duration > 0 && data.duration < 300 && data.fps > 0 && data.fps <= 30 &&
+              data.width > 0 && data.width <= 1280 && data.height > 0 && data.height <= 1280 &&
+              data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
+              data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
+              data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16))) {
+          throw new Error('Invalid preview manifest');
+        }
+        this.canvas.width = data.width;
+        this.canvas.height = data.height;
+        this.data = data;
+        return data;
+      }).catch(error => { this.loading = null; throw error; });
+      return this.loading;
+    }
+    sheet(index) {
+      if (this.images.has(index)) return Promise.resolve(this.images.get(index));
+      if (this.pending.has(index)) return this.pending.get(index);
+      const epoch = this.epoch;
+      const url = new URL(this.data.sheets[index], this.url);
+      url.search = this.url.search;
+      const image = new Image();
+      image.decoding = 'async';
+      const pending = new Promise((resolve, reject) => {
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error('Preview frame unavailable'));
+        image.src = url.href;
+      }).then(image => {
+        // A paused/closed gallery must not retain decoded offscreen atlases.
+        if (this.running && epoch === this.epoch) this.images.set(index, image);
+        return image;
+      }).finally(() => {
+        if (this.pending.get(index) === pending) this.pending.delete(index);
+      });
+      this.pending.set(index, pending);
+      return pending;
+    }
+    play() {
+      if (this.running) return;
+      this.running = true;
+      const epoch = ++this.epoch;
+      this.last = null;
+      this.manifest().then(() => {
+        if (this.running && epoch === this.epoch) this.tick();
+      }).catch(error => {
+        if (this.running && epoch === this.epoch) this.fail(error);
+      });
+    }
+    tick() {
+      this.raf = requestAnimationFrame(now => {
+        this.raf = 0;
+        if (!this.running) return;
+        const data = this.data;
+        // Buffering and pauses do not consume the demonstration's timeline.
+        const elapsed = this.elapsed + (this.last === null ? 0 : Math.max(0, (now-this.last)/1000));
+        this.last = now;
+        if (elapsed >= data.duration) {
+          this.reset();
+          this.callbacks.ended();
+          return;
+        }
+        const frame = Math.min(data.frames.length-1, Math.floor(elapsed * data.fps));
+        const tile = data.frames[frame];
+        const sheet = Math.floor(tile / data.tilesPerSheet);
+        const image = this.images.get(sheet);
+        if (image) {
+          this.elapsed = elapsed;
+          if (tile !== this.tile || !this.drawn) {
+            const offset = tile % data.tilesPerSheet;
+            this.context.drawImage(image, (offset % data.columns)*data.width,
+              Math.floor(offset/data.columns)*data.height, data.width, data.height,
+              0, 0, data.width, data.height);
+            this.tile = tile;
+          }
+          this.canvas.dataset.previewFrame = String(frame);
+          this.canvas.dataset.previewTime = this.elapsed.toFixed(3);
+          if (!this.drawn) { this.drawn = true; this.callbacks.playing(); }
+          const nextTile = data.frames.slice(frame+1,frame+17).find(tile => Math.floor(tile/data.tilesPerSheet) !== sheet);
+          const nextSheet = nextTile === undefined ? sheet : Math.floor(nextTile/data.tilesPerSheet);
+          for (const key of this.images.keys()) {
+            if (key !== sheet && key !== nextSheet) this.images.delete(key);
+          }
+          if (nextSheet !== sheet && !this.images.has(nextSheet)) this.loadSheet(nextSheet);
+        } else {
+          this.last = null;
+          this.loadSheet(sheet);
+        }
+        if (this.running) this.tick();
+      });
+    }
+    loadSheet(sheet) {
+      const epoch = this.epoch;
+      this.sheet(sheet).catch(error => {
+        if (this.running && epoch === this.epoch) this.fail(error);
+      });
+    }
+    pause() {
+      this.running = false;
+      ++this.epoch;
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
+      this.last = null;
+      this.images.clear();
+      this.pending.clear();
+    }
+    reset() {
+      this.pause();
+      this.elapsed = 0;
+      this.tile = -1;
+      this.drawn = false;
+      this.canvas.dataset.previewTime = '0';
+      delete this.canvas.dataset.previewFrame;
+    }
+    fail(error) {
+      this.reset();
+      this.callbacks.error(error);
+    }
+  }
+  window.PortfolioFramePlayer = PreviewFramePlayer;
+})();
+
 /* Every animated preview gets one automatic play after its first full appearance.
    Completion restores its cover; the separate control explicitly plays/replays. */
 (() => {
   const root = document.documentElement;
   const motion = matchMedia('(prefers-reduced-motion:reduce)');
   const english = root.dataset.language === 'en';
-  const entries = [...document.querySelectorAll('.preview-media video[data-preview-auto]')].map(video => {
-    const media = video.closest('.preview-media');
-    return {video, media, control:media.querySelector('[data-preview-play]'),
-      popup:video.closest('.feature-overlay'), started:false, hasPlayed:false,
+  const entries = [...document.querySelectorAll('.preview-media canvas[data-preview-auto]')].map(canvas => {
+    const media = canvas.closest('.preview-media');
+    return {canvas, media, control:media.querySelector('[data-preview-play]'),
+      popup:canvas.closest('.feature-overlay'), started:false, hasPlayed:false,
       finished:false, needsManual:false, manual:false};
   });
   if (!entries.length) return;
@@ -375,59 +519,68 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
   const label = entry => {
     const replay = entry.hasPlayed;
     const value = replay ? (english?'Replay':'重播') : (english?'Play':'播放');
-    entry.control.setAttribute('aria-label', value + (english?' video':'视频'));
+    entry.control.setAttribute('aria-label', value + (english?' animation':'动画'));
     entry.control.title = value;
     entry.control.querySelector('.preview-play-label').textContent = value;
     entry.control.querySelector('.preview-play-icon').textContent = replay ? '↻' : '▶';
     entry.control.dataset.previewAction = replay ? 'replay' : 'play';
   };
   const still = entry => {
-    entry.video.pause();
+    entry.player.reset();
     entry.media.dataset.previewState = 'poster';
-    try { entry.video.currentTime = 0; } catch {}
     label(entry);
   };
   const play = (entry, manual=false) => {
     if (blocked(entry)) return;
-    const video = entry.video;
     if (manual) {
       entry.manual = true;
       entry.finished = false;
       entry.needsManual = false;
-      delete video.dataset.previewFinished;
+      delete entry.canvas.dataset.previewFinished;
       still(entry);
     }
     entry.started = true;
-    if (!video.getAttribute('src')) { video.src = video.dataset.src; video.preload = 'metadata'; }
-    video.loop = false;
-    video.muted = true;
-    video.play().catch(() => {
-      entry.needsManual = true;
-      entry.media.dataset.previewState = 'poster';
-      label(entry);
-    });
+    entry.player.play();
   };
   const sync = () => {
     frame = 0;
     for (const entry of entries) {
-      const video = entry.video;
-      if (blocked(entry) || (motion.matches && !entry.manual)) { video.pause(); continue; }
+      const player = entry.player;
+      if (blocked(entry) || (motion.matches && !entry.manual)) { player.pause(); continue; }
       if (entry.finished || entry.needsManual) continue;
       const box = viewport(Boolean(entry.popup));
-      const rect = video.getBoundingClientRect();
+      const rect = entry.canvas.getBoundingClientRect();
       const visible = fraction(rect,box);
       if (!entry.started) {
         const complete = rect.width>0 && rect.height>0 && rect.top>=box.top-.5 && rect.left>=box.left-.5 && rect.bottom<=box.bottom+.5 && rect.right<=box.right+.5;
         if (complete) play(entry);
-        else video.pause();
-      } else if (visible < .15) video.pause();
-      else if (video.paused) play(entry);
+        else player.pause();
+      } else if (visible < .15) player.pause();
+      else if (!player.running) play(entry);
     }
   };
   const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
   for (const entry of entries) {
-    const video = entry.video;
-    video.loop = false;
+    const canvas = entry.canvas;
+    entry.player = new window.PortfolioFramePlayer(canvas, canvas.dataset.previewSequence, {
+      playing() {
+        if (blocked(entry) || entry.finished) { entry.player.pause(); return; }
+        entry.hasPlayed = true;
+        canvas.dataset.previewStarted = 'true';
+        entry.media.dataset.previewState = 'playing';
+        label(entry);
+      },
+      ended() {
+        entry.finished = true;
+        canvas.dataset.previewFinished = 'true';
+        still(entry);
+      },
+      error() {
+        entry.needsManual = true;
+        entry.media.dataset.previewState = 'poster';
+        label(entry);
+      }
+    });
     label(entry);
     entry.control.addEventListener('click', event => {
       event.stopPropagation();
@@ -438,23 +591,10 @@ requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-
     entry.control.addEventListener('keydown', event => {
       if (event.key === ' ') event.stopPropagation();
     });
-    video.addEventListener('playing', () => {
-      if (blocked(entry) || entry.finished) { video.pause(); return; }
-      entry.hasPlayed = true;
-      video.dataset.previewStarted = 'true';
-      entry.media.dataset.previewState = 'playing';
-      label(entry);
-    });
-    video.addEventListener('ended', () => {
-      entry.finished = true;
-      video.dataset.previewFinished = 'true';
-      still(entry);
-    });
-    video.addEventListener('loadedmetadata', schedule);
   }
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(schedule,{threshold:[0,.15,1]});
-    entries.forEach(entry=>observer.observe(entry.video));
+    entries.forEach(entry=>observer.observe(entry.canvas));
   }
   document.addEventListener('scroll',schedule,{passive:true,capture:true});
   window.addEventListener('resize',schedule,{passive:true});

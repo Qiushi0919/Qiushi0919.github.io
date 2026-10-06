@@ -67,9 +67,9 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         battery = tree.xpath('//*[@id="eecsCoverTrigger"]')
         if battery:
             if origin == 'cn':
-                preview = battery[0].xpath('./video[@muted and not(@loop) and @playsinline and @data-preview-auto]')
-                assert len(preview) == 1 and preview[0].get('data-src') == '/assets/portfolio-cover/eecs-2026/method-preview.mp4'
-                assert (directory / preview[0].get('data-src').lstrip('/')).is_file()
+                preview = battery[0].xpath('./canvas[@data-preview-auto]')
+                assert len(preview) == 1 and urlsplit(preview[0].get('data-preview-sequence')).path == '/assets/preview-frames/battery-method/sequence.json'
+                assert (directory / urlsplit(preview[0].get('data-preview-sequence')).path.lstrip('/')).is_file()
             else:
                 assert battery[0].xpath('./img[@class="paper-preview-image"]')
         assert '谢秋实' in tree.text_content() and 'Qiushi Xie' in tree.text_content()
@@ -103,15 +103,13 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert len(card.xpath('.//*[contains(concat(" ",@class," ")," project-kicker ")]')) == 1, str(p)
             if card.get('id') != 'lowcomProjectCard' or team.get('award'):
                 assert len(card.xpath('.//span[@class="competition-award"]')) == 1, str(p)
-        for trigger, project, dimensions in [('coverTrigger','intelcup-2026',['1080','720']), ('nuedcCoverTrigger','nuedc-c',['1280','960'])]:
-            for video in tree.xpath(f'//*[@id="{trigger}"]/video'):
-                assert urlsplit(video.get('data-src')).path == f'/assets/portfolio-cover/{project}/preview-with-cover-{language}.mp4', str(p)
-                assert urlsplit(video.get('data-src')).query.startswith('v='), str(p)
-                assert [video.get('width'),video.get('height')] == dimensions, str(p)
-                assert all(attribute in video.attrib for attribute in ('muted','playsinline','data-preview-auto')), str(p)
-                assert 'loop' not in video.attrib and 'autoplay' not in video.attrib, str(p)
-                assert urlsplit(video.get('poster')).path == f'/assets/portfolio-cover/{project}/cover-{language}.jpg', str(p)
-                assert urlsplit(video.get('poster')).query == urlsplit(video.get('data-src')).query, str(p)
+        for trigger, project in [('coverTrigger','intelcup-2026'), ('nuedcCoverTrigger','nuedc-c')]:
+            for canvas in tree.xpath(f'//*[@id="{trigger}"]/canvas'):
+                assert urlsplit(canvas.get('data-preview-sequence')).path == f'/assets/preview-frames/{project}-{language}/sequence.json', str(p)
+                assert urlsplit(canvas.get('data-preview-sequence')).query.startswith('v='), str(p)
+                poster = canvas.getnext()
+                assert urlsplit(poster.get('src')).path == f'/assets/portfolio-cover/{project}/cover-{language}.jpg', str(p)
+                assert urlsplit(poster.get('src')).query == urlsplit(canvas.get('data-preview-sequence')).query, str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Zeyu Zhang"]'):
             assert author.xpath('./sup/text()') == ['†','‡'], str(p)
         for author in tree.xpath('//*[@id="vaseProjectCard"]//span[@data-author-name="Hao Tang"]'):
@@ -120,9 +118,20 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         for wrapper in tree.xpath('//div[@data-preview-motion]'):
             assert len(wrapper.xpath('./button[@data-preview-play]')) == 1, str(p)
             assert len(wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/img[@class="preview-poster"]')) == 1, str(p)
-            assert len(wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/video[not(@loop) and not(@autoplay)]')) == 1, str(p)
+            assert not wrapper.xpath('.//video'), str(p)
+            canvas = wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/canvas[@data-preview-auto]')
+            assert len(canvas) == 1 and canvas[0].get('width') and canvas[0].get('height'), str(p)
+            sequence = directory / urlsplit(canvas[0].get('data-preview-sequence')).path.lstrip('/')
+            data = json.loads(sequence.read_text())
+            assert data['frames'] and data['duration'] > 0, str(p)
+            assert all((sequence.parent / name).is_file() for name in data['sheets']), str(p)
             if 'data-preview-popup' in wrapper.attrib:
                 assert wrapper.getprevious().get('class') == 'overlay-head', str(p)
+                original = wrapper.getnext()
+                assert original.tag == 'details' and original.get('class') == 'preview-original' and 'open' not in original.attrib, str(p)
+                assert original.xpath('./video[@controls and @playsinline and not(@autoplay)]'), str(p)
+        assert not tree.xpath('//video[@autoplay]'), str(p)
+        assert all('controls' in v.attrib for v in tree.xpath('//video')), str(p)
         for leader in tree.xpath('//sup[text()="‡"]'):
             assert leader.get('class') == 'role-lead', str(p)
         if urlsplit(canonical).path in ('/', '/about/'):
@@ -173,4 +182,4 @@ for p in (ROOT / 'github-legacy').rglob('index.html'):
     assert tree.xpath('//a/@href') == [target], str(p)
     legacy_count += 1
 assert legacy_count == 30
-print(json.dumps({'status':'passed','static_pages':count,'paper_project_pages':1,'sitemap_urls':31,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, confirmed team rosters and roles, contribution marks, preview videos and dimensions, root migration redirects, paper project assets'}))
+print(json.dumps({'status':'passed','static_pages':count,'paper_project_pages':1,'sitemap_urls':31,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, confirmed team rosters and roles, contribution marks, Canvas previews, original video controls and dimensions, root migration redirects, paper project assets'}))

@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'preview-replay-covers-20261006'
+VERSION = 'canvas-previews-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -421,9 +421,14 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             code = re.sub(r"    const runWhenIdle =.*?    const hydrateOverlay", '    const hydrateOverlay', code, flags=re.S)
             code = re.sub(r'    const preloadAllProjectMedia =.*?    const setOpen', '    const setOpen', code, flags=re.S)
             code = code.replace("    window.addEventListener('portfolio:ready', preloadAllProjectMedia, {once:true});\n", '')
-            code = code.replace("project.overlay.querySelectorAll('video').forEach(video => {\n        if (open", "project.overlay.querySelectorAll('video:not([data-preview-auto])').forEach(video => {\n        if (open")
+            # Original experiment videos are an explicit user choice; merely
+            # opening a gallery must not activate a phone's native media player.
+            code = code.replace('if (open && !reduceMotion) video.play().catch(() => {});\n        else video.pause();', 'if (!open) video.pause();')
+            code = code.replace("if (!anyOpen() || (event.key !== 'Escape' && event.key !== ' ')) return;",
+                "if (!anyOpen() || (event.key !== 'Escape' && event.key !== ' ')) return;\n      if (event.key === ' ' && event.target.closest('button,a,input,summary,video,select,textarea')) return;")
         scripts.append(code)
     scripts.append("requestAnimationFrame(() => { document.documentElement.classList.add('portfolio-ready'); window.dispatchEvent(new Event('portfolio:ready')); if (!matchMedia('(prefers-reduced-motion:reduce)').matches) document.documentElement.classList.add('carousels-running'); });")
+    scripts.append((SOURCE / 'preview-frame-player.js').read_text())
     scripts.append((SOURCE / 'preview-playback.js').read_text())
     scripts.append((SOURCE / 'work-view.js').read_text())
     scripts.append((SOURCE / 'device-preview/frame-context.js').read_text())
@@ -476,6 +481,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         for source_file in (SOURCE / 'project-previews').rglob('*'):
             if source_file.is_file() and 'inputs' not in source_file.parts and source_file.suffix in ('.mp4', '.jpg', '.webp', '.svg'):
                 target = destination / 'assets/portfolio-cover' / source_file.relative_to(SOURCE/'project-previews')
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(source_file.read_bytes())
+        for source_file in (SOURCE / 'preview-frames').rglob('*'):
+            if source_file.is_file():
+                target = destination / 'assets/preview-frames' / source_file.relative_to(SOURCE/'preview-frames')
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
         for source_file in (SOURCE / 'citations').glob('*.bib'):
@@ -737,7 +747,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         e.set('href', GH + 'cv/')
                     if e.tag == 'img' and e.get('class') not in ('profile-photo', 'profile-qq-logo'):
                         e.set('loading', 'lazy'); e.set('decoding', 'async')
-                    if e.tag == 'video': e.set('preload', 'none')
+                    if e.tag == 'video':
+                        e.set('preload', 'none')
+                        e.attrib.pop('autoplay', None)
+                        if 'data-preview-auto' not in e.attrib:
+                            e.set('controls', '')
                 main = tree.xpath('//*[contains(concat(" ",@class," ")," page ")]')[0]
                 main.set('id', 'main-content')
                 if route == '' or category:
@@ -748,19 +762,27 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         copy.append(details)
                 for video in tree.xpath('//article[@data-work-category]/button/video[@data-preview-auto]'):
                     button = video.getparent()
-                    video.attrib.pop('loop', None)
-                    video.attrib.pop('autoplay', None)
-                    video_id = button.get('id') + '-video'
-                    video.set('id', video_id)
+                    preview_id = button.get('id') + '-animation'
+                    name = {'coverTrigger':f'intelcup-2026-{language}',
+                            'nuedcCoverTrigger':f'nuedc-c-{language}',
+                            'eecsCoverTrigger':'battery-method'}[button.get('id')]
+                    sequence = json.loads((SOURCE / 'preview-frames' / name / 'sequence.json').read_text())
+                    canvas = element('canvas', **{'id':preview_id,'data-preview-auto':'',
+                        'data-preview-sequence':f'/assets/preview-frames/{name}/sequence.json?v={VERSION}',
+                        'aria-label':video.get('aria-label'),'role':'img',
+                        'width':str(sequence['width']),'height':str(sequence['height'])})
+                    poster_src = video.get('poster')
+                    button.replace(video, canvas)
                     wrapper = element('div', **{'class':button.get('class', '') + ' preview-media',
-                                                'data-preview-motion':'','data-preview-state':'poster'})
+                                                'data-preview-motion':'','data-preview-state':'poster',
+                                                'style':f'--preview-ratio:{sequence["width"]}/{sequence["height"]}'})
                     button.addprevious(wrapper)
                     wrapper.append(button)
                     button.set('class', 'preview-open')
-                    poster = element('img', src=video.get('poster'), alt='', **{'class':'preview-poster', 'aria-hidden':'true'})
-                    button.insert(button.index(video)+1, poster)
-                    control = element('button', type='button', aria_label='播放视频' if language == 'zh' else 'Play video',
-                                      aria_controls=video_id, **{'class':'preview-play-control','data-preview-play':''})
+                    poster = element('img', src=poster_src, alt='', **{'class':'preview-poster', 'aria-hidden':'true'})
+                    button.insert(button.index(canvas)+1, poster)
+                    control = element('button', type='button', aria_label='播放动画' if language == 'zh' else 'Play animation',
+                                      aria_controls=preview_id, **{'class':'preview-play-control','data-preview-play':''})
                     control.append(element('span', '▶', **{'class':'preview-play-icon','aria-hidden':'true'}))
                     control.append(element('span', '播放' if language == 'zh' else 'Play', **{'class':'preview-play-label'}))
                     wrapper.append(control)
@@ -777,15 +799,19 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         featured_button.tag = 'div'
                         featured_button.attrib.clear()
                         featured_button.set('class', 'preview-open')
-                        featured_video = featured_button.find('video')
-                        featured_video.set('id', video_id + '-expanded')
-                        featured_video.set('data-preview-popup', '')
-                        featured_video.set('data-src', video.get('data-src'))
+                        featured_canvas = featured_button.find('canvas')
+                        featured_canvas.set('id', preview_id + '-expanded')
+                        featured_canvas.set('data-preview-popup', '')
                         featured_control = featured.find('button')
-                        featured_control.set('aria-controls', video_id + '-expanded')
+                        featured_control.set('aria-controls', preview_id + '-expanded')
                         for zoom_hint in featured.xpath('.//*[contains(concat(" ",@class," ")," cover-zoom-hint ")]'):
                             zoom_hint.getparent().remove(zoom_hint)
                         overlay[0][0].addnext(featured)
+                        original = element('details', **{'class':'preview-original'})
+                        original.append(element('summary', '播放原视频' if language == 'zh' else 'Play original video'))
+                        original.append(element('video', **{'src':video.get('data-src'),'poster':poster_src,
+                            'controls':'','playsinline':'','preload':'none','aria-label':video.get('aria-label')}))
+                        featured.addnext(original)
                 sizes = json.loads((SOURCE / 'work-media-sizes.json').read_text())
                 for media in tree.xpath('//article[@data-work-category]/button//img | //article[@data-work-category]/button/video | //div[@data-preview-motion]//img | //div[@data-preview-motion]//video'):
                     src = (media.get('src') or media.get('data-src') or '').lstrip('/')

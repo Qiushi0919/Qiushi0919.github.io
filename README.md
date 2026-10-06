@@ -513,3 +513,51 @@ with `render_competition_covers.cjs`, then compose the four videos with
 `prepend_competition_covers.py`; Intel duration is 17.9583s and C-topic is 11s.
 Current release, exact-byte checks and browser evidence:
 `docs/preview-replay-covers-20261006/`.
+
+### Unobtrusive controls and tablet gallery spacing (2026-10-06)
+
+Play/Replay controls are borderless and translucent. They occupy a reserved
+26px strip below each preview, so no cover text or image is covered. The strip
+stays in place while playing; its button is hidden until the cover returns.
+Controls remain separate from gallery-open buttons. The existing phone-canvas
+scale is used only to keep this strip and control at their intended visual size.
+Work-list separators are black, 2px. At native widths from 601px to 1024px,
+expanded galleries occupy 84% of the viewport width and at most 76% of its height,
+leaving more space on every side. Desktop and phone dialog sizes stay unchanged.
+Current release records: `docs/preview-controls-20261006/`.
+
+
+### Canvas previews instead of native thumbnail videos (2026-10-06)
+
+This supersedes the older video/autoplay behavior described above. All animated
+thumbnail and featured gallery previews now use Canvas raster frames, not video
+elements. This keeps phone browsers from activating native playback UI for these
+previews. The featured animation is followed by a collapsed “Play original video” section.
+Opening a gallery no longer starts any original experiment video;
+those videos retain controls and play only when explicitly selected. Their media
+files, still figures and links remain available below the featured animation.
+
+The same first-full-visibility rule applies in every view. A sequence plays once,
+returns to its original cover and requires Play/Replay to start again. Background,
+offscreen and closed-gallery animation clocks pause; buffering does not skip
+content. Reduced motion requires manual playback. The translucent borderless
+button occupies its own slim strip below the image and disappears while playing.
+The latest black 2px separators and tablet dialog spacing are included.
+
+`render_preview_frames.py` creates 12fps, 640px-wide WebP sprite sheets from the
+unchanged original MP4s. Each sheet has at most 16 tiles, identical frames share a
+tile, and the manifest keeps the original timeline and source hash. The player
+loads on demand, holds at most the current/next decoded sheets while playing and
+releases them when paused/finished. Manifest and sheet failures leave the static
+cover and allow a manual retry. No autoplay permission or native playback API is
+used. Intel remains 17.9583s, C-topic 11s and the battery method preview 16.2333s;
+network buffering may extend wall-clock playback without omitting scenes.
+
+Rebuild frames when their source videos change, then run `build_site.py` and
+`check_site.py`. Run `node tests/preview-playback.cjs` (18 visibility/control
+scenarios) and `node tests/preview-frame-player.cjs` (13 frame-player scenarios).
+The current narrow release, asset inventory, verification and browser evidence
+are in `docs/canvas-previews-20261006/`. Browser checks are simulated viewports,
+not physical phone/tablet validation. Original sources and the current release
+bundle are retained; rebuildable staging/cache directories go to recoverable
+Trash after live verification.
