@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'preview-timing-landscape-20261006'
+VERSION = 'preview-gallery-smooth-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -407,15 +407,18 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
     css += (SOURCE / 'work-view.css').read_text()
     css += (SOURCE / 'competition-presentation.css').read_text()
     css += (SOURCE / 'preview-playback.css').read_text()
+    css += (SOURCE / 'gallery-readability.css').read_text()
     typography = (SOURCE / 'site-typography.css').read_text()
     css += typography
-    scripts = []
+    scripts = [(SOURCE / 'gallery-scroll.js').read_text()]
     for s in template.xpath('//script[not(@src)]'):
         code = s.text or ''
         if 'portraitCanvasWidth' in code or 'activateCategory' in code or 'maximumWaitMs' in code:
             continue
         # Detail/category pages have only a subset of the original projects.
         if 'const anyOpen' in code:
+            code = code.replace("const syncBackdrop = () => document.body.classList.toggle('overlay-active', anyOpen());",
+                                "const syncBackdrop = () => { const open = anyOpen(); document.body.classList.toggle('overlay-active', open); window.portfolioGalleryLock(open); };")
             code = code.replace('    ];\n    const anyOpen',
                                 '    ].filter(project => project.card && project.trigger && project.overlay && project.close);\n    const anyOpen')
             code = re.sub(r"    const runWhenIdle =.*?    const hydrateOverlay", '    const hydrateOverlay', code, flags=re.S)
@@ -613,7 +616,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 share_image = (canonical_base + PROJECT_PAGES[route]['image'] if detail_id
                                else portrait_url(canonical_base))
                 share_alt = PROJECT_PAGES[route]['image_alt'][language] if detail_id else '谢秋实 / Qiushi Xie'
-                for prop, value in [('og:title', title), ('og:description', description), ('og:type', 'website'),
+                site_name = '谢秋实的个人主页' if origin == 'cn' else 'Qiushi Xie'
+                for prop, value in [('og:title', title), ('og:site_name', site_name), ('og:description', description), ('og:type', 'website'),
                                     ('og:url', canonical), ('og:locale', 'zh_CN' if language == 'zh' else 'en_US'),
                                     ('og:image', share_image), ('og:image:alt', share_alt)]:
                     head.append(element('meta', property=prop, content=value))
@@ -632,7 +636,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         '@id': canonical + '#page', 'url': canonical, 'name': title,
                         'description': description, 'inLanguage': 'zh-CN' if language == 'zh' else 'en',
                         'mainEntity': {'@id': person['@id']}, 'isPartOf': {'@id': canonical_base + '#website'}}
-                graph = [person, page, {'@type': 'WebSite', '@id': canonical_base + '#website', 'url': canonical_base, 'name': 'Qiushi Xie / 谢秋实'}]
+                graph = [person, page, {'@type': 'WebSite', '@id': canonical_base + '#website', 'url': canonical_base,
+                                       'name': site_name, 'alternateName': ['谢秋实', 'Qiushi Xie', canonical_base.split('/')[2]]}]
                 if route == '':
                     portrait = {'@type': 'ImageObject', '@id': canonical_base + '#portrait',
                                 'contentUrl': person['image'], 'url': person['image'],
@@ -728,13 +733,12 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     title_link.attrib.pop('target', None)
                 for photo in tree.xpath('//img[@class="profile-photo"]'):
                     photo.set('src', portrait_url())
-                if origin == 'cn':
-                    for image in tree.xpath('//*[@id="eecsCoverTrigger"]/img[@class="paper-preview-image"]'):
-                        preview = element('video', **{'class':'paper-preview-video', 'muted':'', 'loop':'',
-                            'playsinline':'', 'preload':'none', 'poster':image.get('src'),
-                            'data-src':'assets/portfolio-cover/eecs-2026/method-preview.mp4',
-                            'data-preview-auto':'', 'aria-label':'Battery RUL animated method preview'})
-                        image.getparent().replace(image, preview)
+                for image in tree.xpath('//*[@id="eecsCoverTrigger"]/img[@class="paper-preview-image"]'):
+                    preview = element('video', **{'class':'paper-preview-video', 'muted':'', 'loop':'',
+                        'playsinline':'', 'preload':'none', 'poster':image.get('src'),
+                        'data-src':'assets/portfolio-cover/eecs-2026/method-preview.mp4',
+                        'data-preview-auto':'', 'aria-label':'Battery RUL animated method preview'})
+                    image.getparent().replace(image, preview)
                 for e in tree.iter():
                     if not isinstance(e.tag, str): continue
                     for attr in ('src', 'href', 'poster', 'data-src', 'data-contact-src'):
@@ -771,6 +775,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         'data-preview-sequence':f'/assets/preview-frames/{name}/sequence.json?v={VERSION}',
                         'aria-label':video.get('aria-label'),'role':'img',
                         'width':str(sequence['width']),'height':str(sequence['height'])})
+                    if name == 'battery-method':
+                        canvas.set('data-preview-loop', 'true')
                     poster_src = video.get('poster')
                     button.replace(video, canvas)
                     wrapper = element('div', **{'class':button.get('class', '') + ' preview-media',

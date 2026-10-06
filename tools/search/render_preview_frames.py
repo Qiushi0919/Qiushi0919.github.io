@@ -18,6 +18,7 @@ INPUTS = {
 }
 
 def render(name, source):
+    fps = 30 if name == 'battery-method' else FPS
     info = json.loads(subprocess.check_output(['/opt/homebrew/bin/ffprobe', '-v', 'error',
         '-show_entries', 'format=duration', '-of', 'json', str(source)]))
     duration = float(info['format']['duration'])
@@ -25,7 +26,7 @@ def render(name, source):
     destination.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='qiushi-preview-frames-') as tmp:
         subprocess.run(['/opt/homebrew/bin/ffmpeg', '-hide_banner', '-loglevel', 'error', '-y',
-            '-i', str(source), '-vf', f'fps={FPS},scale={WIDTH}:-2:flags=lanczos',
+            '-i', str(source), '-vf', f'fps={fps},scale={WIDTH}:-2:flags=lanczos',
             str(Path(tmp) / 'frame-%05d.png')], check=True)
         paths = sorted(Path(tmp).glob('frame-*.png'))
         unique, hashes, frames = [], {}, []
@@ -49,12 +50,15 @@ def render(name, source):
             atlas.save(destination / sheet, 'WEBP', quality=85, method=6)
             sheets.append(sheet)
             atlas.close()
-        manifest = {'version': 1, 'fps': FPS, 'duration': duration,
+        manifest = {'version': 1, 'fps': fps, 'duration': duration,
                     'replayStart': 0 if name == 'battery-method' else 2,
                     'width': width,
                     'height': height, 'columns': COLUMNS, 'tilesPerSheet': TILES,
                     'frames': frames, 'sheets': sheets,
                     'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest()}
+        if name == 'battery-method':
+            timing = json.loads((source.parent/'preview-timing.json').read_text())
+            manifest['loopIntroExtra'] = timing['loop_intro_extra_seconds']
         (destination / 'sequence.json').write_text(json.dumps(manifest, separators=(',', ':')) + '\n')
         for image in unique:
             image.close()

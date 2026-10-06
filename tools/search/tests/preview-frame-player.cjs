@@ -1,11 +1,11 @@
 /* Check the actual image player, including clocks, buffering and stale loads. */
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const source=fs.readFileSync(require('node:path').join(__dirname,'../source/preview-frame-player.js'),'utf8');
-function fixture({fail=false,defer=false,invalid=false,replayStart=0}={}){
+function fixture({fail=false,defer=false,invalid=false,replayStart=0,loop=false,loopIntroExtra=0}={}){
  const frames=new Map(),images=[],draws=[],events=[];let next=0,time=0,fetches=0;
- const data={duration:2,replayStart,fps:12,width:640,height:480,columns:4,tilesPerSheet:16,
+ const data={duration:2,replayStart,loopIntroExtra,fps:12,width:640,height:480,columns:4,tilesPerSheet:16,
   frames:Array.from({length:24},(_,i)=>i),sheets:invalid?['../bad.webp']:['sheet-000.webp','sheet-001.webp']};
- const canvas={dataset:{},getContext:()=>({drawImage:(...args)=>draws.push(args)})};
+ const canvas={dataset:{previewLoop:String(loop)},getContext:()=>({drawImage:(...args)=>draws.push(args)})};
  const window={};
  class Image {
   set src(value){this.url=value;images.push(this);if(!defer)queueMicrotask(()=>this.onload())}
@@ -38,5 +38,9 @@ function fixture({fail=false,defer=false,invalid=false,replayStart=0}={}){
  const failure=fixture({fail:true});await failure.ready();assert.equal(failure.events[0],'error');assert.equal(failure.canvas.dataset.previewTime,'0');n++;
  const replay=fixture({replayStart:1,defer:true});replay.player.play({skipCover:true});await Promise.resolve();await replay.step(5000);await replay.step(5000);assert.equal(replay.player.elapsed,1);await replay.load();await replay.step();assert.equal(replay.canvas.dataset.previewFrame,'12');assert.equal(replay.events[0],'playing');n++;
  const badStart=fixture({replayStart:3});await badStart.ready();assert.equal(badStart.events[0],'error');n++;
+ const looping=fixture({loop:true});await looping.ready();for(let i=0;i<70;i++)await looping.step();assert.ok(Number(looping.canvas.dataset.previewLoops)>=2);assert.equal(looping.player.running,true);assert.deepEqual(looping.events,['playing']);assert.ok(looping.player.images.size<=3);n++;
+ looping.player.pause();const loopTime=looping.player.elapsed;await looping.step(5000);assert.equal(looping.player.elapsed,loopTime);assert.equal(looping.player.images.size,0);await looping.ready();await looping.step();await looping.step();assert.equal(looping.player.elapsed,loopTime);assert.deepEqual(looping.events,['playing']);n++;
+ looping.player.reset();assert.equal(looping.canvas.dataset.previewLoops,undefined);assert.equal(looping.canvas.dataset.previewFrame,undefined);n++;
+ const longerIntro=fixture({loop:true,loopIntroExtra:1.2});await longerIntro.ready();await longerIntro.step();await longerIntro.step();await longerIntro.step(1000);await longerIntro.step(1000);assert.equal(longerIntro.canvas.dataset.previewLoops,'1');await longerIntro.step(600);await longerIntro.step(500);assert.equal(longerIntro.canvas.dataset.previewTime,'0.000');assert.equal(longerIntro.player.round,1);await longerIntro.step(200);assert.equal(longerIntro.canvas.dataset.previewTime,'0.100');assert.equal(longerIntro.events.includes('ended'),false);n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'lazy loading, sprite cropping, versioned URLs, paused clock, buffering, completion reset, replay, bounded decoded images, stale loads and failure-to-cover'}));
 })();

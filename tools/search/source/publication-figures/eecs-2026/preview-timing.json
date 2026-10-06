@@ -1,0 +1,19 @@
+{
+  "fps": 30,
+  "original_sha256": "012822d017607c45c2927c720fbb74b9ea85ab7974c155927c3c1bef9442027a",
+  "output_sha256": "6f4ca3b69f53757dc26d004960addc167292340822be9f39fb5ca0d6f000bac0",
+  "scene_seconds": {
+    "Overview": 1.5,
+    "ALA–VMD": 3.125,
+    "Input grouping": 1.8,
+    "BiTCN + Attention": 2.4,
+    "Aggregation and result": 2.5
+  },
+  "crossfade_seconds": 0.55,
+  "first_cycle_seconds": 13.533333,
+  "later_cycle_seconds": 14.733333,
+  "later_overview_seconds": 2.7,
+  "loop_intro_extra_seconds": 1.2,
+  "source_content_complete": true,
+  "planned_first_cycle_seconds": 13.524999999999999
+}

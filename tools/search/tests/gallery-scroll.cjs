@@ -1,0 +1,11 @@
+const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
+const styles=new Map([['width',['92%','important']],['color',['red','']]]),classes=new Set(),scrolls=[];
+const style={getPropertyValue:n=>styles.get(n)?.[0]||'',getPropertyPriority:n=>styles.get(n)?.[1]||'',setProperty:(n,v,p='')=>styles.set(n,[v,p]),removeProperty:n=>styles.delete(n)};
+const document={body:{style},documentElement:{classList:{add:n=>classes.add(n),remove:n=>classes.delete(n)}}};
+const window={scrollX:7,scrollY:812,scrollTo:value=>scrolls.push(value)};
+vm.runInNewContext(fs.readFileSync('source/gallery-scroll.js','utf8'),{window,document});
+window.portfolioGalleryLock(true);assert.equal(styles.get('position')[0],'fixed');assert.equal(styles.get('top')[0],'-812px');assert.ok(classes.has('gallery-locked'));
+window.scrollY=0;window.portfolioGalleryLock(true);assert.equal(styles.get('top')[0],'-812px');
+window.portfolioGalleryLock(false);assert.equal(styles.get('position'),undefined);assert.deepEqual(styles.get('width'),['92%','important']);assert.deepEqual(styles.get('color'),['red','']);assert.equal(scrolls[0].top,812);assert.equal(scrolls[0].left,7);assert.equal(classes.size,0);
+window.portfolioGalleryLock(false);assert.equal(scrolls.length,1);
+console.log(JSON.stringify({status:'passed',checks:'background fixed at original scroll, idempotent open/close, inline style restoration, exact scroll restoration'}));

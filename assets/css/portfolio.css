@@ -441,6 +441,36 @@ html.work-mobile .work-collection[data-work-view="large"] .preview-open>.preview
  html:not(.portrait-phone) .feature-overlay{width:84vw;right:8vw;max-height:76vh;max-height:76dvh}
 }
 @media print{.preview-play-control{display:none!important}.preview-poster{visibility:visible!important}}
+/* A phone's 980px overview canvas must not keep desktop gallery columns or
+   fixed picture heights. Natural ratios preserve diagrams and entire photos. */
+.feature-overlay{--gallery-unit:1px}
+.feature-overlay{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;isolation:isolate}
+.feature-overlay>.overlay-head{position:sticky;top:0;z-index:5;background:var(--gallery-header-bg,#f9fbfd);padding-bottom:8px;border-bottom:1px solid #c9d1d7;margin-bottom:10px}
+html.gallery-locked{overflow:hidden!important;overscroll-behavior:none;scrollbar-gutter:stable}
+@media(prefers-color-scheme:dark){.feature-overlay{--gallery-header-bg:#202020}}
+html.portrait-phone .feature-overlay{--gallery-unit:calc(1px / var(--portrait-ui-scale));width:92vw;right:4vw;left:auto;padding:calc(8 * var(--gallery-unit));max-height:82vh;max-height:82dvh}
+html.portrait-phone .project-card.is-open .feature-overlay{transform:translate(0,-50%) scale(1)}
+html.portrait-phone .feature-overlay :is(.feature-grid,.research-grid,.nuedc-grid,.eecs-grid,.embedded-grid,.lowcom-grid,.side-project-demo-grid){grid-template-columns:minmax(0,1fr);gap:calc(10 * var(--gallery-unit))}
+html.portrait-phone .feature-overlay figure{display:block;grid-column:1/-1!important;grid-row:auto;min-width:0;align-self:start}
+html.portrait-phone .feature-overlay figure img{display:block;width:100%;height:auto!important;min-height:0;max-height:none!important;aspect-ratio:auto!important;padding:0!important;object-fit:contain!important}
+html.portrait-phone .feature-overlay .overlay-head h3{font-size:calc(15 * var(--gallery-unit));line-height:1.3}
+html.portrait-phone .feature-overlay>.overlay-head{padding:calc(4 * var(--gallery-unit)) 0 calc(5 * var(--gallery-unit));margin-bottom:calc(8 * var(--gallery-unit));gap:calc(6 * var(--gallery-unit))}
+html.portrait-phone .feature-overlay .overlay-head h3 span{font-size:calc(11 * var(--gallery-unit))}
+html.portrait-phone .feature-overlay figcaption{font-size:calc(11 * var(--gallery-unit));line-height:1.4;padding:calc(5 * var(--gallery-unit)) calc(6 * var(--gallery-unit))}
+html.portrait-phone .feature-overlay .preview-original{font-size:calc(11 * var(--gallery-unit))}
+/* Small UI-dialog crops stay compact; full application screenshots use the
+   available width. Restrict the whole figure, not a tiny image in a wide box. */
+html.portrait-phone .feature-overlay .codex-tidy-demo:not(:first-child){width:min(100%,calc(220 * var(--gallery-unit)));justify-self:center}
+@media(max-width:600px){
+ html:not(.portrait-phone) .feature-overlay{width:92vw;right:4vw;left:auto;padding:8px;max-height:82vh;max-height:82dvh}
+ html:not(.portrait-phone) .project-card.is-open .feature-overlay{transform:translate(0,-50%) scale(1)}
+ html:not(.portrait-phone) .feature-overlay :is(.feature-grid,.research-grid,.nuedc-grid,.eecs-grid,.embedded-grid,.lowcom-grid,.side-project-demo-grid){grid-template-columns:minmax(0,1fr);gap:10px}
+ html:not(.portrait-phone) .feature-overlay figure{display:block;grid-column:1/-1!important;grid-row:auto;min-width:0;align-self:start}
+ html:not(.portrait-phone) .feature-overlay figure img{display:block;width:100%;height:auto!important;min-height:0;max-height:none!important;aspect-ratio:auto!important;padding:0!important;object-fit:contain!important}
+ html:not(.portrait-phone) .feature-overlay .overlay-head h3{font-size:15px;line-height:1.3}
+ html:not(.portrait-phone) .feature-overlay .overlay-head h3 span,html:not(.portrait-phone) .feature-overlay figcaption{font-size:11px;line-height:1.4}
+ html:not(.portrait-phone) .feature-overlay .codex-tidy-demo:not(:first-child){width:min(100%,220px);justify-self:center}
+}
 /* Latin glyphs use Times New Roman; CJK glyphs fall through to Microsoft YaHei.
    System fallbacks cover devices that do not have these fonts installed. */
 :root{--site-font:"Times New Roman",Times,"Microsoft YaHei","微软雅黑","Microsoft YaHei UI","PingFang SC","Noto Sans CJK SC",serif}

@@ -5,7 +5,7 @@
   ],
   "fps": 24,
   "fade_seconds": 0.5,
-  "duration_seconds": 8.958333333333332,
+  "duration_seconds": 10.058333333333334,
   "sound": false,
   "fit": "contain with white padding; no cropping or stretching",
   "order": [
@@ -17,8 +17,8 @@
     "text-recognition.mp4"
   ],
   "scene_duration_seconds": [
-    2,
-    2,
+    2.8,
+    2.3,
     1.5,
     2.5,
     1.9583333333333333,

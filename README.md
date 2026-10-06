@@ -594,11 +594,12 @@ remains in the detailed figure gallery. The 2400×1350 landscape source is retai
 and its intrinsic dimensions are recorded in `source/work-media-sizes.json`.
 Correction release and browser evidence: `docs/preview-timing-landscape-20261006/`.
 
-The current Intel preview scene lengths are 2/2/1.5/2.5/original/2 seconds;
+The current Intel preview scene lengths are 2.8/2.3/1.5/2.5/original/2 seconds;
 C-topic scenes are 2 seconds each. Shared timing constants in
 `render_competition_previews.py` also feed `prepend_competition_covers.py`.
 With the existing cover hold and 0.5-second overlapping fades, the displayed
-cover sequences total about 10.96 seconds (Intel) and 6.5 seconds (C-topic).
+cover sequences measure 12.041667 seconds (Intel) and 6.5 seconds (C-topic).
+The six scene targets overlap by 0.5 seconds; 24fps encoding quantizes fractional targets to frames.
 
 Manual play/replay skips the introductory competition cover and begins at the
 first fully visible demo frame (`replayStart=2`). Automatic playback retains the
@@ -608,11 +609,42 @@ Offscreen playback still releases decoded images; network/decode delays show
 feedback instead of silently accepting repeated restarts.
 
 The EECS list thumbnail has no play/replay button and no reserved control strip.
-It still automatically plays once after full visibility and resets to the
-landscape framework poster. Its expanded gallery retains manual replay.
+After its first full visibility it continuously loops the 30fps source timeline,
+without resetting to the poster between cycles. Its expanded gallery follows the same loop.
+It pauses offscreen or behind a gallery and resumes its current position.
+Competition previews keep their one-play/finish-to-cover and Replay behavior.
 Playback code also supports previews that intentionally have no control.
 
 The Chinese homepage title is `浙江大学2027级直博生-谢秋实（Qiushi Xie）`.
 The generated title, og:title and ProfilePage name use the same title. This
 change is limited to the Chinese homepage on both portfolio origins; deployment
 and verified title metadata are recorded in `docs/homepage-title-order-20261006/`.
+
+Phone galleries use a single column, original image ratios and natural heights,
+including photos previously cropped by fixed-height slots. Small Codex Tidy
+confirmation-dialog crops are capped at 220 visual CSS px; full application
+screenshots use the gallery width. The gallery header and close button stay
+sticky, scrolling is contained, and the background is fixed at its existing
+position until close restores that position. Tablet outer margins remain.
+Maintained sources are `source/gallery-readability.css` and `source/gallery-scroll.js`.
+
+EECS sprites preserve the source's 30fps rather than sampling at 12fps.
+Two upcoming atlases are decoded ahead (three retained at most), including the
+first atlas near loop wrap. Offscreen/hidden playback releases decoded atlases.
+Source-matched scene timing and release checks are in
+`docs/preview-gallery-smooth-20261006/`.
+
+Both origins retain the existing user-supplied illustrated favicon at stable
+URLs. Chinese-origin WebSite structured data and og:site_name prefer
+“谢秋实的个人主页”; the international origin prefers “Qiushi Xie”. Search
+engines decide the displayed name and icon after recrawling.
+
+The final EECS targets are 1.5 / 3.125 / 1.8 / 2.4 / 2.5 seconds, plus four
+0.55s frozen-endpoint crossfades. `render_eecs_preview.py` retimes full stages
+from the preserved `method-preview-original.mp4`; the first cycle measures
+13.533333s. `loopIntroExtra=1.2` holds the opening overview longer beginning
+with cycle two, making its overview 2.7s and its cycle 14.733333s. Intel/C
+timelines and Replay behavior remain independent.
+
+The EECS Canvas preview and loop are shared by Chinese and international builds.
+Local legacy-asset preview now uses the canonical GitHub root asset URLs.

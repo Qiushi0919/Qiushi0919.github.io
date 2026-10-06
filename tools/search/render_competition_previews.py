@@ -11,7 +11,7 @@ FFMPEG = '/opt/homebrew/bin/ffmpeg'
 FFPROBE = '/opt/homebrew/bin/ffprobe'
 FPS = 24
 FADE = .5
-INTEL_SCENE_SECONDS = (2, 2, 1.5, 2.5, None, 2)
+INTEL_SCENE_SECONDS = (2.8, 2.3, 1.5, 2.5, None, 2)
 C_SCENE_SECONDS = 2
 INTEL_FILES = ['flight-summary.mp4', 'self-check.mp4', 'simulation.mp4',
                'free-route.mp4', 'gesture-gaze.mp4', 'text-recognition.mp4']

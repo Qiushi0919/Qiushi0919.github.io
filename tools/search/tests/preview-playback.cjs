@@ -7,7 +7,9 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  const icon={textContent:''},label={textContent:''};
  const control={dataset:{},setAttribute:(k,v)=>attrs[k]=v,querySelector:s=>s.includes('icon')?icon:label,addEventListener:(e,f)=>clicks[e]=f};
  const media={dataset:{previewState:'poster'},querySelector:()=>noControl?null:control};
- const overlay={hidden:!open,getAttribute:()=>overlay.hidden?'true':'false'};
+ const overlay={hidden:!open,getAttribute:()=>overlay.hidden?'true':'false',
+  getBoundingClientRect:()=>({top:20,bottom:580,left:0,right:400}),
+  querySelector:()=>({getBoundingClientRect:()=>({top:20,bottom:60})})};
  let rect={top,bottom,left:0,right:400,width:400,height:bottom-top};
  const canvas={dataset:{previewSequence:'demo.json'},closest:s=>s==='.preview-media'?media:(popup?overlay:null),getBoundingClientRect:()=>rect};
  let player;
@@ -57,11 +59,12 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  assert.equal(manual.key(' '),true);assert.equal(manual.key('Escape'),false);n++; // Space plays; Escape still reaches gallery close.
  const reduced=scenario({top:100,bottom:400,reduce:true});assert.equal(reduced.player.plays,0);reduced.click();assert.equal(reduced.player.running,true);n++;
  const hidden=scenario({top:100,bottom:400});hidden.document.hidden=true;hidden.visible();assert.equal(hidden.player.running,false);n++;
- const gallery=scenario({popup:true,top:30,bottom:330});assert.equal(gallery.player.plays,0);gallery.overlay.hidden=false;gallery.changed();assert.equal(gallery.player.running,true);n++;
+ const gallery=scenario({popup:true,top:30,bottom:330});assert.equal(gallery.player.plays,0);gallery.overlay.hidden=false;gallery.changed();assert.equal(gallery.player.running,false);gallery.move(60,330);assert.equal(gallery.player.running,true);n++;
  hidden.document.hidden=false;hidden.bodyClasses.add('overlay-active');hidden.changed();assert.equal(hidden.player.running,false);n++;
  gallery.ended();gallery.overlay.hidden=true;gallery.changed();gallery.overlay.hidden=false;gallery.changed();assert.equal(gallery.player.running,false);assert.equal(gallery.media.dataset.previewState,'poster');n++;
  const denied=scenario({top:100,bottom:400,deny:true});await Promise.resolve();denied.move(100,400);assert.equal(denied.player.plays,1);denied.player.deny=false;denied.click();assert.equal(denied.player.running,true);n++;
  const slow=scenario({defer:true});slow.click();assert.equal(slow.media.dataset.previewState,'loading');assert.equal(slow.label.textContent,'加载中');assert.equal(slow.attrs['aria-busy'],'true');assert.equal(slow.player.skipCover,true);const starts=slow.player.plays;slow.click();slow.click();assert.equal(slow.player.plays,starts);slow.player.callbacks.playing();assert.equal(slow.media.dataset.previewState,'playing');assert.equal(slow.attrs['aria-busy'],'false');n++;
  const automaticOnly=scenario({top:100,bottom:400,noControl:true});assert.equal(automaticOnly.player.running,true);automaticOnly.ended();automaticOnly.move(100,400);assert.equal(automaticOnly.media.dataset.previewState,'poster');assert.equal(automaticOnly.player.plays,1);n++;
+ const clipped=scenario({popup:true,open:true,top:100,bottom:590});assert.equal(clipped.player.plays,0);clipped.move(100,570);assert.equal(clipped.player.plays,1);n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and frame loading failure'}));
 })();

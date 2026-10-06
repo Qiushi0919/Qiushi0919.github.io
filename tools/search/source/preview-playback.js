@@ -1,5 +1,5 @@
-/* Every animated preview gets one automatic play after its first full appearance.
-   Completion restores its cover; the separate control explicitly plays/replays. */
+/* First full appearance starts playback. Competition previews finish at their
+   cover; the battery method loops until paused offscreen or behind a gallery. */
 (() => {
   const root = document.documentElement;
   const motion = matchMedia('(prefers-reduced-motion:reduce)');
@@ -17,7 +17,14 @@
     const box = {left:visual?.offsetLeft || 0, top:visual?.offsetTop || 0,
       right:(visual?.offsetLeft || 0)+(visual?.width || innerWidth),
       bottom:(visual?.offsetTop || 0)+(visual?.height || innerHeight)};
-    if (popup) return box; // Expanded media paints above the site navigation.
+    if (popup) {
+      const panel = popup.getBoundingClientRect();
+      const header = popup.querySelector('.overlay-head')?.getBoundingClientRect();
+      box.left=Math.max(box.left,panel.left);box.right=Math.min(box.right,panel.right);
+      box.top=Math.max(box.top,panel.top,header?.bottom || panel.top);
+      box.bottom=Math.min(box.bottom,panel.bottom);
+      return box;
+    }
     const top = box.top;
     for (const bar of document.querySelectorAll('.site-toolbar, .work-readingbar')) {
       const rect = bar.getBoundingClientRect();
@@ -76,7 +83,7 @@
       const player = entry.player;
       if (blocked(entry) || (motion.matches && !entry.manual)) { player.pause(); continue; }
       if (entry.finished || entry.needsManual) continue;
-      const box = viewport(Boolean(entry.popup));
+      const box = viewport(entry.popup);
       const rect = entry.canvas.getBoundingClientRect();
       const visible = fraction(rect,box);
       if (!entry.started) {

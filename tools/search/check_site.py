@@ -66,12 +66,10 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert not tree.xpath('//*[contains(@class,"profile-mobile-summary") and contains(string(.),"（拟入学）")]')
         battery = tree.xpath('//*[@id="eecsCoverTrigger"]')
         if battery:
-            if origin == 'cn':
-                preview = battery[0].xpath('./canvas[@data-preview-auto]')
-                assert len(preview) == 1 and urlsplit(preview[0].get('data-preview-sequence')).path == '/assets/preview-frames/battery-method/sequence.json'
-                assert (directory / urlsplit(preview[0].get('data-preview-sequence')).path.lstrip('/')).is_file()
-            else:
-                assert battery[0].xpath('./img[@class="paper-preview-image"]')
+            preview = battery[0].xpath('./canvas[@data-preview-auto]')
+            assert len(preview) == 1 and urlsplit(preview[0].get('data-preview-sequence')).path == '/assets/preview-frames/battery-method/sequence.json'
+            assert preview[0].get('data-preview-loop') == 'true'
+            assert (directory / urlsplit(preview[0].get('data-preview-sequence')).path.lstrip('/')).is_file()
         assert '谢秋实' in tree.text_content() and 'Qiushi Xie' in tree.text_content()
         assert tree.xpath('//meta[@name="description"]/@content')[0]
         schema = json.loads(tree.xpath('//script[@type="application/ld+json"]/text()')[0])

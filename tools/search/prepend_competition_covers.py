@@ -1,7 +1,7 @@
 """Compose bilingual covers and complete original demos into a seamless cycle.
 
 The first cover holds 1.5 seconds, then crossfades for 0.5 seconds. Original
-Intel clips are retimed (never cropped) to 2/2/1.5/2.5/original/2 seconds. C-topic
+Intel clips are retimed (never cropped) to 2.8/2.3/1.5/2.5/original/2 seconds. C-topic
 figures each occupy 2-second segments. Every boundary has a 0.5-second overlap.
 """
 from pathlib import Path
@@ -40,7 +40,8 @@ for project in ['intelcup-2026','nuedc-c']:
   # a first-frame still for frame verification; it is not a second thumbnail.
   encode(inputs,filters,label,duration,output)
   records.append({'project':project,'language':lang,'output':str(output.relative_to(ROOT)),
-   'scene_seconds':durations,'cover_hold':1.5,'crossfade':FADE,'duration_seconds':duration,
+   'scene_seconds':durations,'cover_hold':1.5,'crossfade':FADE,
+   'duration_seconds':float(probe(output)[0]['format']['duration']), 'planned_duration_seconds':duration,
    'retiming':'Full original clips; speed adjusted; no trimming of content'})
   print(json.dumps(records[-1]),flush=True)
 (ROOT/'docs/preview-replay-covers-20261006/media-build.json').write_text(json.dumps(records,indent=2)+'\n')
