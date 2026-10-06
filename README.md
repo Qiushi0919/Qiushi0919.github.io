@@ -521,7 +521,7 @@ Play/Replay controls are borderless and translucent. They occupy a reserved
 stays in place while playing; its button is hidden until the cover returns.
 Controls remain separate from gallery-open buttons. The existing phone-canvas
 scale is used only to keep this strip and control at their intended visual size.
-Work-list separators are black, 2px. At native widths from 601px to 1024px,
+Work-list separators use #333333 at 0.8px. At native widths from 601px to 1024px,
 expanded galleries occupy 84% of the viewport width and at most 76% of its height,
 leaving more space on every side. Desktop and phone dialog sizes stay unchanged.
 Current release records: `docs/preview-controls-20261006/`.
@@ -542,7 +542,7 @@ returns to its original cover and requires Play/Replay to start again. Backgroun
 offscreen and closed-gallery animation clocks pause; buffering does not skip
 content. Reduced motion requires manual playback. The translucent borderless
 button occupies its own slim strip below the image and disappears while playing.
-The latest black 2px separators and tablet dialog spacing are included.
+The latest 0.8px #333333 separators and tablet dialog spacing are included.
 
 `render_preview_frames.py` creates 12fps, 640px-wide WebP sprite sheets from the
 unchanged original MP4s. Each sheet has at most 16 tiles, identical frames share a
@@ -561,3 +561,28 @@ are in `docs/canvas-previews-20261006/`. Browser checks are simulated viewports,
 not physical phone/tablet validation. Original sources and the current release
 bundle are retained; rebuildable staging/cache directories go to recoverable
 Trash after live verification.
+
+### Preview pointer hit areas (2026-10-06)
+
+The original cover CSS disables pointer events on all descendants. Once previews
+were wrapped in a div, that rule also disabled the inner gallery-open and replay
+buttons. Explicit pointer events on both direct buttons restore the entire image
+click area and the replay icon/text/padding area. The replay button remains hidden
+and noninteractive during playback. Keyboard and pointer activation both work;
+clicking Replay does not open the gallery. Current patch release and actual hit
+test/browser click evidence: `docs/canvas-replay-click-20261006/`.
+
+Lead marks now share the equal-contribution `.72em` superscript position while
+retaining the plain Arial double dagger. Covers and their opening/closing frames
+are regenerated together. Work separators cover nested homepage cards, list and standalone detail
+cards, the mobile reading toolbar, detail information/media rows and the list
+footer, all #333333 at 0.8px; photo/glyph contents and unrelated site navigation remain.
+
+The user reduced separators from 2px to 1.5px (the original was 1px), then requested 0.8px and 20% lighter than black
+(#333333). The rule
+uses descendant cards because the home-page generator adds project-context
+wrappers; category/detail cards and footer/reading-toolbar lines also match.
+
+The final 0.8px separator uses a fractional inset stroke, rather than a CSS
+border that Chromium may round up to 1px. Every page footer is included, as
+explicitly requested, and the reading toolbar uses the same bottom stroke.

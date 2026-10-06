@@ -42,8 +42,8 @@ const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&
       const runs = Array.isArray(value) ? value : [{value:String(value)}];
       const spans = runs.map(run => String(run.value).split(/([†‡*])/).filter(Boolean).map(chunk => {
         const dy=restore?size*.32:0; restore=false;
-        if (chunk==='*') { restore=true; return `<tspan dy="${dy-size*.32}" font-family="Times New Roman" font-size="${size*.65}">*</tspan>`; }
         const mark = /^[†‡]$/.test(chunk);
+        if (chunk==='*' || mark) { restore=true; return `<tspan dy="${dy-size*.32}" font-family="${mark?'Arial':'Times New Roman'}" font-size="${size*(mark ? .72 : .65)}" font-weight="400">${esc(chunk)}</tspan>`; }
         return `<tspan dy="${dy}" font-size="${size}" ${mark?'font-family="Arial" font-weight="400"':''} ${run.underline&&!mark?'text-decoration="underline"':''}>${esc(chunk)}</tspan>`;
       }).join('')).join('');
       content.push(`<text x="${x}" y="${y}" font-size="${size}" ${opts}>${spans}</text>`);
