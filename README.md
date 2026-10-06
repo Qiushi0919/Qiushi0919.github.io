@@ -67,7 +67,8 @@ blue for SPIE). The left column is
 and VaseAgent reliability framework as a compact vertical pair that uses the
 full image column; the battery paper displays the NASA B0005 prediction
 result. All images retain their original aspect ratios. The arXiv venue/month
-line is bold; the SPIE venue line and colored resource-tag values are also bold. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
+line is bold; the SPIE venue line and colored resource-tag values are also bold. Venue names
+retain italic styling with an explicit 700 weight. Thumbnails have no outer border or shadow and a muted zoom hint (27px on desktop, 18px physical size on portrait phones).
 Clicking still opens all original full method/result figures. These cover images
 are selected from existing assets, not cropped, redrawn, stretched, or overwritten.
 The compact split resource tags use a gray label and a colored value; all existing

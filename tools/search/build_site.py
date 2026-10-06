@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'light-paper-bold-20261006'
+VERSION = 'light-paper-bold-italic-20261006'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -189,6 +189,7 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-venue{margin:0 0 5px;color:#30383e;font-size:14px;line-height:1.5}
 .vase-card .paper-venue{color:#a42632;font-weight:700}
 .eecs-card .paper-venue{color:#315b98;font-weight:700}
+.paper-venue em{font-weight:700;font-style:italic}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
 /* Paper lists put the work first; institutional marks only render on details. */
