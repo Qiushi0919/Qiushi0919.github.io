@@ -25,12 +25,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/competitions/"/>
   </url>
   <url>
-    <loc>https://qiushi0919.github.io/projects/</loc>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/"/>
-  </url>
-  <url>
     <loc>https://qiushi0919.github.io/papers/vasemuseum/</loc>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/papers/vasemuseum/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/papers/vasemuseum/"/>
@@ -65,30 +59,6 @@
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/competitions/embedded-2025/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/competitions/embedded-2025/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/competitions/embedded-2025/"/>
-  </url>
-  <url>
-    <loc>https://qiushi0919.github.io/projects/codex-tidy/</loc>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/codex-tidy/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/codex-tidy/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/codex-tidy/"/>
-  </url>
-  <url>
-    <loc>https://qiushi0919.github.io/projects/boring-notch-focus/</loc>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/boring-notch-focus/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/boring-notch-focus/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/boring-notch-focus/"/>
-  </url>
-  <url>
-    <loc>https://qiushi0919.github.io/projects/alttab/</loc>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/alttab/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/alttab/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/alttab/"/>
-  </url>
-  <url>
-    <loc>https://qiushi0919.github.io/projects/mindmap/</loc>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://qiushi0919.cn/projects/mindmap/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qiushi0919.github.io/projects/mindmap/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qiushi0919.github.io/projects/mindmap/"/>
   </url>
   <url>
     <loc>https://qiushi0919.github.io/IntelCup-2026/</loc>

@@ -18,15 +18,15 @@ desktop iframe.
 
 ## Search-friendly static pages
 
-Each language has a homepage, a biography page, three category pages, and ten project pages. All
-text and navigation links exist in HTML without JavaScript. JavaScript adds
+Each language has a homepage, a biography page, three category pages, and ten project pages.
+Public paper/competition text and navigation links exist in HTML without JavaScript. JavaScript adds
 contact dialogs, project previews, and image carousels; it does not hide the
 portfolio while waiting for images.
 
 Preferred Chinese URLs live on `qiushi0919.cn`; preferred English URLs live on
 GitHub Pages. Same-language alternate copies point to those preferred URLs with
 canonical links. Reciprocal `zh-CN`, `en`, and `x-default` hreflang links describe
-the language alternatives. Each origin's sitemap lists its 15 preferred portfolio pages; the CN sitemap also lists the battery-paper project website. The international sitemap additionally lists the five owned standalone project sites from `source/github-project-sites.json`. Intel Cup uses a contest-first title followed by the project description, three team names and Huazhong University of Science and Technology; the other project titles start with Qiushi's Chinese name and the relevant contest or project name.
+the language alternatives. Each origin's sitemap lists its 10 public preferred portfolio pages (the five protected side-project routes are omitted); the CN sitemap also lists the battery-paper project website. The international sitemap additionally lists the five owned standalone project sites from `source/github-project-sites.json`. Intel Cup uses a contest-first title followed by the project description, three team names and Huazhong University of Science and Technology; the other project titles start with Qiushi's Chinese name and the relevant contest or project name.
 Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
@@ -188,6 +188,37 @@ eligible; Bing and Google choose whether and where to display it. The Intel Cup
 award is displayed as "National Second Prize". Competition award lines omit
 percentile ranks, the HUST-only team claim, and the embedded contest's regional
 award, retaining the confirmed main prize in both languages.
+
+## Private side-project collection
+
+All Work always excludes the four side projects, including after unlock. Only
+`/projects/` and its four portfolio detail routes offer access. Their public
+HTML contains an AES-GCM encrypted document and a responsive lock card; no
+project text, thumbnail requests, or plaintext password is shipped in these
+pages. Successful entry remembers a derived key and fixed expiration for 180
+days in the current browser/origin. Refresh, language changes and direct detail
+links reuse that access without extending it. Clearing browser storage or using
+a different origin/browser requires entry again. Locked pages are `noindex`
+and excluded from portfolio sitemaps. Existing public repositories, standalone
+websites, media files and Git history remain public; this protects the portfolio
+presentation and does not make those separate resources confidential.
+
+Maintain `access_gate.py` and `source/side-project-gate.{html,css,js}`. The browser
+waits for DOMContentLoaded before replacing an automatically restored document,
+so the old parser cannot append duplicate navigation. `side-project-session.js`
+also checks expiration when an open page regains focus.
+
+Build dependencies are listed in `requirements.txt`. Initial setup or password
+rotation uses `python3 -B setup_side_project_access.py`; its hidden prompts write
+only a derived build key and public salt/identifier to
+`.private/side-project-access.json` (directory 0700, file 0600). Preserve this
+local private file for rebuilds, exclude it from every publication and backup
+upload, and never put the owner's password in source or documentation. Changing
+the key identifier invalidates previous saved access after republishing all
+protected routes. Build fails closed if the private configuration is missing.
+Run `python3 -B check_site.py` and `node tests/side-project-access.cjs` to check
+static visibility, authenticated decryption, wrong passwords, the 180-day term,
+expiry, storage fallback and the parser-completion regression.
 
 ## Website icon
 

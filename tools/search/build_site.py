@@ -11,6 +11,7 @@ import re
 from urllib.parse import urljoin
 
 from lxml import etree, html
+from access_gate import access_config, protect_document, protected_route
 
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
@@ -242,6 +243,7 @@ def format_project_list(card, is_detail, language):
 
 
 def build():
+    gate_config = access_config()
     raw = (SOURCE / 'portfolio.html').read_text()
     template = html.document_fromstring(raw)
     # Preserve the phone canvas; content never waits for animation downloads.
@@ -495,6 +497,9 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         write(destination / 'assets/css/portfolio.css', css)
         write(destination / 'assets/css/site-typography.css', typography)
         write(destination / 'assets/js/portfolio-runtime.js', runtime)
+        for name in ('side-project-gate.css', 'side-project-gate.js', 'side-project-session.js'):
+            write(destination / 'assets' / ('css' if name.endswith('.css') else 'js') / name,
+                  (SOURCE / name).read_text())
         for source_file in (SOURCE / 'fonts').glob('*'):
             if source_file.is_file():
                 target = destination / 'assets/fonts' / source_file.name
@@ -563,6 +568,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 detail_id = next((key for key, value in DETAILS.items() if value == route), None)
                 for card in tree.xpath('//article[@data-work-category]'):
                     if ((route == 'about') or (category and card.get('data-work-category') != category[2]) or
+                        (route == '' and card.get('data-work-category') == 'side') or
                         (detail_id and card.get('id') != detail_id)):
                         card.getparent().remove(card)
                 # Keep affiliation originals in each paper's own page, not list headers.
@@ -967,7 +973,9 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         if re.search(r'/portfolio-cover/(intelcup-2026|nuedc-c|embedded-2025|low-altitude-communication)/(cover-(zh|en)\.jpg|preview-with-cover-(zh|en)\.mp4)$', value):
                             media.set(attribute, value + '?v=' + VERSION)
                 target = destination / lang_prefix / route / 'index.html'
-                write(target, '<!doctype html>\n' + etree.tostring(tree, encoding='unicode', method='html') + '\n')
+                document = (protect_document(tree, language, local_base, route, gate_config) if protected_route(route)
+                            else '<!doctype html>\n' + etree.tostring(tree, encoding='unicode', method='html') + '\n')
+                write(target, document)
         # The standalone paper project has its own repository for the international site.
         if origin == 'cn':
             for source_file in (SOURCE / 'project-sites/battery-rul').rglob('*'):
@@ -997,6 +1005,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         write(destination / 'robots.txt', f'{named_agents}{blocked_paths}Allow: /\n\nUser-agent: *\n{blocked_paths}Allow: /\nSitemap: {base}sitemap.xml\n')
         sitemap = etree.Element('urlset', nsmap={None:'http://www.sitemaps.org/schemas/sitemap/0.9', 'xhtml':'http://www.w3.org/1999/xhtml'})
         for route in ROUTES:
+            if protected_route(route): continue
             url = etree.SubElement(sitemap, 'url')
             etree.SubElement(url, 'loc').text = route_url(base, route)
             for lang, alt in [('zh-CN', CN), ('en', GH), ('x-default', GH)]:
@@ -1032,7 +1041,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
     # The old sitemap allows crawlers to discover the old pages' redirects.
     old_sitemap = etree.Element('urlset', nsmap={None:'http://www.sitemaps.org/schemas/sitemap/0.9'})
     for route in ROUTES:
-        if route == 'about': continue
+        if route == 'about' or protected_route(route): continue
         url = etree.SubElement(old_sitemap, 'url')
         etree.SubElement(url, 'loc').text = route_url(LEGACY_GH, route)
     write(legacy / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n' + etree.tostring(old_sitemap, encoding='unicode', pretty_print=True))

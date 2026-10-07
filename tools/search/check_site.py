@@ -3,6 +3,9 @@ from pathlib import Path
 from urllib.parse import urlsplit, unquote
 from urllib.robotparser import RobotFileParser
 import hashlib, json
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from access_gate import access_config
 from lxml import html, etree
 
 ROOT = Path(__file__).resolve().parent / 'build'
@@ -17,8 +20,10 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         assert {f.name for f in public.rglob('*') if f.is_file()} <= set(rules['allowed']), str(public)
     sitemap = etree.parse(str(directory / 'sitemap.xml'))
     locations = sitemap.xpath('//*[local-name()="loc"]/text()')
-    expected_locations = 16 if origin == 'cn' else 15
+    extra = 1 if origin == 'cn' else len(json.loads((ROOT.parent / 'source/github-project-sites.json').read_text()))
+    expected_locations = 10 + extra
     assert len(locations) == expected_locations and len(set(locations)) == expected_locations
+    assert not any('/projects/' in location for location in locations)
     robots = RobotFileParser()
     robots.parse((directory / 'robots.txt').read_text().splitlines())
     assert robots.site_maps() == [f'https://{host}/sitemap.xml']
@@ -30,6 +35,22 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
     for p in directory.rglob('index.html'):
         tree = html.fromstring(p.read_text())
         relative = p.relative_to(directory).as_posix()
+        gated = tree.xpath('//script[@id="gate-payload"]/text()')
+        if gated:
+            assert tree.xpath('//meta[@name="robots"]/@content') == ['noindex,nofollow,noarchive'], str(p)
+            assert not tree.xpath('//article | //img | //video | //canvas'), str(p)
+            assert len(tree.xpath('//input[@type="password"]')) == 1, str(p)
+            assert 'width=device-width' in tree.xpath('//meta[@name="viewport"]/@content')[0]
+            assert not any(name in p.read_text() for name in ('Codex Tidy','Boring Notch','AltTab','MindMap'))
+            payload = json.loads(gated[0]); config = access_config()
+            assert payload['days'] == 180 and payload['id'] == config['id']
+            content = AESGCM(base64.b64decode(config['key'])).decrypt(base64.b64decode(payload['nonce']), base64.b64decode(payload['ciphertext']), payload['context'].encode()).decode()
+            tree = html.fromstring(content)
+            assert tree.xpath('//meta[@name="robots"]/@content') == ['noindex,nofollow,noarchive']
+            assert tree.xpath('//article[@data-work-category="side"]')
+        elif relative in ('index.html','en/index.html','zh/index.html'):
+            assert not tree.xpath('//article[@data-work-category="side"] | //input[@type="password"]')
+            assert not any(name in p.read_text() for name in ('Codex Tidy','Boring Notch','AltTab','MindMap'))
         if relative == 'device-preview/index.html':
             assert tree.xpath('//meta[@name="robots"]/@content') == ['noindex,follow']
             assert tree.xpath('//input[@name="device"]/@value') == ['tablet','phone','desktop']
@@ -213,7 +234,9 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
     for link in locations:
         parts=urlsplit(link); assert parts.hostname == host
         path=parts.path[len(prefix):]
-        assert (directory / path.lstrip('/') / 'index.html').exists()
+        # Standalone project sites are served by their own repositories.
+        if parts.path not in [item['url'].split(host, 1)[-1] for item in json.loads((ROOT.parent / 'source/github-project-sites.json').read_text())]:
+            assert (directory / path.lstrip('/') / 'index.html').exists()
 legacy_count = 0
 for p in (ROOT / 'github-legacy').rglob('index.html'):
     tree = html.fromstring(p.read_text())
@@ -223,4 +246,4 @@ for p in (ROOT / 'github-legacy').rglob('index.html'):
     assert tree.xpath('//a/@href') == [target], str(p)
     legacy_count += 1
 assert legacy_count == 30
-print(json.dumps({'status':'passed','static_pages':count,'paper_project_pages':1,'sitemap_urls':31,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, confirmed team rosters and roles, contribution marks, Canvas previews, original video controls and dimensions, root migration redirects, paper project assets'}))
+print(json.dumps({'status':'passed','static_pages':count,'paper_project_pages':1,'sitemap_urls':26,'legacy_redirects':legacy_count,'checks':'languages, headings, canonicals, hreflang, schema, links, IDs, confirmed team rosters and roles, contribution marks, Canvas previews, original video controls and dimensions, root migration redirects, paper project assets'}))
