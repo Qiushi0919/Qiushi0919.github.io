@@ -8,7 +8,8 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  const control={dataset:{},setAttribute:(k,v)=>attrs[k]=v,querySelector:s=>s.includes('icon')?icon:label,addEventListener:(e,f)=>clicks[e]=f};
  const transportEvents={},toggleEvents={};
  const range={value:'0',setAttribute(){},addEventListener:(e,f)=>transportEvents[e]=f},toggle={setAttribute(){},addEventListener:(e,f)=>toggleEvents[e]=f},time={};
- const media={dataset:{previewState:'poster'},querySelector:s=>s==='[data-preview-play]'&&!noControl?control:transport?({'[data-preview-toggle]':toggle,'[data-preview-seek]':range,'[data-preview-time]':time}[s]||null):null};
+ const progress={attrs:{},dataset:{},style:{setProperty(k,v){this[k]=v}},setAttribute(k,v){this.attrs[k]=v},removeAttribute(k){delete this.attrs[k]}};
+ const media={dataset:{previewState:'poster'},querySelector:s=>s==='.preview-load-progress'?progress:s==='[data-preview-play]'&&!noControl?control:transport?({'[data-preview-toggle]':toggle,'[data-preview-seek]':range,'[data-preview-time]':time}[s]||null):null};
  const overlay={hidden:!open,getAttribute:()=>overlay.hidden?'true':'false',
   getBoundingClientRect:()=>({top:20,bottom:580,left:0,right:400}),
   querySelector:()=>({getBoundingClientRect:()=>({top:20,bottom:60})})};
@@ -35,7 +36,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   MutationObserver:class{constructor(f){mutations.push(f)}observe(){}},Number});
  const flush=()=>{while(frames.size){const fs=[...frames.values()];frames.clear();fs.forEach(f=>f())}};
  flush();
- return {canvas,player,media,control,attrs,label,rootClasses,bodyClasses,motion,document,overlay,toggle,time,
+ return {canvas,player,media,control,attrs,label,progress,rootClasses,bodyClasses,motion,document,overlay,toggle,time,
   get toggleDisabled(){return toggle.disabled},get seekDisabled(){return range.disabled},
   toggle(){toggleEvents.click({stopPropagation(){}});flush()},
   seek(value){transportEvents.pointerdown();range.value=String(value);transportEvents.input();transportEvents.change();flush()},
@@ -69,7 +70,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  hidden.document.hidden=false;hidden.bodyClasses.add('overlay-active');hidden.changed();assert.equal(hidden.player.running,false);n++;
  gallery.ended();gallery.overlay.hidden=true;gallery.changed();gallery.overlay.hidden=false;gallery.changed();assert.equal(gallery.player.running,false);assert.equal(gallery.media.dataset.previewState,'poster');n++;
  const denied=scenario({top:100,bottom:400,deny:true});await Promise.resolve();denied.move(100,400);assert.equal(denied.player.plays,1);denied.player.deny=false;denied.click();assert.equal(denied.player.running,true);n++;
- const slow=scenario({defer:true});slow.click();assert.equal(slow.media.dataset.previewState,'loading');assert.equal(slow.label.textContent,'加载中');assert.equal(slow.attrs['aria-busy'],'true');assert.equal(slow.player.skipCover,true);const starts=slow.player.plays;slow.click();slow.click();assert.equal(slow.player.plays,starts);slow.player.callbacks.playing();assert.equal(slow.media.dataset.previewState,'playing');assert.equal(slow.attrs['aria-busy'],'false');n++;
+ const slow=scenario({defer:true});slow.click();assert.equal(slow.media.dataset.previewState,'loading');assert.equal(slow.label.textContent,'播放');assert.equal(slow.attrs['aria-busy'],'true');assert.equal(slow.player.skipCover,true);const starts=slow.player.plays;slow.click();slow.click();assert.equal(slow.player.plays,starts);slow.player.callbacks.playing();assert.equal(slow.media.dataset.previewState,'playing');assert.equal(slow.attrs['aria-busy'],'false');n++;
  const automaticOnly=scenario({top:100,bottom:400,noControl:true});assert.equal(automaticOnly.player.running,true);automaticOnly.ended();automaticOnly.move(100,400);assert.equal(automaticOnly.media.dataset.previewState,'poster');assert.equal(automaticOnly.player.plays,1);n++;
  const clipped=scenario({popup:true,open:true,top:100,bottom:590});assert.equal(clipped.player.plays,0);clipped.move(100,570);assert.equal(clipped.player.plays,1);n++;
  const controls=scenario({popup:true,open:true,top:100,bottom:400,transport:true,noControl:true});controls.toggle();assert.equal(controls.player.running,false);controls.seek(6);await Promise.resolve();assert.equal(controls.player.currentTime,6);assert.equal(controls.player.running,false);controls.changed();assert.equal(controls.player.running,false);controls.toggle();assert.equal(controls.player.running,true);assert.equal(controls.player.currentTime,6);n++;
@@ -77,5 +78,10 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  const boot=scenario({top:100,bottom:400});boot.rootClasses.add('portfolio-loading');boot.changed();assert.equal(boot.player.running,false);boot.rootClasses.delete('portfolio-loading');boot.changed();assert.equal(boot.player.running,true);n++;
  const buffering=scenario({popup:true,open:true,top:100,bottom:400,transport:true,noControl:true,defer:true});buffering.player.callbacks.buffering('loading',{duration:12},false);assert.equal(buffering.toggleDisabled,true);assert.equal(buffering.seekDisabled,true);buffering.player.drawn=true;buffering.player.callbacks.playing();buffering.player.callbacks.buffering('loading',{duration:12},true);assert.equal(buffering.toggleDisabled,false);assert.equal(buffering.seekDisabled,true);buffering.toggle();assert.equal(buffering.player.running,false);buffering.player.callbacks.buffering('ready',{duration:12},true);assert.equal(buffering.seekDisabled,false);n++;
  const readyWhileHidden=scenario({top:100,bottom:400,defer:true});readyWhileHidden.bodyClasses.add('overlay-active');readyWhileHidden.changed();readyWhileHidden.canvas.dataset.previewBuffer='ready';readyWhileHidden.player.callbacks.buffering('ready',{duration:12},true);assert.equal(readyWhileHidden.media.dataset.previewState,'poster');assert.equal(readyWhileHidden.attrs['aria-busy'],'false');assert.equal(readyWhileHidden.label.textContent,'播放');n++;
+ const measured=scenario({defer:true});measured.player.callbacks.buffering('loading',{duration:12},false,{kind:'video',loadedBytes:43,totalBytes:100});assert.equal(measured.progress.attrs['aria-valuenow'],'43');assert.equal(measured.progress.style['--load-progress'],'43%');assert.equal(measured.progress.dataset.indeterminate,'false');assert.equal(measured.progress.attrs['aria-hidden'],'false');n++;
+ measured.player.callbacks.buffering('waiting',{duration:12},false,{kind:'video',loadedBytes:0,totalBytes:100});assert.equal(measured.progress.style['--load-progress'],'0%');n++;
+ measured.player.callbacks.buffering('loading',{duration:12},false,{kind:'video',loadedBytes:10,totalBytes:0});assert.equal(measured.progress.attrs['aria-valuenow'],undefined);assert.equal(measured.progress.dataset.indeterminate,'true');n++;
+ measured.player.callbacks.buffering('ready',{duration:12},true,{kind:'video',loadedBytes:100,totalBytes:100});assert.equal(measured.progress.attrs['aria-valuenow'],'100');assert.equal(measured.progress.attrs['aria-hidden'],'true');n++;
+ measured.player.callbacks.buffering('error',{duration:12},false);assert.equal(measured.progress.attrs['aria-hidden'],'true');n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and frame loading failure'}));
 })();

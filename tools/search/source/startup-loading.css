@@ -1,13 +1,2 @@
+/* Keep the work list wrapper neutral. Download feedback lives on image edges. */
 .work-loading-region{position:relative}
-/* The status stays in its own row above the list; posters remain unobscured. */
-.work-loading-region>.portfolio-loader{position:relative;inset:auto;z-index:1;display:block;padding:8px 0;margin-bottom:8px;background:transparent;pointer-events:none}
-.portfolio-ready .work-loading-region>.portfolio-loader{display:none}
-.portfolio-loader{--loader-unit:1px;font-family:var(--site-font)}
-html.portrait-phone .portfolio-loader{--loader-unit:calc(1px / var(--portrait-ui-scale))}
-.portfolio-loader .loader-inner{position:static;display:flex;align-items:center;justify-content:center;gap:calc(8 * var(--loader-unit));flex-wrap:wrap;width:100%;margin:0;text-align:center}
-.portfolio-loader .loader-title{font-size:calc(12 * var(--loader-unit))}
-.portfolio-loader .loader-subtitle{font-size:calc(10 * var(--loader-unit));letter-spacing:0;text-transform:none;margin:0}
-.portfolio-loader .loader-timer{font-size:calc(10 * var(--loader-unit));margin:0}
-.portfolio-loader .loader-track{flex:none;width:calc(90 * var(--loader-unit));height:calc(2 * var(--loader-unit));margin:0}
-@media(prefers-color-scheme:dark){.loader-title{color:#e2e7eb}.loader-subtitle,.loader-timer{color:#a1aeb7}.loader-track{background:#343b40}}
-@media print{.portfolio-loader{display:none!important}}

@@ -24,6 +24,7 @@
       if (!this.items.has(key)) this.items.set(key, {url, priority:Number.isFinite(priority)?priority:100,
         position:this.items.size, state:'waiting', blobs:new Map(), listeners:new Set(),
         manifest:deferred(), playable:deferred(), complete:deferred(), available:new Map(), canPlay:false,
+        loadedBytes:0, totalBytes:videoData?.bytes || 0,
         ...(videoData?{kind:'video',data:{...videoData,sheets:[url.pathname.split('/').pop()]}}:{})});
       const item=this.items.get(key);
       if (this.started) this.pump();
@@ -47,6 +48,7 @@
         item.manifest=deferred(); item.playable=deferred(); item.complete=deferred();
         item.available=new Map();item.canPlay=false;
         item.error=null;
+        item.loadedBytes=0;
         this.notify(item,'waiting'); // Explicit retry reuses successful blobs.
       }
       this.started=true;
@@ -83,12 +85,33 @@
       if (remaining && remaining/(downloaded/elapsed)*1.1>runway) return;
       item.canPlay=true;item.playable.resolve(data);this.notify(item,'loading');
     }
-    async fetch(url, type) {
+    async fetch(url, type, item) {
       const controller=new AbortController();
       const timeout=setTimeout(()=>controller.abort(),20000);
       try {
         const response=await fetch(url,{cache:'force-cache',signal:controller.signal});
         if (!response.ok) throw new Error('Preview download unavailable');
+        if (type === 'blob' && item) {
+          // Count received bytes, not elapsed time. The build supplies the exact
+          // file size when a CDN omits Content-Length. No second request is made.
+          const size=Number(response.headers?.get('Content-Length'));
+          if (size>0) item.totalBytes=size;
+          this.notify(item,'loading');
+          if (response.body?.getReader) {
+            const reader=response.body.getReader(), chunks=[];
+            let lastPercent=-1;
+            try {
+              for (;;) {
+                const {done,value}=await reader.read();
+                if (done) break;
+                chunks.push(value);item.loadedBytes+=value.byteLength;
+                const percent=item.totalBytes?Math.min(99,Math.floor(item.loadedBytes/item.totalBytes*100)):0;
+                if (percent!==lastPercent) {lastPercent=percent;this.notify(item,'loading');}
+              }
+            } finally {reader.releaseLock();}
+            return new Blob(chunks,{type:response.headers?.get('Content-Type') || 'video/mp4'});
+          }
+        }
         return await response[type]();
       } finally { clearTimeout(timeout); }
     }
@@ -130,7 +153,8 @@
             item.manifest.resolve(item.data);
             this.notify(item,'loading');
             if (item.kind === 'video') {
-              if (!item.blobs.has(0)) item.blobs.set(0,await this.fetch(item.url,'blob'));
+              if (!item.blobs.has(0)) item.blobs.set(0,await this.fetch(item.url,'blob',item));
+              item.loadedBytes=item.totalBytes=item.blobs.get(0).size;
               item.objectURL ||= URL.createObjectURL(item.blobs.get(0));
             } else await this.sheets(item);
             item.canPlay=true;item.playable.resolve(item.data);

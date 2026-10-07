@@ -603,10 +603,9 @@ The six scene targets overlap by 0.5 seconds; 24fps encoding quantizes fractiona
 
 Manual play/replay skips the introductory competition cover and begins at the
 first fully visible demo frame (`replayStart=2`). Automatic playback retains the
-existing opening cover. While a frame is loading the control immediately shows
-Loading/加载中 and prevents repeated clicks from resetting the pending load.
-Offscreen playback still releases decoded images; network/decode delays show
-feedback instead of silently accepting repeated restarts.
+existing opening cover. During loading the control keeps its Play/Replay label
+and prevents repeated clicks from resetting the pending load. Download feedback
+uses only the top-edge progress bar; it has no visible loading text.
 
 The EECS list thumbnail has no play/replay button and no reserved control strip.
 After its first full visibility it continuously loops the 30fps source timeline,
@@ -671,11 +670,15 @@ A closed gallery skips its deferred callback. Original videos preload metadata
 only and remain a manual user choice. Other gallery figures and source media
 remain available without being copied into the animation cache.
 
-The five-second startup status occupies a separate row between the work heading
-and list; it never masks the covers or biography. Each unfinished thumbnail has
-an indicator in a reserved strip above its image. Loaded thumbnail status is
-reset correctly even when its decoder was paused while a gallery opened.
-Dark gallery headers use light title/subtitle/close colors.
+Content appears immediately with no startup screen, status row or countdown.
+All animated thumbnails and expanded copies use a 3px rectangular download bar
+positioned on the image's top edge, with zero reserved top space. It measures
+received bytes from the existing MP4 request; the exact build-time file size is
+a fallback when Content-Length is absent. Unknown sizes use a moving segment;
+queued downloads show an empty track. Complete/error states hide it. EECS has
+no loading label or spinner. Dark gallery headers use light title/subtitle/close
+colors. The reference pattern is Material Web's linear progress indicator:
+https://material-web.dev/components/progress/ .
 
 Video and poster versions derive from their content, independently of the UI
 release, so a style update preserves the unchanged media cache address. Expanded
@@ -685,8 +688,8 @@ maintenance reference with its bounded four-file pool and adaptive prefix gate.
 
 Cold HTTP/2 tests from this host: all 25 EECS sprites took about 16s at 1/4/8/25
 concurrency; the MP4 took 2.146s. This is not a physical-phone startup guarantee.
-Proofs and scoped publishing: `docs/preview-bounded-loading-20261007/`.
+Proofs and scoped publishing: `docs/preview-edge-progress-20261007/`.
 Run preview-load-queue, preview-frame-player, preview-video-player,
-preview-playback, startup-loading and gallery-scroll tests, then build/check.
+preview-playback, preview-progress, startup-loading and gallery-scroll tests, then build/check.
 After building, run gallery-media-loading to cover warm-cache opening and
 closed/superseded deferred panels.

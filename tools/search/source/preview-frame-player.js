@@ -23,7 +23,7 @@
         canvas.dataset.previewLoadedSheets = String(item.blobs.size);
         canvas.dataset.previewTotalSheets = String(item.data?.sheets.length || 0);
         canvas.dataset.previewPlayable=String(item.canPlay);
-        callbacks.buffering?.(item.state, item.data, item.canPlay);
+        callbacks.buffering?.(item.state, item.data, item.canPlay, item);
       });
     }
     async manifest() {

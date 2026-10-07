@@ -9,7 +9,8 @@
       this.epoch=0;this.raf=0;this.last=null;this.hold=0;
       this.loop=canvas.dataset.previewLoop==='true';
       this.data={duration:Number(canvas.dataset.previewDuration),replayStart:Number(canvas.dataset.previewReplayStart)||0,
-        loopIntroExtra:Number(canvas.dataset.previewLoopIntroExtra)||0,width:canvas.width,height:canvas.height};
+        loopIntroExtra:Number(canvas.dataset.previewLoopIntroExtra)||0,width:canvas.width,height:canvas.height,
+        bytes:Number(canvas.dataset.previewBytes)||0};
       this.resource=window.PortfolioPreviewLoads.registerVideo(new URL(url,document.baseURI),
         Number(canvas.dataset.previewLoadOrder),this.data);
       window.PortfolioPreviewLoads.subscribe(this.resource,item=>{
@@ -17,7 +18,7 @@
         canvas.dataset.previewLoadedSheets=String(item.blobs.size);
         canvas.dataset.previewTotalSheets='1';
         canvas.dataset.previewPlayable=String(item.canPlay);
-        callbacks.buffering?.(item.state,item.data,item.canPlay);
+        callbacks.buffering?.(item.state,item.data,item.canPlay,item);
       });
       callbacks.time?.(0,this.duration());
     }

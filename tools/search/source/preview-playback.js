@@ -48,14 +48,14 @@
   const label = entry => {
     const loading = entry.media.dataset.previewState === 'loading';
     const replay = entry.hasPlayed;
-    const value = loading ? (english?'Loading':'加载中') : replay ? (english?'Replay':'重播') : (english?'Play':'播放');
+    const value = replay ? (english?'Replay':'重播') : (english?'Play':'播放');
     if (entry.control) {
       entry.control.setAttribute('aria-disabled', String(loading));
       entry.control.setAttribute('aria-busy', String(loading));
-      entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
+      entry.control.setAttribute('aria-label', value + (english?' animation':'动画'));
       entry.control.title = value;
       entry.control.querySelector('.preview-play-label').textContent = value;
-      entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
+      entry.control.querySelector('.preview-play-icon').textContent = replay ? '↻' : '▶';
       entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
     }
     if (entry.toggle) {
@@ -116,10 +116,20 @@
     const canvas = entry.canvas;
     const Player=canvas.dataset.previewVideo?window.PortfolioVideoPlayer:window.PortfolioFramePlayer;
     entry.player = new Player(canvas, canvas.dataset.previewVideo || canvas.dataset.previewSequence, {
-      buffering(state,data,canPlay) {
+      buffering(state,data,canPlay,resource) {
         entry.media.dataset.previewBuffer = state;
-        const indicator = entry.media.querySelector('.preview-loading-indicator');
+        const indicator = entry.media.querySelector('.preview-load-progress');
         indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
+        if (indicator) {
+          const total=resource?.totalBytes || data?.sheetBytes?.reduce((sum,size)=>sum+size,0) || 0;
+          const loaded=resource?.kind === 'video'?resource.loadedBytes:
+            [...(resource?.blobs?.values() || [])].reduce((sum,blob)=>sum+blob.size,0);
+          const percent=state === 'ready'?100:total?Math.min(99,Math.floor(loaded/total*100)):0;
+          indicator.dataset.indeterminate=String(state === 'loading' && !total);
+          if (total || state === 'ready') indicator.setAttribute('aria-valuenow',String(percent));
+          else indicator.removeAttribute('aria-valuenow');
+          indicator.style.setProperty('--load-progress',`${percent}%`);
+        }
         if (entry.seek) entry.seek.disabled = state !== 'ready';
         if (entry.toggle) entry.toggle.disabled = !canPlay && (state === 'waiting' || state === 'loading');
         if (data && entry.seek) entry.seek.max=String(data.duration);

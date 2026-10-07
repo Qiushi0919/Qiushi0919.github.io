@@ -386,6 +386,7 @@
       if (!this.items.has(key)) this.items.set(key, {url, priority:Number.isFinite(priority)?priority:100,
         position:this.items.size, state:'waiting', blobs:new Map(), listeners:new Set(),
         manifest:deferred(), playable:deferred(), complete:deferred(), available:new Map(), canPlay:false,
+        loadedBytes:0, totalBytes:videoData?.bytes || 0,
         ...(videoData?{kind:'video',data:{...videoData,sheets:[url.pathname.split('/').pop()]}}:{})});
       const item=this.items.get(key);
       if (this.started) this.pump();
@@ -409,6 +410,7 @@
         item.manifest=deferred(); item.playable=deferred(); item.complete=deferred();
         item.available=new Map();item.canPlay=false;
         item.error=null;
+        item.loadedBytes=0;
         this.notify(item,'waiting'); // Explicit retry reuses successful blobs.
       }
       this.started=true;
@@ -445,12 +447,33 @@
       if (remaining && remaining/(downloaded/elapsed)*1.1>runway) return;
       item.canPlay=true;item.playable.resolve(data);this.notify(item,'loading');
     }
-    async fetch(url, type) {
+    async fetch(url, type, item) {
       const controller=new AbortController();
       const timeout=setTimeout(()=>controller.abort(),20000);
       try {
         const response=await fetch(url,{cache:'force-cache',signal:controller.signal});
         if (!response.ok) throw new Error('Preview download unavailable');
+        if (type === 'blob' && item) {
+          // Count received bytes, not elapsed time. The build supplies the exact
+          // file size when a CDN omits Content-Length. No second request is made.
+          const size=Number(response.headers?.get('Content-Length'));
+          if (size>0) item.totalBytes=size;
+          this.notify(item,'loading');
+          if (response.body?.getReader) {
+            const reader=response.body.getReader(), chunks=[];
+            let lastPercent=-1;
+            try {
+              for (;;) {
+                const {done,value}=await reader.read();
+                if (done) break;
+                chunks.push(value);item.loadedBytes+=value.byteLength;
+                const percent=item.totalBytes?Math.min(99,Math.floor(item.loadedBytes/item.totalBytes*100)):0;
+                if (percent!==lastPercent) {lastPercent=percent;this.notify(item,'loading');}
+              }
+            } finally {reader.releaseLock();}
+            return new Blob(chunks,{type:response.headers?.get('Content-Type') || 'video/mp4'});
+          }
+        }
         return await response[type]();
       } finally { clearTimeout(timeout); }
     }
@@ -492,7 +515,8 @@
             item.manifest.resolve(item.data);
             this.notify(item,'loading');
             if (item.kind === 'video') {
-              if (!item.blobs.has(0)) item.blobs.set(0,await this.fetch(item.url,'blob'));
+              if (!item.blobs.has(0)) item.blobs.set(0,await this.fetch(item.url,'blob',item));
+              item.loadedBytes=item.totalBytes=item.blobs.get(0).size;
               item.objectURL ||= URL.createObjectURL(item.blobs.get(0));
             } else await this.sheets(item);
             item.canPlay=true;item.playable.resolve(item.data);
@@ -542,7 +566,7 @@
         canvas.dataset.previewLoadedSheets = String(item.blobs.size);
         canvas.dataset.previewTotalSheets = String(item.data?.sheets.length || 0);
         canvas.dataset.previewPlayable=String(item.canPlay);
-        callbacks.buffering?.(item.state, item.data, item.canPlay);
+        callbacks.buffering?.(item.state, item.data, item.canPlay, item);
       });
     }
     async manifest() {
@@ -726,7 +750,8 @@
       this.epoch=0;this.raf=0;this.last=null;this.hold=0;
       this.loop=canvas.dataset.previewLoop==='true';
       this.data={duration:Number(canvas.dataset.previewDuration),replayStart:Number(canvas.dataset.previewReplayStart)||0,
-        loopIntroExtra:Number(canvas.dataset.previewLoopIntroExtra)||0,width:canvas.width,height:canvas.height};
+        loopIntroExtra:Number(canvas.dataset.previewLoopIntroExtra)||0,width:canvas.width,height:canvas.height,
+        bytes:Number(canvas.dataset.previewBytes)||0};
       this.resource=window.PortfolioPreviewLoads.registerVideo(new URL(url,document.baseURI),
         Number(canvas.dataset.previewLoadOrder),this.data);
       window.PortfolioPreviewLoads.subscribe(this.resource,item=>{
@@ -734,7 +759,7 @@
         canvas.dataset.previewLoadedSheets=String(item.blobs.size);
         canvas.dataset.previewTotalSheets='1';
         canvas.dataset.previewPlayable=String(item.canPlay);
-        callbacks.buffering?.(item.state,item.data,item.canPlay);
+        callbacks.buffering?.(item.state,item.data,item.canPlay,item);
       });
       callbacks.time?.(0,this.duration());
     }
@@ -904,14 +929,14 @@
   const label = entry => {
     const loading = entry.media.dataset.previewState === 'loading';
     const replay = entry.hasPlayed;
-    const value = loading ? (english?'Loading':'加载中') : replay ? (english?'Replay':'重播') : (english?'Play':'播放');
+    const value = replay ? (english?'Replay':'重播') : (english?'Play':'播放');
     if (entry.control) {
       entry.control.setAttribute('aria-disabled', String(loading));
       entry.control.setAttribute('aria-busy', String(loading));
-      entry.control.setAttribute('aria-label', loading ? (english?'Loading animation':'正在加载动画') : value + (english?' animation':'动画'));
+      entry.control.setAttribute('aria-label', value + (english?' animation':'动画'));
       entry.control.title = value;
       entry.control.querySelector('.preview-play-label').textContent = value;
-      entry.control.querySelector('.preview-play-icon').textContent = loading ? '…' : replay ? '↻' : '▶';
+      entry.control.querySelector('.preview-play-icon').textContent = replay ? '↻' : '▶';
       entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
     }
     if (entry.toggle) {
@@ -972,10 +997,20 @@
     const canvas = entry.canvas;
     const Player=canvas.dataset.previewVideo?window.PortfolioVideoPlayer:window.PortfolioFramePlayer;
     entry.player = new Player(canvas, canvas.dataset.previewVideo || canvas.dataset.previewSequence, {
-      buffering(state,data,canPlay) {
+      buffering(state,data,canPlay,resource) {
         entry.media.dataset.previewBuffer = state;
-        const indicator = entry.media.querySelector('.preview-loading-indicator');
+        const indicator = entry.media.querySelector('.preview-load-progress');
         indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
+        if (indicator) {
+          const total=resource?.totalBytes || data?.sheetBytes?.reduce((sum,size)=>sum+size,0) || 0;
+          const loaded=resource?.kind === 'video'?resource.loadedBytes:
+            [...(resource?.blobs?.values() || [])].reduce((sum,blob)=>sum+blob.size,0);
+          const percent=state === 'ready'?100:total?Math.min(99,Math.floor(loaded/total*100)):0;
+          indicator.dataset.indeterminate=String(state === 'loading' && !total);
+          if (total || state === 'ready') indicator.setAttribute('aria-valuenow',String(percent));
+          else indicator.removeAttribute('aria-valuenow');
+          indicator.style.setProperty('--load-progress',`${percent}%`);
+        }
         if (entry.seek) entry.seek.disabled = state !== 'ready';
         if (entry.toggle) entry.toggle.disabled = !canPlay && (state === 'waiting' || state === 'loading');
         if (data && entry.seek) entry.seek.max=String(data.duration);
@@ -1069,57 +1104,13 @@
   schedule();
 })();
 
-/* Give the first animation a bounded startup window; later downloads continue
-   in order while their thumbnails keep the static cover and loading indicator. */
+/* Reveal content immediately; each thumbnail owns its download progress. */
 (() => {
   const root=document.documentElement;
-  const loader=document.getElementById('portfolioLoader');
-  if (!loader) {
-    root.classList.remove('portfolio-loading');root.classList.add('portfolio-ready');
-    window.dispatchEvent(new Event('portfolio:ready'));
-    return;
-  }
-  const region=loader.closest('.work-loading-region');
-  region?.setAttribute('aria-busy','true');
-  const english=root.dataset.language === 'en';
-  const timer=document.getElementById('loaderTimer');
-  const track=document.getElementById('loaderTrack');
-  const progress=document.getElementById('loaderProgress');
-  const started=window.portfolioLoadStartedAt || performance.now();
-  const maximumWaitMs=5000;
-  loader.querySelector('.loader-title').textContent=english?'Loading portfolio':'正在加载作品集';
-  loader.querySelector('.loader-subtitle').textContent=english?'Preparing the first animation':'正在准备首个动画';
-  loader.setAttribute('aria-label',english?'Loading portfolio':'正在加载作品集');
-  track.setAttribute('aria-label',english?'First animation loading progress':'首个动画加载进度');
-  const first=window.PortfolioPreviewLoads.ordered()[0];
-  const update=() => {
-    const elapsed=Math.min(maximumWaitMs,performance.now()-started);
-    const remaining=Math.max(0,(maximumWaitMs-elapsed)/1000).toFixed(1);
-    timer.textContent=english?`Up to 5 seconds · ${remaining}s remaining`:`最多等待 5 秒 · 剩余 ${remaining}s`;
-    const fraction=first?.state === 'ready'?1:first?.data?first.blobs.size/first.data.sheets.length:0;
-    const value=Math.round(fraction*100);
-    progress.style.width=`${value}%`;track.setAttribute('aria-valuenow',String(value));
-  };
-  const reveal=() => {
-    clearInterval(interval);
-    root.classList.remove('portfolio-loading');root.classList.add('portfolio-ready');
-    loader.setAttribute('aria-hidden','true');
-    region?.setAttribute('aria-busy','false');
-    window.dispatchEvent(new Event('portfolio:ready'));
-    if (!matchMedia('(prefers-reduced-motion:reduce)').matches) root.classList.add('carousels-running');
-  };
-  update();
-  const interval=setInterval(update,100);
-  const firstReady=window.PortfolioPreviewLoads.start().catch(()=>{});
-  const images=[...new Set([document.querySelector('.profile-photo'),document.querySelector('.preview-poster')].filter(Boolean))];
-  const imagesReady=Promise.all(images.map(image=>new Promise(resolve=>{
-    if (image.complete) { resolve();return; }
-    image.loading='eager';
-    image.addEventListener('load',resolve,{once:true});image.addEventListener('error',resolve,{once:true});
-  })));
-  const deadline=new Promise(resolve=>setTimeout(resolve,Math.max(0,maximumWaitMs-(performance.now()-started))));
-  const minimum=new Promise(resolve=>setTimeout(resolve,Math.max(0,240-(performance.now()-started))));
-  Promise.all([Promise.race([Promise.all([firstReady,imagesReady]),deadline]),minimum]).then(reveal);
+  window.PortfolioPreviewLoads.start().catch(()=>{});
+  root.classList.remove('portfolio-loading');root.classList.add('portfolio-ready');
+  window.dispatchEvent(new Event('portfolio:ready'));
+  if (!matchMedia('(prefers-reduced-motion:reduce)').matches) root.classList.add('carousels-running');
 })();
 
 (() => {

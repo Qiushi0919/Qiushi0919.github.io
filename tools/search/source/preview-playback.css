@@ -1,6 +1,5 @@
 /* Separate siblings keep playback independent from the original gallery button. */
-.preview-media{position:relative;min-width:0;padding-top:22px!important}
-html.portrait-phone .preview-media{padding-top:calc(22px / var(--portrait-ui-scale))!important}
+.preview-media{position:relative;min-width:0;padding-top:0!important}
 /* A reserved slim strip keeps the control clear of every poster's text. Its
    height stays fixed while playing so the image and scroll position do not move. */
 :is(.work-preview,.paper-preview).preview-media,.gallery-preview-media{padding-bottom:26px!important}
@@ -32,13 +31,16 @@ html.work-mobile .work-collection[data-work-view="large"] .preview-open>.preview
  html:not(.portrait-phone) .feature-overlay{width:84vw;right:8vw;max-height:76vh;max-height:76dvh}
 }
 @media print{.preview-play-control{display:none!important}.preview-poster{visibility:visible!important}}
-.preview-loading-indicator{--loading-unit:1px;position:absolute;z-index:4;top:0;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:calc(5 * var(--loading-unit));padding:calc(3 * var(--loading-unit)) calc(7 * var(--loading-unit));border:0;border-radius:calc(12 * var(--loading-unit));background:rgba(255,255,255,.68);color:rgba(28,47,61,.8);font:calc(10 * var(--loading-unit))/1.2 var(--site-font);pointer-events:none;white-space:nowrap}
-html.portrait-phone .preview-loading-indicator{--loading-unit:calc(1px / var(--portrait-ui-scale))}
-.preview-media:is([data-preview-buffer="waiting"],[data-preview-buffer="loading"])>.preview-loading-indicator{display:inline-flex}
-.preview-loading-spinner{display:block;width:calc(13 * var(--loading-unit));height:calc(13 * var(--loading-unit));border:calc(1.5 * var(--loading-unit)) solid rgba(56,88,108,.2);border-top-color:rgba(56,88,108,.8);border-radius:50%;animation:preview-loading-spin .8s linear infinite}
-@keyframes preview-loading-spin{to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){.preview-loading-spinner{animation:none}}
-@media print{.preview-loading-indicator{display:none!important}}
+/* The download bar overlays only the top image edge; it never adds a row. */
+.preview-load-progress{--load-unit:1px;--load-progress:0%;position:absolute;z-index:4;top:0;left:0;right:0;height:calc(3 * var(--load-unit));display:none;overflow:hidden;border:0;border-radius:0;background:rgba(31,71,103,.16);pointer-events:none}
+html.portrait-phone .preview-load-progress{--load-unit:calc(1px / var(--portrait-ui-scale))}
+.preview-media:is([data-preview-buffer="waiting"],[data-preview-buffer="loading"])>.preview-load-progress{display:block}
+.preview-load-fill{display:block;width:var(--load-progress);height:100%;background:#1772c9;transition:width .16s linear}
+.preview-load-progress[data-indeterminate="true"]>.preview-load-fill{width:28%;animation:preview-load-travel 1.2s ease-in-out infinite}
+@keyframes preview-load-travel{from{transform:translateX(-100%)}to{transform:translateX(360%)}}
+@media(prefers-color-scheme:dark){.preview-load-progress{background:rgba(132,190,232,.25)}.preview-load-fill{background:#65b9f4}}
+@media(prefers-reduced-motion:reduce){.preview-load-fill{transition:none}.preview-load-progress[data-indeterminate="true"]>.preview-load-fill{animation:none}}
+@media print{.preview-load-progress{display:none!important}}
 .gallery-preview-media{padding-bottom:0!important}
 html.portrait-phone .gallery-preview-media{padding-bottom:0!important}
 .preview-transport{--transport-unit:1px;display:flex;align-items:center;gap:calc(8 * var(--transport-unit));min-height:calc(34 * var(--transport-unit));padding:calc(4 * var(--transport-unit)) calc(7 * var(--transport-unit));background:rgba(31,44,54,.88);color:#fff;font:calc(11 * var(--transport-unit))/1.2 var(--site-font)}

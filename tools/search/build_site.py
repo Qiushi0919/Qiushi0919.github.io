@@ -15,7 +15,7 @@ from lxml import etree, html
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
 BUILD = ROOT / 'build'
-VERSION = 'preview-bounded-loading-20261007b'
+VERSION = 'preview-edge-progress-20261007'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -232,19 +232,9 @@ def format_project_list(card, is_detail, language):
 def build():
     raw = (SOURCE / 'portfolio.html').read_text()
     template = html.document_fromstring(raw)
-    # Preserve the phone canvas and bound the restored startup loader even if
-    # the external runtime is delayed or unavailable.
+    # Preserve the phone canvas; content never waits for animation downloads.
     viewport_script = next(s.text for s in template.xpath('//head/script')
                            if 'portraitCanvasWidth' in (s.text or ''))
-    viewport_script = viewport_script.replace("document.documentElement.classList.add('portfolio-loading');", """document.documentElement.classList.add('portfolio-loading');
-      window.portfolioLoadStartedAt = performance.now();
-      window.setTimeout(() => {
-        document.documentElement.classList.remove('portfolio-loading');
-        document.documentElement.classList.add('portfolio-ready');
-        document.getElementById('portfolioLoader')?.setAttribute('aria-hidden', 'true');
-        document.querySelector('.work-loading-region')?.setAttribute('aria-busy', 'false');
-        window.dispatchEvent(new Event('portfolio:ready'));
-      }, 5000);""")
     viewport_script = viewport_script.replace(
         'const screenWidth = Math.min(window.innerWidth, window.screen.width, window.screen.height);',
         "const previewQuery = new URLSearchParams(location.search);\n      const previewPhone = window.parent !== window && previewQuery.get('preview-device') === 'phone';\n      const previewWidth = Number(previewQuery.get('preview-width')) || 390;\n      const screenWidth = previewPhone ? Math.max(320,Math.min(600,previewWidth)) : Math.min(window.innerWidth, window.screen.width, window.screen.height);")
@@ -803,6 +793,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     canvas = element('canvas', **{'id':preview_id,'data-preview-auto':'',
                         'data-preview-video':video_path + '?v=' + video_version,
                         'data-preview-duration':str(sequence['duration']),
+                        'data-preview-bytes':str((destination / video_path.lstrip('/')).stat().st_size),
                         'data-preview-replay-start':str(sequence.get('replayStart', 0)),
                         'data-preview-loop-intro-extra':str(sequence.get('loopIntroExtra', 0)),
                         'data-preview-sequence':f'/assets/preview-frames/{name}/sequence.json?v={PREVIEW_VERSIONS[name]}',
@@ -828,10 +819,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     control.append(element('span', '▶', **{'class':'preview-play-icon','aria-hidden':'true'}))
                     control.append(element('span', '播放' if language == 'zh' else 'Play', **{'class':'preview-play-label'}))
                     wrapper.append(control)
-                    indicator = element('span', role='status', aria_label='正在加载动画' if language == 'zh' else 'Loading animation',
-                                        aria_hidden='true', **{'class':'preview-loading-indicator'})
-                    indicator.append(element('span', **{'class':'preview-loading-spinner','aria-hidden':'true'}))
-                    indicator.append(element('span', '正在加载' if language == 'zh' else 'Loading'))
+                    indicator = element('span', role='progressbar',
+                                        aria_label='动画下载进度' if language == 'zh' else 'Animation download progress',
+                                        aria_hidden='true', aria_valuemin='0', aria_valuemax='100', aria_valuenow='0',
+                                        **{'class':'preview-load-progress'})
+                    indicator.append(element('span', **{'class':'preview-load-fill','aria-hidden':'true'}))
                     wrapper.append(indicator)
                     # Clicking the original thumbnail still opens its full gallery.
                     # A separate control avoids nested buttons and accidental opens.
@@ -910,20 +902,16 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     for card in list(main):
                         if (card.tag == 'article' and card.get('data-work-category')) or card.get('class') == 'homepage-project-context':
                             collection.append(card)
-                loader = tree.xpath('//*[@id="portfolioLoader"]')[0]
                 visible_cards = tree.xpath('//article[@data-work-category]')
                 if visible_cards:
                     collections = tree.xpath('//section[@class="work-collection"]')
                     parent = collections[0] if collections else main
-                    region = element('div', **{'class':'work-loading-region','aria-busy':'true'})
+                    region = element('div', **{'class':'work-loading-region'})
                     works_head = tree.xpath('//*[@class="works-head"]')[0]
                     parent.insert(parent.index(works_head) + 1, region)
                     for child in list(parent):
                         if (child.tag == 'article' and child.get('data-work-category')) or child.get('class') == 'homepage-project-context':
                             region.append(child)
-                    region.insert(0, loader)
-                else:
-                    loader.getparent().remove(loader)
                 skip = element('a', '跳到作品' if language == 'zh' else 'Skip to content', href='#main-content', **{'class':'skip-link'})
                 body.insert(0, skip)
                 footer = element('footer', **{'class':'site-footer'})
