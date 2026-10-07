@@ -758,7 +758,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         biography.append(paragraph)
                     return_link = element('a', href=local_base + '#all-work', **{'class':'return-all-work'})
                     return_link.append(element('span', '←', aria_hidden='true', **{'class':'return-arrow'}))
-                    return_link.append(element('span', '返回 All Work' if language == 'zh' else 'Back to All Work'))
+                    return_link.append(element('span', '返回全部作品' if language == 'zh' else 'Back to All Work'))
                     biography.append(return_link)
                     biography.append(element('h2', '代表论文与项目' if language == 'zh' else 'Selected papers and projects'))
                     works = element('ul')

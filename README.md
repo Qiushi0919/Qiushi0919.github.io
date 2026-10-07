@@ -196,7 +196,7 @@ award, retaining the confirmed main prize in both languages.
 
 All Work always excludes the four side projects, including after unlock. Only
 `/projects/` and its four portfolio detail routes offer access. Their public
-HTML contains an AES-GCM encrypted document and a responsive lock card; no
+HTML contains an AES-GCM encrypted document and a responsive, unboxed password form; no
 project text, thumbnail requests, or plaintext password is shipped in these
 pages. Successful entry remembers a derived key and fixed expiration for 180
 days in the current browser/origin. Refresh, language changes and direct detail
@@ -205,6 +205,16 @@ a different origin/browser requires entry again. Locked pages are `noindex`
 and excluded from portfolio sitemaps. Existing public repositories, standalone
 websites, media files and Git history remain public; this protects the portfolio
 presentation and does not make those separate resources confidential.
+
+All Work, Papers and Competitions show only the thumbnail/link instructions,
+followed by a parenthesized author legend with full stops: equal contribution
+(†), project lead (‡), and corresponding author / competition advisor (*). The
+Chinese version uses the matching Chinese terms, with the same symbols.
+
+The locked view uses a plain white background, neutral controls and one concise
+instruction above the input. No decorative card, lock emblem, collection tag or
+visible expiration notice is shown. Dark mode keeps the same flat neutral layout.
+The underlying fixed 180-day access behavior is unchanged.
 
 Maintain `access_gate.py` and `source/side-project-gate.{html,css,js}`. The browser
 waits for DOMContentLoaded before replacing an automatically restored document,
@@ -781,7 +791,7 @@ Release and verification records: `docs/lowcom-white-hero-20261007/`.
 
 ### About-page return button (2026-10-07)
 
-The biography ends with a prominent blue “← 返回 All Work” / “← Back to All Work”
+The biography ends with a prominent blue “← 返回全部作品” / “← Back to All Work”
 link, immediately before Selected papers and projects. It links to the same-language
 homepage's `#all-work` section, with a 44px visual phone touch target, keyboard
 focus and dark-mode styles. The native link needs no extra script or download.

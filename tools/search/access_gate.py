@@ -50,15 +50,11 @@ def protect_document(tree, language, local_base, route, config):
     title = label + (' · 暂不开放 | 谢秋实 Qiushi Xie' if zh else ' · Private collection | Qiushi Xie 谢秋实')
     copy = {
         'label': label, 'title': title,
-        'description': '独立作品，持续探索。' if zh else 'Independent work, ongoing exploration.',
-        'tag': '私人作品集' if zh else 'PRIVATE COLLECTION',
-        'heading': '暂不开放' if zh else 'Not publicly available',
-        'intro': '这部分作品暂未公开。\n如有访问密码，可解锁后继续浏览。' if zh else 'This collection is not public yet.\nHave an access password? Unlock it to continue.',
+        'heading': '暂不开放，输入密码后查看' if zh else 'Private collection — enter your password.',
         'password': '访问密码' if zh else 'Access password',
         'placeholder': '请输入密码' if zh else 'Enter your password',
         'show': '显示密码' if zh else 'Show password',
-        'unlock': '解锁小项目' if zh else 'Unlock collection',
-        'remember': '验证成功后，此浏览器 180 天内无需再次输入。' if zh else 'Access stays unlocked in this browser for 180 days.',
+        'unlock': '查看作品' if zh else 'View collection',
         'return': '返回全部作品' if zh else 'Back to All Work',
         'noscript': '请启用 JavaScript 后输入访问密码。' if zh else 'Enable JavaScript to enter your access password.',
     }
