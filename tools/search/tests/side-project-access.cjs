@@ -34,6 +34,10 @@ async function main(){
  const events={},live=new Storage(saved);let reloads=0,interval;const window={localStorage:live,sessionStorage:new Storage(),addEventListener:(e,fn)=>events[e]=fn};
  vm.runInNewContext(sessionCode,{window,localStorage:live,sessionStorage:window.sessionStorage,document:{hidden:false,addEventListener:(e,fn)=>events[e]=fn},location:{reload(){reloads++;}},setInterval(fn){interval=fn;},Date,Number});
  events.focus();assert.equal(reloads,0);live.setItem(name,JSON.stringify({...saved,expires:Date.now()-1}));interval();assert.equal(reloads,1);
+ const fallbackEvents={},fallbackStore=new Storage(saved);let fallbackReloads=0;
+ const fallbackWindow={localStorage:{getItem(){throw Error();}},sessionStorage:fallbackStore,addEventListener:(e,fn)=>fallbackEvents[e]=fn};
+ vm.runInNewContext(sessionCode,{window:fallbackWindow,document:{hidden:false,addEventListener:(e,fn)=>fallbackEvents[e]=fn},location:{reload(){fallbackReloads++;}},setInterval(){},Date,Number});
+ assert.equal(fallbackWindow.portfolioAccessHadRecord,true);fallbackStore.setItem(name,JSON.stringify({...saved,expires:Date.now()-1}));fallbackEvents.focus();assert.equal(fallbackReloads,1);
  console.log(JSON.stringify({status:'passed',checks:['correct/wrong password','authenticated encryption','180-day expiry','reload preserves original expiry','obsolete/corrupt records','English errors','storage fallback','open-page expiry']}));
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

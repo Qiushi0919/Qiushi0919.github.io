@@ -11,7 +11,9 @@
     // Storage-disabled browsers may view this document, but cannot remember it.
     if (window.portfolioAccessHadRecord) location.reload();
   };
-  try { window.portfolioAccessHadRecord = Boolean(localStorage.getItem(name) || sessionStorage.getItem(name)); } catch (_) {}
+  window.portfolioAccessHadRecord = ['localStorage', 'sessionStorage'].some(kind => {
+    try { return Boolean(window[kind].getItem(name)); } catch (_) { return false; }
+  });
   window.addEventListener('pageshow', check);
   window.addEventListener('focus', check);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
