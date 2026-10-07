@@ -55,6 +55,7 @@ AUTHOR = json.loads((SOURCE / 'author-profile.json').read_text())
 PROJECT_PAGES = json.loads((SOURCE / 'project-pages.json').read_text())
 COMPETITION_TEAMS = json.loads((SOURCE / 'competition-teams.json').read_text())
 VERIFICATION = json.loads((SOURCE / 'search-verification.json').read_text()) if (SOURCE / 'search-verification.json').exists() else {}
+GITHUB_PROJECT_SITES = json.loads((SOURCE / 'github-project-sites.json').read_text())
 PORTRAIT_PATH = 'assets/contact/profile-photo.jpg'
 PORTRAIT_VERSION = hashlib.sha256((SOURCE / 'contact/profile-photo.jpg').read_bytes()).hexdigest()[:12]
 PREVIEW_VERSIONS = {}
@@ -996,6 +997,11 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         if origin == 'cn':
             project_url = etree.SubElement(sitemap, 'url')
             etree.SubElement(project_url, 'loc').text = CN + 'battery-rul/'
+        else:
+            for project in GITHUB_PROJECT_SITES:
+                assert project['url'].startswith(GH)
+                project_url = etree.SubElement(sitemap, 'url')
+                etree.SubElement(project_url, 'loc').text = project['url']
         write(destination / 'sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n' + etree.tostring(sitemap, encoding='unicode', pretty_print=True))
         alias = f'<!doctype html><html lang="{default_lang}"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url={base}"><link rel="canonical" href="{base}"><title>Qiushi Xie / 谢秋实</title></head><body><a href="{base}">Qiushi Xie / 谢秋实 · Homepage</a></body></html>\n'
         write(destination / 'portfolio-cover.html', alias)

@@ -26,7 +26,7 @@ portfolio while waiting for images.
 Preferred Chinese URLs live on `qiushi0919.cn`; preferred English URLs live on
 GitHub Pages. Same-language alternate copies point to those preferred URLs with
 canonical links. Reciprocal `zh-CN`, `en`, and `x-default` hreflang links describe
-the language alternatives. Each origin's sitemap lists its 15 preferred portfolio pages; the CN sitemap also lists the battery-paper project website.
+the language alternatives. Each origin's sitemap lists its 15 preferred portfolio pages; the CN sitemap also lists the battery-paper project website. The international sitemap additionally lists the five owned standalone project sites from `source/github-project-sites.json`; their titles start with Qiushi's Chinese name and the relevant contest or project name.
 Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
