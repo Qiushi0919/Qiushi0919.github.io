@@ -93,6 +93,18 @@ def translate_tree(tree):
         e.tail = translated(e.tail)
 
 
+def format_author_legend(tree):
+    for legend in tree.xpath('//*[@class="work-author-legend"]'):
+        parts = re.split(r'([†‡*])', legend.text)
+        legend.text = parts[0]
+        for index in range(1, len(parts), 2):
+            # Match the author-name marks without changing the header's line height.
+            mark = element('sup', parts[index], style='font-size:.72em;line-height:0;vertical-align:super')
+            if parts[index] == '‡': mark.set('class', 'role-lead')
+            mark.tail = parts[index + 1]
+            legend.append(mark)
+
+
 def write(path, content):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding='utf-8')
@@ -579,6 +591,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     format_project_list(card, bool(detail_id), language)
                 if language == 'en':
                     translate_tree(tree)
+                format_author_legend(tree)
                 for competition in tree.xpath('//article[@data-work-category="competition"]'):
                     format_competition_team(competition, language)
                 format_vase_contributions(tree, language, detail_id == 'vaseProjectCard')

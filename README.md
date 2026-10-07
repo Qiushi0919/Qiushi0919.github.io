@@ -209,7 +209,9 @@ presentation and does not make those separate resources confidential.
 All Work, Papers and Competitions show only the thumbnail/link instructions,
 followed by a parenthesized author legend with full stops: equal contribution
 (†), project lead (‡), and corresponding author / competition advisor (*). The
-Chinese version uses the matching Chinese terms, with the same symbols.
+Chinese version uses the matching Chinese terms, with the same symbols. Legend
+symbols are superscripts with the same relative size and position as author marks,
+without increasing the header line height.
 
 The locked view uses a plain white background, neutral controls and one concise
 instruction above the input. No decorative card, lock emblem, collection tag or

@@ -73,7 +73,8 @@
   （†共同第一作者。‡项目负责人。*通讯作者／竞赛指导教师。）”；英文采用
   “Click a thumbnail on the left to view details, or a title or link below to visit
   the corresponding page. (†Equal contribution. ‡Project lead.
-  *Corresponding author / Competition advisor.)”。不再加作品分类总述。
+  *Corresponding author / Competition advisor.)”。释义中的 †、‡、* 也使用
+  与姓名后标记相同的上标位置与字号，不增加说明行高。不再加作品分类总述。
 - 比赛奖项仅保留主奖项：Intel 全国二等奖、C 题湖北赛区一等奖、嵌赛
   全国总决赛二等奖。删除“前 7.83%”、“华中科技大学该题目唯一省一队伍”
   和嵌赛“中部赛区一等奖 · 全国前3.97%”，中文与英文、首页与详情／关于我同步。
