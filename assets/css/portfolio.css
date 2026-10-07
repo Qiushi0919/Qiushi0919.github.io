@@ -419,6 +419,11 @@ html.portrait-phone .feature-overlay .close::before{font-size:calc(33px / var(--
 /* A reserved slim strip keeps the control clear of every poster's text. Its
    height stays fixed while playing so the image and scroll position do not move. */
 :is(.work-preview,.paper-preview).preview-media,.gallery-preview-media{padding-bottom:26px!important}
+/* Center the copy against the image area; the separate Play strip is excluded. */
+.work-list-card .preview-media:not(.no-preview-control)+.work-copy{margin-bottom:26px!important}
+html.portrait-phone .work-list-card .preview-media:not(.no-preview-control)+.work-copy{margin-bottom:calc(26px / var(--portrait-ui-scale))!important}
+html.work-mobile .work-collection[data-work-view="large"] .preview-media+.work-copy{margin-bottom:0!important}
+@media(max-width:760px){html:not(.work-mobile):not(.portrait-phone) .work-list-card .preview-media+.work-copy{margin-bottom:0!important}}
 .preview-media>.preview-open{position:relative;display:block;appearance:none;width:100%;height:auto;aspect-ratio:var(--preview-ratio);padding:0;margin:0;border:0;border-radius:0;background:#fff;overflow:hidden;cursor:zoom-in;line-height:0;pointer-events:auto}
 .preview-open>canvas{display:block;width:100%;height:auto;aspect-ratio:var(--preview-ratio);object-fit:contain;background:#fff;pointer-events:none}
 .preview-open>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:1}
@@ -468,6 +473,15 @@ html.portrait-phone .preview-transport{--transport-unit:calc(1px / var(--portrai
 .preview-transport input:disabled{opacity:.4;cursor:wait}
 .preview-transport [data-preview-time]{flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
 .preview-transport :is(button,input):focus-visible{outline:calc(2 * var(--transport-unit)) solid #80c1ef;outline-offset:calc(2 * var(--transport-unit))}
+/* Context menu is an overlay: no extra button row or thumbnail obstruction. */
+.preview-download-menu{--menu-unit:1px;position:fixed;z-index:100000;min-width:calc(170 * var(--menu-unit));max-width:100vw;padding:calc(4 * var(--menu-unit));border:1px solid #cbd5df;border-radius:calc(7 * var(--menu-unit));background:#fff;color:#203c4e;box-shadow:0 calc(4 * var(--menu-unit)) calc(18 * var(--menu-unit)) rgba(0,0,0,.18);font:calc(14 * var(--menu-unit))/1.4 var(--site-font)}
+.preview-download-menu[hidden]{display:none!important}
+.preview-download-menu button{display:block;appearance:none;width:100%;min-height:calc(36 * var(--menu-unit));padding:calc(6 * var(--menu-unit)) calc(12 * var(--menu-unit));border:0;border-radius:calc(4 * var(--menu-unit));background:transparent;color:inherit;font:inherit;text-align:left;white-space:nowrap;cursor:pointer}
+.preview-download-menu button:is(:hover,:focus-visible){outline:0;background:#eaf2fb}
+.preview-download-menu button:disabled{opacity:.65;cursor:wait}
+html.portrait-phone .preview-download-menu{--menu-unit:calc(1px / var(--portrait-ui-scale))}
+@media(prefers-color-scheme:dark){.preview-download-menu{background:#192b39;border-color:#526c7e;color:#eff6fc}.preview-download-menu button:is(:hover,:focus-visible){background:#29465c}}
+@media print{.preview-download-menu{display:none!important}}
 /* A phone's 980px overview canvas must not keep desktop gallery columns or
    fixed picture heights. Natural ratios preserve diagrams and entire photos. */
 .feature-overlay{--gallery-unit:1px}

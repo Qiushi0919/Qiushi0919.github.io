@@ -1,7 +1,7 @@
 /* Playback state transitions, independent of a browser or specific layout. */
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const source=fs.readFileSync(require('node:path').join(__dirname,'../source/preview-playback.js'),'utf8');
-function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false,defer=false,noControl=false,transport=false}={}){
+function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false,defer=false,noControl=false,transport=false,manual=false}={}){
  const events={},docEvents={},handlers={},clicks={},attrs={},frames=new Map(),mutations=[];let next=0;
  const rootClasses=new Set(),bodyClasses=new Set();
  const icon={textContent:''},label={textContent:''};
@@ -14,7 +14,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   getBoundingClientRect:()=>({top:20,bottom:580,left:0,right:400}),
   querySelector:()=>({getBoundingClientRect:()=>({top:20,bottom:60})})};
  let rect={top,bottom,left:0,right:400,width:400,height:bottom-top};
- const canvas={dataset:{previewSequence:'demo.json'},closest:s=>s==='.preview-media'?media:(popup?overlay:null),getBoundingClientRect:()=>rect};
+ const canvas={dataset:{previewSequence:'demo.json',previewManual:String(manual)},closest:s=>s==='.preview-media'?media:(popup?overlay:null),getBoundingClientRect:()=>rect};
  let player;
  class FakePlayer {
   constructor(c,url,callbacks){player=this;this.canvas=c;this.callbacks=callbacks;this.running=false;this.currentTime=0;this.plays=0;this.deny=deny}
@@ -57,7 +57,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  a.move(90,390);assert.equal(a.player.running,true);assert.equal(a.canvas.dataset.previewStarted,'true');n++;
  a.player.currentTime=7;a.move(700,1000);assert.equal(a.player.running,false);n++;
  a.move(450,750);assert.equal(a.player.running,true);assert.equal(a.player.currentTime,7);n++;
- a.ended();assert.equal(a.player.currentTime,0);assert.equal(a.media.dataset.previewState,'poster');assert.equal(a.control.dataset.previewAction,'replay');n++;
+ a.ended();assert.equal(a.player.currentTime,0);assert.equal(a.media.dataset.previewState,'poster');assert.equal(a.control.dataset.previewAction,'play');n++;
  const endedPlays=a.player.plays;a.move(100,400);a.view();assert.equal(a.player.plays,endedPlays);assert.equal(a.player.running,false);n++;
  a.click();assert.equal(a.player.running,true);assert.equal(a.player.currentTime,0);assert.equal(a.canvas.dataset.previewFinished,undefined);n++;
  a.ended();a.view();assert.equal(a.media.dataset.previewState,'poster');assert.equal(a.player.running,false);n++;
@@ -83,5 +83,10 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  measured.player.callbacks.buffering('loading',{duration:12},false,{kind:'video',loadedBytes:10,totalBytes:0});assert.equal(measured.progress.attrs['aria-valuenow'],undefined);assert.equal(measured.progress.dataset.indeterminate,'true');n++;
  measured.player.callbacks.buffering('ready',{duration:12},true,{kind:'video',loadedBytes:100,totalBytes:100});assert.equal(measured.progress.attrs['aria-valuenow'],'100');assert.equal(measured.progress.attrs['aria-hidden'],'true');n++;
  measured.player.callbacks.buffering('error',{duration:12},false);assert.equal(measured.progress.attrs['aria-hidden'],'true');n++;
+ const clickOnly=scenario({manual:true,top:100,bottom:400});assert.equal(clickOnly.player.plays,0);clickOnly.view();clickOnly.changed();clickOnly.move(120,420);assert.equal(clickOnly.player.plays,0);n++;
+ clickOnly.click();assert.equal(clickOnly.player.running,true);assert.equal(clickOnly.player.skipCover,true);clickOnly.move(700,1000);assert.equal(clickOnly.player.running,false);clickOnly.move(100,400);assert.equal(clickOnly.player.running,true);n++;
+ clickOnly.ended();assert.equal(clickOnly.label.textContent,'播放');assert.equal(clickOnly.control.dataset.previewAction,'play');clickOnly.view();clickOnly.changed();assert.equal(clickOnly.player.running,false);n++;
+ clickOnly.click();assert.equal(clickOnly.player.running,true);assert.equal(clickOnly.player.skipCover,true);n++;
+ const manualGallery=scenario({manual:true,popup:true,open:true,top:100,bottom:400,transport:true,noControl:true});assert.equal(manualGallery.player.plays,0);manualGallery.toggle();assert.equal(manualGallery.player.running,true);manualGallery.ended();manualGallery.changed();assert.equal(manualGallery.player.running,false);manualGallery.toggle();assert.equal(manualGallery.player.running,true);n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and frame loading failure'}));
 })();

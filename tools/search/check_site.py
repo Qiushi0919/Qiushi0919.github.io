@@ -149,6 +149,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             canvas = wrapper.xpath('./*[contains(concat(" ",@class," ")," preview-open ")]/canvas[@data-preview-auto]')
             assert len(canvas) == 1 and canvas[0].get('width') and canvas[0].get('height'), str(p)
             assert canvas[0].get('data-preview-load-order') in ('0','1','2'), str(p)
+            assert (canvas[0].get('data-preview-manual') == 'true') == (canvas[0].get('data-preview-load-order') != '0'), str(p)
             video_url = urlsplit(canvas[0].get('data-preview-video'))
             video_file = directory / video_url.path.lstrip('/')
             assert video_file.is_file() and video_file.suffix == '.mp4', str(p)

@@ -23,7 +23,7 @@ def public_media_allowed(relative):
     return not policy or len(parts) == 2 and parts[1] in policy['allowed']
 
 BUILD = ROOT / 'build'
-VERSION = 'about-return-work-20261007'
+VERSION = 'preview-download-20261007'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -470,6 +470,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
     scripts.append((SOURCE / 'preview-load-queue.js').read_text())
     scripts.append((SOURCE / 'preview-frame-player.js').read_text())
     scripts.append((SOURCE / 'preview-video-player.js').read_text())
+    scripts.append((SOURCE / 'preview-download.js').read_text())
     scripts.append((SOURCE / 'preview-playback.js').read_text())
     scripts.append((SOURCE / 'startup-loading.js').read_text())
     scripts.append((SOURCE / 'work-view.js').read_text())
@@ -757,7 +758,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     for path, zh, en in [
                         ('papers/vasemuseum', 'VaseMuseum · arXiv 预印本，共同第一作者', 'VaseMuseum · arXiv preprint, co-first author'),
                         ('papers/battery-rul', '锂离子电池剩余寿命预测 · SPIE 2026，独立第一作者', 'Battery remaining-useful-life estimation · SPIE 2026, sole author'),
-                        ('competitions/intelcup-2026', '英特尔杯无人机地面站 · 全国二等奖，前7.83%', 'Intel Cup drone ground station · National Second Prize, top 7.83%'),
+                        ('competitions/intelcup-2026', '英特尔杯无人机地面站 · 全国二等奖', 'Intel Cup drone ground station · National Second Prize'),
                         ('competitions/nuedc-c', '数字钥匙实验系统 · 湖北赛区一等奖', 'Digital-key system · First Prize, Hubei division')]:
                         item = element('li'); item.append(element('a', zh if language == 'zh' else en, href=route_url(local_base, path))); works.append(item)
                     biography.append(works)
@@ -831,6 +832,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         'width':str(sequence['width']),'height':str(sequence['height'])})
                     if name == 'battery-method':
                         canvas.set('data-preview-loop', 'true')
+                    else:
+                        canvas.set('data-preview-manual', 'true')
                     poster_src = video.get('poster')
                     poster_file = destination / poster_src.split('?', 1)[0].lstrip('/')
                     poster_src = poster_src.split('?', 1)[0] + '?v=' + hashlib.sha256(poster_file.read_bytes()).hexdigest()[:12]

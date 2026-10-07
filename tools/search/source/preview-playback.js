@@ -1,5 +1,5 @@
-/* First full appearance starts playback. Competition previews finish at their
-   cover; the battery method loops until paused offscreen or behind a gallery. */
+/* Competition previews require Play and finish at their cover. The battery
+   method starts when fully visible and loops until offscreen or behind a gallery. */
 (() => {
   const root = document.documentElement;
   const motion = matchMedia('(prefers-reduced-motion:reduce)');
@@ -9,6 +9,7 @@
     return {canvas, media, control:media.querySelector('[data-preview-play]'),
       toggle:media.querySelector('[data-preview-toggle]'), seek:media.querySelector('[data-preview-seek]'),
       time:media.querySelector('[data-preview-time]'), userPaused:false,
+      manualOnly:canvas.dataset.previewManual === 'true',
       popup:canvas.closest('.feature-overlay'), started:false, hasPlayed:false,
       finished:false, needsManual:false, manual:false};
   });
@@ -47,16 +48,15 @@
     : document.body.classList.contains('overlay-active') || root.classList.contains('contact-modal-open'));
   const label = entry => {
     const loading = entry.media.dataset.previewState === 'loading';
-    const replay = entry.hasPlayed;
-    const value = replay ? (english?'Replay':'重播') : (english?'Play':'播放');
+    const value = english?'Play':'播放';
     if (entry.control) {
       entry.control.setAttribute('aria-disabled', String(loading));
       entry.control.setAttribute('aria-busy', String(loading));
       entry.control.setAttribute('aria-label', value + (english?' animation':'动画'));
       entry.control.title = value;
       entry.control.querySelector('.preview-play-label').textContent = value;
-      entry.control.querySelector('.preview-play-icon').textContent = replay ? '↻' : '▶';
-      entry.control.dataset.previewAction = loading ? 'loading' : replay ? 'replay' : 'play';
+      entry.control.querySelector('.preview-play-icon').textContent = '▶';
+      entry.control.dataset.previewAction = loading ? 'loading' : 'play';
     }
     if (entry.toggle) {
       const playing=entry.player.running && entry.media.dataset.previewState === 'playing';
@@ -98,6 +98,7 @@
     for (const entry of entries) {
       const player = entry.player;
       if (blocked(entry) || (motion.matches && !entry.manual)) { pause(entry); continue; }
+      if (entry.manualOnly && !entry.manual) { pause(entry); continue; }
       if (entry.userPaused) continue;
       if (entry.finished || entry.needsManual) continue;
       const box = viewport(entry.popup);
@@ -162,6 +163,7 @@
         label(entry);
       }
     });
+    window.PortfolioPreviewDownloads?.attach(entry.media, entry.player.resource);
     label(entry);
     entry.control?.addEventListener('click', event => {
       event.stopPropagation();

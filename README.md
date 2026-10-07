@@ -185,7 +185,9 @@ attribute, although the final search title and snippet remain engine-controlled.
 The homepages allow `max-image-preview:large` and identify the existing portrait
 as their primary image in structured data. These settings make an image preview
 eligible; Bing and Google choose whether and where to display it. The Intel Cup
-award is displayed as "National Second Prize · Top 7.83%" without the rank.
+award is displayed as "National Second Prize". Competition award lines omit
+percentile ranks, the HUST-only team claim, and the embedded contest's regional
+award, retaining the confirmed main prize in both languages.
 
 ## Website icon
 
@@ -665,6 +667,11 @@ Blob URL for thumbnail, expanded player and replay. `preview-video-player.js`
 uses a detached muted inline decoder to draw full-resolution frames into Canvas;
 no native video control surface is exposed. Existing timing, cover reset,
 full-visibility gating and the extra 1.2s EECS intro after round one remain.
+Intel/C previews now require an explicit Play click, including expanded copies;
+their labels remain Play after finishing. EECS keeps automatic visibility-gated
+looping. Preview downloads still prepare in the same order. In side-by-side work
+rows, the copy centers on the thumbnail image, excluding the 26px Play strip;
+phone overview uses visual-scale compensation and stacked views add no offset.
 
 Gallery detail images and original videos wait until the registered thumbnail
 animations finish or fail. Hover/focus/touch do not preload gallery assets.
@@ -695,6 +702,18 @@ Run preview-load-queue, preview-frame-player, preview-video-player,
 preview-playback, preview-progress, startup-loading and gallery-scroll tests, then build/check.
 After building, run gallery-media-loading to cover warm-cache opening and
 closed/superseded deferred panels.
+
+### Right-click video download (2026-10-07)
+
+`source/preview-download.js` adds a localized context menu to every MP4 thumbnail
+and expanded Canvas preview. Right-click or Shift+F10 offers Download video;
+ordinary click still opens the gallery. The menu floats outside the thumbnail
+layout, supports dark mode, and Escape dismisses it before closing a gallery.
+Saving uses the existing shared Blob URL, including repeated downloads and
+gallery copies. An early click waits for the ordered preview queue; failed
+transfers can be retried. No visible native video control or extra download
+request is introduced. Run `node tests/preview-download.cjs`, playback/video
+cache tests, then build/check. Scoped release: `docs/preview-download-20261007/`.
 
 ### Lingyun Ruitong public media restriction (2026-10-07)
 
