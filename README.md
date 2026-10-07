@@ -752,3 +752,7 @@ link, immediately before Selected papers and projects. It links to the same-lang
 homepage's `#all-work` section, with a 44px visual phone touch target, keyboard
 focus and dark-mode styles. The native link needs no extra script or download.
 Release and verification records: `docs/about-return-work-20261007/`.
+# 站长平台验证文件
+
+同名文件可能由平台为两个域名签发不同内容。`verification/cn/` 和
+`verification/github/` 是各域名的覆盖目录，共享验证文件仍保存在 `verification/`。

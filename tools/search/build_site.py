@@ -980,6 +980,13 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         if verification.exists():
             for p in verification.iterdir():
                 if p.is_file(): write(destination / p.name, p.read_text())
+            # Platforms can issue different contents for the same filename on
+            # each domain. An origin-specific file overrides the shared copy.
+            scoped_verification = verification / origin
+            if scoped_verification.exists():
+                for p in scoped_verification.rglob('*'):
+                    if p.is_file():
+                        write(destination / p.relative_to(scoped_verification), p.read_text())
         legacy_tools = 'Disallow: /Qiushi-Portfolio/tools/\n' if origin == 'github' else ''
         blocked_paths = f'Disallow: {path_prefix}analytics/\nDisallow: {path_prefix}cost-per-day/api/\nDisallow: {path_prefix}tools/\n{legacy_tools}'
         # Specific bot groups do not inherit wildcard restrictions.

@@ -89,6 +89,8 @@
   `source/github-project-sites.json`，国际站网站地图包含这 5 个项目入口。
   这些路径共用 `qiushi0919.github.io`，验证根站点后统一提交，不重复建立
   每个子目录的站点名称。网页正文中的正式论文／作品名称保持原样。
+- 同名的站长平台验证文件按域名单独保存：`verification/cn/` 与
+  `verification/github/` 覆盖共享文件，不能用 GitHub 的神马文件覆盖国内站。
 - 沿用用户提供的插画 favicon，图标 URL 保持稳定。
 - Google 控制台／搜索图标需要 Google 独立抓取和处理，不通过反复修改图标
   URL 强制刷新。先检查主页引用、图标响应与爬虫权限，再按需请求主页重新抓取。
