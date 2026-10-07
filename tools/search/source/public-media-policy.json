@@ -1,0 +1,10 @@
+{
+  "low-altitude-communication": {
+    "allowed": [
+      "award-certificate.png",
+      "innovation-competition-logo.webp",
+      "mcsp-lab-logo.svg"
+    ],
+    "reason": "User prohibits publishing the project PPT and all exported slides; use only the supplied award certificate and public organization logos, 2026-10-07."
+  }
+}

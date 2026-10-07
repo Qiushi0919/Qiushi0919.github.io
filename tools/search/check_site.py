@@ -10,6 +10,11 @@ teams = json.loads((ROOT.parent / 'source/competition-teams.json').read_text())
 count = 0
 for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919.github.io', '')]:
     directory = ROOT / origin
+    policy = json.loads((ROOT.parent / 'source/public-media-policy.json').read_text())
+    for project, rules in policy.items():
+        public = directory / 'assets/portfolio-cover' / project
+        assert public.is_dir(), str(public)
+        assert {f.name for f in public.rglob('*') if f.is_file()} <= set(rules['allowed']), str(public)
     sitemap = etree.parse(str(directory / 'sitemap.xml'))
     locations = sitemap.xpath('//*[local-name()="loc"]/text()')
     expected_locations = 16 if origin == 'cn' else 15
@@ -108,6 +113,16 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert len(card.xpath('.//*[contains(concat(" ",@class," ")," project-kicker ")]')) == 1, str(p)
             if card.get('id') != 'lowcomProjectCard' or team.get('award'):
                 assert len(card.xpath('.//span[@class="competition-award"]')) == 1, str(p)
+        for lowcom in tree.xpath('//*[@id="lowcomProjectCard"]'):
+            images = lowcom.xpath('.//img[@src or @data-src]')
+            certificates = [i for i in images if 'award-certificate.png' in (i.get('src') or i.get('data-src') or '')]
+            assert len(certificates) == 2, str(p)
+            assert len(lowcom.xpath('.//div[@class="lowcom-grid"]/figure')) == 1, str(p)
+            for image in images:
+                value = image.get('src') or image.get('data-src')
+                if '/low-altitude-communication/' in value:
+                    assert urlsplit(value).path.split('/')[-1] in policy['low-altitude-communication']['allowed'], str(p)
+            assert '中国国际大学生创新大赛（2026）' not in lowcom.text_content(), str(p)
         for trigger, project in [('coverTrigger','intelcup-2026'), ('nuedcCoverTrigger','nuedc-c')]:
             for canvas in tree.xpath(f'//*[@id="{trigger}"]/canvas'):
                 assert urlsplit(canvas.get('data-preview-sequence')).path == f'/assets/preview-frames/{project}-{language}/sequence.json', str(p)

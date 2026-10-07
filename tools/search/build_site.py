@@ -14,8 +14,16 @@ from lxml import etree, html
 
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'source'
+PUBLIC_MEDIA_POLICY = json.loads((SOURCE / 'public-media-policy.json').read_text())
+
+
+def public_media_allowed(relative):
+    parts = Path(relative).parts
+    policy = PUBLIC_MEDIA_POLICY.get(parts[0]) if parts else None
+    return not policy or len(parts) == 2 and parts[1] in policy['allowed']
+
 BUILD = ROOT / 'build'
-VERSION = 'preview-edge-progress-20261007'
+VERSION = 'lowcom-certificate-20261007'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -498,12 +506,12 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         # Native paper figures exported from the user's local experiment visualization.
         figures = SOURCE / 'publication-figures'
         for source_file in figures.rglob('*'):
-            if source_file.is_file():
+            if source_file.is_file() and public_media_allowed(source_file.relative_to(figures)):
                 target = destination / 'assets/portfolio-cover' / source_file.relative_to(figures)
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
         for source_file in (SOURCE / 'project-previews').rglob('*'):
-            if source_file.is_file() and 'inputs' not in source_file.parts and source_file.suffix in ('.mp4', '.jpg', '.webp', '.svg'):
+            if source_file.is_file() and public_media_allowed(source_file.relative_to(SOURCE/'project-previews')) and 'inputs' not in source_file.parts and source_file.suffix in ('.mp4', '.jpg', '.webp', '.svg'):
                 target = destination / 'assets/portfolio-cover' / source_file.relative_to(SOURCE/'project-previews')
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
@@ -516,6 +524,13 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
             target = destination / 'assets/citations' / source_file.name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(source_file.read_bytes())
+        # Sanitize an existing build too: a skipped private source file must
+        # never leave a stale public copy from an earlier build.
+        for project in PUBLIC_MEDIA_POLICY:
+            restricted = destination / 'assets/portfolio-cover' / project
+            for file in restricted.rglob('*'):
+                if file.is_file() and not public_media_allowed(file.relative_to(destination / 'assets/portfolio-cover')):
+                    file.unlink()
         for language in ('zh', 'en'):
             lang_prefix = '' if language == default_lang else language + '/'
             local_base = path_prefix + lang_prefix

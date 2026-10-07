@@ -693,3 +693,16 @@ Run preview-load-queue, preview-frame-player, preview-video-player,
 preview-playback, preview-progress, startup-loading and gallery-scroll tests, then build/check.
 After building, run gallery-media-loading to cover warm-cache opening and
 closed/superseded deferred panels.
+
+### Lingyun Ruitong public media restriction (2026-10-07)
+
+The project PPT and exported slides must not be uploaded publicly. All list
+thumbnails, expanded views, and project sharing images use the user-supplied
+2025 HUST university-level bronze award certificate. Public organization logos
+remain allowed. `source/public-media-policy.json` is an explicit allowlist for
+this project's media in both source figure and preview directories; other files
+are excluded from every build, including stale outputs from earlier builds.
+Run `python3 -B tests/public-media-policy.py` and `check_site.py` to verify.
+Old published slide exports are removed
+from both current deployments, with private rollback backups retained. Git
+history is not rewritten. Release: `docs/lowcom-certificate-20261007/`.
