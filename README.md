@@ -717,3 +717,11 @@ SVG/JPEG outputs are in `source/project-previews/low-altitude-communication/`.
 Use the bundled Node runtime with `NODE_PATH` pointing to its `node_modules`
 (which provides sharp), run the renderer, then build/check. No PPT export is read.
 Release and verification records: `docs/lowcom-white-hero-20261007/`.
+
+### About-page return button (2026-10-07)
+
+The biography ends with a prominent blue “← 返回 All Work” / “← Back to All Work”
+link, immediately before Selected papers and projects. It links to the same-language
+homepage's `#all-work` section, with a 44px visual phone touch target, keyboard
+focus and dark-mode styles. The native link needs no extra script or download.
+Release and verification records: `docs/about-return-work-20261007/`.

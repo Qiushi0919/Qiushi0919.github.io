@@ -23,7 +23,7 @@ def public_media_allowed(relative):
     return not policy or len(parts) == 2 and parts[1] in policy['allowed']
 
 BUILD = ROOT / 'build'
-VERSION = 'lowcom-white-hero-20261007'
+VERSION = 'about-return-work-20261007'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -277,6 +277,13 @@ body{overflow-x:clip}
 .biography{margin:0 16px;padding:12px 0 8px;max-width:720px;color:#344d60;font-size:15px;line-height:1.85}
 .biography p{margin:0 0 18px}.biography h2{margin:24px 0 10px;color:#213747;font-size:18px}
 .biography ul{padding-left:20px}.biography li{margin:9px 0}.biography .author-links{display:flex;flex-wrap:wrap;gap:10px 20px}
+.biography .return-all-work{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:8px 18px;box-sizing:border-box;border:1px solid transparent;border-radius:6px;background:#1a66b4;color:#fff;font-size:15px;font-weight:700;line-height:1.3;text-decoration:none;touch-action:manipulation}
+.biography .return-all-work:hover{background:#124e93;color:#fff;text-decoration:none}
+.biography .return-all-work:focus-visible{outline:3px solid #2983e4;outline-offset:3px}
+.return-all-work .return-arrow{font-size:1.25em;line-height:1}
+#all-work{scroll-margin-top:80px}
+html.portrait-phone .biography .return-all-work{gap:calc(9px / var(--portrait-ui-scale));min-height:calc(44px / var(--portrait-ui-scale));padding:calc(8px / var(--portrait-ui-scale)) calc(18px / var(--portrait-ui-scale));font-size:calc(14px / var(--portrait-ui-scale));border-radius:calc(6px / var(--portrait-ui-scale))}
+@media(prefers-color-scheme:dark){.biography .return-all-work{background:#2066aa;border-color:#7ca9d4;color:#fff}.biography .return-all-work:hover{background:#18558e}}
 .skip-link{position:absolute;left:12px;top:-70px;padding:10px;background:#fff;z-index:1100}
 .skip-link:focus{top:12px}
 .feature-overlay{overflow-y:auto;max-height:85vh}
@@ -741,6 +748,10 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     biography = element('section', aria_label='个人介绍' if language == 'zh' else 'Biography', **{'class':'biography'})
                     for paragraph in author_paragraphs(language):
                         biography.append(paragraph)
+                    return_link = element('a', href=local_base + '#all-work', **{'class':'return-all-work'})
+                    return_link.append(element('span', '←', aria_hidden='true', **{'class':'return-arrow'}))
+                    return_link.append(element('span', '返回 All Work' if language == 'zh' else 'Back to All Work'))
+                    biography.append(return_link)
                     biography.append(element('h2', '代表论文与项目' if language == 'zh' else 'Selected papers and projects'))
                     works = element('ul')
                     for path, zh, en in [
@@ -896,6 +907,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                             media.getparent().getparent().set('style', f'--preview-ratio:{dimensions[0]}/{dimensions[1]}')
                 if route == '' or category:
                     collection = element('section', **{'class':'work-collection', 'data-work-view':'overview', 'aria-label':'作品' if language == 'zh' else 'Works'})
+                    if route == '':
+                        collection.set('id', 'all-work')
                     works_head = tree.xpath('//*[@class="works-head"]')[0]
                     main.insert(main.index(works_head), collection)
                     collection.append(works_head)
