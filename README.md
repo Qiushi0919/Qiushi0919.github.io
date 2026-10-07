@@ -353,6 +353,12 @@ CN uses Nginx with static directory pages, actual 404 responses, and 301 redirec
 from the former root homepage aliases. Existing navigation, cost tracker, and
 other service routes retain their own configuration.
 
+The standalone `/intelcup-2026/` entry permanently redirects (301) to
+`https://qiushi0919.github.io/IntelCup-2026/`. It is separate from the crawlable
+portfolio detail at `/competitions/intelcup-2026/`. Search Console may list the
+old entry as "Page with redirect" because the destination is the page intended
+for indexing; this does not mean the homepage has an indexing failure.
+
 Both origin-root `robots.txt` files explicitly allow all crawlers to fetch
 public pages through `User-agent: *` and `Allow: /`, and advertise their own
 sitemaps. This universal rule covers Grok, Doubao, DeepSeek, Qwen, Kimi, Yuanbao,
