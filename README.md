@@ -615,9 +615,11 @@ Competition previews keep their one-play/finish-to-cover and Replay behavior.
 Playback code also supports previews that intentionally have no control.
 
 The Chinese homepage title is `浙江大学2027级直博生-谢秋实（Qiushi Xie）`.
-The generated title, og:title and ProfilePage name use the same title. This
-change is limited to the Chinese homepage on both portfolio origins; deployment
-and verified title metadata are recorded in `docs/homepage-title-order-20261006/`.
+The English homepage title is now `Zhejiang University · Incoming PhD Student (2027) — Qiushi Xie (谢秋实)`.
+Both put the university and incoming cohort before the name. The generated title,
+og:title and ProfilePage name use the same language-matched title. The original
+Chinese update is recorded in `docs/homepage-title-order-20261006/`; the English
+correction on both portfolio origins is in `docs/homepage-title-en-20261007/`.
 
 Phone galleries use a single column, original image ratios and natural heights,
 including photos previously cropped by fixed-height slots. Small Codex Tidy

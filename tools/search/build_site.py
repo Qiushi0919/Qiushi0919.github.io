@@ -609,7 +609,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 tree.set('data-language', language)
                 tree.set('data-origin', origin)
                 title = ('浙江大学2027级直博生-谢秋实（Qiushi Xie）' if language == 'zh'
-                         else 'Qiushi Xie (谢秋实) — Incoming PhD Student, ZJU (2027)')
+                         else 'Zhejiang University · Incoming PhD Student (2027) — Qiushi Xie (谢秋实)')
                 description = AUTHOR['description'][language]
                 heading = tree.xpath('//*[@class="works-head"]/h2')[0]
                 if route == 'about':

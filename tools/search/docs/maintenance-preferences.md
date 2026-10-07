@@ -70,6 +70,9 @@
 ## 身份与搜索展示
 
 - 中文首页标题：浙江大学2027级直博生-谢秋实（Qiushi Xie）。
+- 英文首页标题：Zhejiang University · Incoming PhD Student (2027) — Qiushi Xie (谢秋实)。
+  两种语言都把学校和入学身份放在姓名前；浏览器标题、分享标题与页面结构化
+  数据同步。英文保留 Incoming，说明 2027 年拟入学身份。
 - 国内站点名称：谢秋实的个人主页；国际站：Qiushi Xie。
 - 沿用用户提供的插画 favicon，图标 URL 保持稳定。
 - Google Scholar 目前填写身份、研究兴趣、主页链接；详细简介在个人网站上展示。
