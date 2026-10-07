@@ -31,6 +31,9 @@ Page titles, descriptions, Open Graph tags, and Person/WebPage structured data
 are generated from the existing portfolio content. Publication claims are not
 inferred or added by the generator.
 
+Competition projects omit citation/BibTeX sections and navigation, including the
+standalone Intel Cup site. Academic papers retain their existing citation tools.
+
 Paper cards use an academic publication layout: title, ordered author list,
 venue/month, a brief summary, and compact flat two-part resource labels. Qiushi
 Xie is underlined in the author line; contribution markers sit outside the underlined name.
