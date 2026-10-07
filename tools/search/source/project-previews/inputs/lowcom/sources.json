@@ -1,0 +1,44 @@
+{
+  "radiation": {
+    "path": "source/project-previews/inputs/lowcom/radiation.png",
+    "sha256": "5315184f95708f4606fc68a89ce30ce1daa86cf0de0f76cde6d11e08a3f3de61",
+    "evidence": "User-selected public hero input, 2026-10-07",
+    "label": {
+      "zh": "波束转向",
+      "en": "Beam steering"
+    }
+  },
+  "tracking": {
+    "path": "source/project-previews/inputs/lowcom/tracking.png",
+    "sha256": "1aba47a4507821d2083500089dec5e995ac853ce238bb9bca1034b2eb44ffbcf",
+    "evidence": "User-selected public hero input, 2026-10-07",
+    "label": {
+      "zh": "波束追踪",
+      "en": "Beam tracking"
+    }
+  },
+  "array": {
+    "path": "source/project-previews/inputs/lowcom/array.png",
+    "sha256": "73b2047f650333f9fe31410db90bfe078f490be79ab7256003a754ad5a57ca31",
+    "evidence": "User-selected public hero input, 2026-10-07",
+    "label": {
+      "zh": "模拟移相器结构",
+      "en": "Simulated phase shifter structure"
+    }
+  },
+  "hust": {
+    "path": "source/project-previews/inputs/hust.png",
+    "url": "https://qiushi0919.cn/assets/hust_logo.png",
+    "sha256": "86e9ef84d69cc01a8e0deaaa2bfc9e59a3c9fa30ddee5eb555781758068d6c05"
+  },
+  "innovation": {
+    "path": "source/publication-figures/low-altitude-communication/innovation-competition-logo.webp",
+    "url": "https://qiushi0919.github.io/assets/portfolio-cover/low-altitude-communication/innovation-competition-logo.webp",
+    "sha256": "8cb15384b6b8b1e287a094b9abac7ac71539cfab22dc3c3dc7c43f0f4bd2fa86"
+  },
+  "mcsp": {
+    "path": "source/publication-figures/low-altitude-communication/mcsp-lab-logo.svg",
+    "url": "https://qiushi0919.github.io/assets/portfolio-cover/low-altitude-communication/mcsp-lab-logo.svg",
+    "sha256": "283d62c8a9d2f0c5f751d16dfd6641d4c185842b5fbaa5595a47bbe7861cf5f6"
+  }
+}

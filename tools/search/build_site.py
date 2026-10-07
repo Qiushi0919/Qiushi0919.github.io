@@ -23,7 +23,7 @@ def public_media_allowed(relative):
     return not policy or len(parts) == 2 and parts[1] in policy['allowed']
 
 BUILD = ROOT / 'build'
-VERSION = 'lowcom-certificate-20261007'
+VERSION = 'lowcom-white-hero-20261007'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -208,12 +208,15 @@ def format_project_list(card, is_detail, language):
                 'aria-label':'数字钥匙实验系统循环演示'}))
         chosen = {
             'embeddedProjectCard': (f'assets/portfolio-cover/embedded-2025/cover-{language}.jpg', '智能烟雾检测与预测系统组成' if language == 'zh' else 'Smoke detection and prediction system components'),
+            'lowcomProjectCard': (f'assets/portfolio-cover/low-altitude-communication/cover-{language}.jpg', '凌云睿通技术概览：波束转向、波束追踪与模拟移相器结构' if language == 'zh' else 'Lingyun Ruitong overview: beam steering, beam tracking and simulated phase shifter structure'),
         }.get(card.get('id'))
         if chosen:
             for child in list(preview):
                 if 'cover-zoom-hint' not in child.get('class', ''):
                     preview.remove(child)
             preview.insert(0, element('img', src=chosen[0], alt=chosen[1], loading='lazy', decoding='async'))
+            if card.get('id') == 'lowcomProjectCard':
+                card.xpath('.//div[@class="lowcom-grid"]/figure[1]/img')[0].set('data-src', chosen[0])
     preview.set('class', preview.get('class', '') + ' work-preview')
     resources = {
         '项目主页': ('Website', 'Project', 'website'),
@@ -645,7 +648,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 head.append(element('link', rel='canonical', href=canonical))
                 for lang, target in [('zh-CN', route_url(CN, route)), ('en', route_url(GH, route)), ('x-default', route_url(GH, route))]:
                     head.append(element('link', rel='alternate', hreflang=lang, href=target))
-                share_image = (canonical_base + PROJECT_PAGES[route]['image'] if detail_id
+                share_image = (canonical_base + PROJECT_PAGES[route]['image'].format(language=language) if detail_id
                                else portrait_url(canonical_base))
                 share_alt = PROJECT_PAGES[route]['image_alt'][language] if detail_id else '谢秋实 / Qiushi Xie'
                 site_name = '谢秋实的个人主页' if origin == 'cn' else 'Qiushi Xie'
@@ -944,7 +947,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 for media in tree.iter():
                     for attribute in ('src', 'data-src', 'poster'):
                         value = media.get(attribute, '')
-                        if re.search(r'/portfolio-cover/(intelcup-2026|nuedc-c|embedded-2025)/(cover-(zh|en)\.jpg|preview-with-cover-(zh|en)\.mp4)$', value):
+                        if re.search(r'/portfolio-cover/(intelcup-2026|nuedc-c|embedded-2025|low-altitude-communication)/(cover-(zh|en)\.jpg|preview-with-cover-(zh|en)\.mp4)$', value):
                             media.set(attribute, value + '?v=' + VERSION)
                 target = destination / lang_prefix / route / 'index.html'
                 write(target, '<!doctype html>\n' + etree.tostring(tree, encoding='unicode', method='html') + '\n')

@@ -696,13 +696,24 @@ closed/superseded deferred panels.
 
 ### Lingyun Ruitong public media restriction (2026-10-07)
 
-The project PPT and exported slides must not be uploaded publicly. All list
-thumbnails, expanded views, and project sharing images use the user-supplied
-2025 HUST university-level bronze award certificate. Public organization logos
-remain allowed. `source/public-media-policy.json` is an explicit allowlist for
+The project PPT and exported slides must not be uploaded publicly. The latest explicitly supplied beam-steering, beam-tracking and simulated-phase-shifter
+images are authorized for the new bilingual white hero; the original PPT exports
+remain prohibited. Thumbnails and sharing metadata use the hero, and the expanded
+gallery shows the hero followed by the 2025 HUST bronze award certificate.
+Public organization logos remain allowed. `source/public-media-policy.json` is an explicit allowlist for
 this project's media in both source figure and preview directories; other files
 are excluded from every build, including stale outputs from earlier builds.
 Run `python3 -B tests/public-media-policy.py` and `check_site.py` to verify.
 Old published slide exports are removed
 from both current deployments, with private rollback backups retained. Git
 history is not rewritten. Release: `docs/lowcom-certificate-20261007/`.
+
+### Lingyun Ruitong white hero (2026-10-07)
+
+`render_lowcom_cover.cjs` extends the existing native competition-cover template,
+using unchanged, hash-checked user images and public HUST/innovation/MCSP logos.
+Original inputs and their provenance are in `source/project-previews/inputs/lowcom/`;
+SVG/JPEG outputs are in `source/project-previews/low-altitude-communication/`.
+Use the bundled Node runtime with `NODE_PATH` pointing to its `node_modules`
+(which provides sharp), run the renderer, then build/check. No PPT export is read.
+Release and verification records: `docs/lowcom-white-hero-20261007/`.

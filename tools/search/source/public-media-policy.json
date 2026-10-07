@@ -3,8 +3,10 @@
     "allowed": [
       "award-certificate.png",
       "innovation-competition-logo.webp",
-      "mcsp-lab-logo.svg"
+      "mcsp-lab-logo.svg",
+      "cover-zh.jpg",
+      "cover-en.jpg"
     ],
-    "reason": "User prohibits publishing the project PPT and all exported slides; use only the supplied award certificate and public organization logos, 2026-10-07."
+    "reason": "Project PPT and old exported slides remain prohibited. User explicitly authorizes the three new supplied images for a white hero with public logos, plus the award certificate, 2026-10-07."
   }
 }

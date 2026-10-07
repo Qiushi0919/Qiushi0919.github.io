@@ -475,10 +475,10 @@ html.gallery-locked{overflow:hidden!important;overscroll-behavior:none;scrollbar
  .feature-overlay>.overlay-head{border-bottom-color:#505b64}
  .feature-overlay>.overlay-head .close{color:#e7edf2;background:#2c3339;border-color:#657581}
 }
-/* One certificate fits as a complete image on desktop/tablet, with room for
-   the sticky heading and caption. Phone galleries keep their existing width. */
+/* Center the overview/certificate gallery with desktop/tablet margins.
+   Phone galleries keep their existing width and natural image ratios. */
 @media(min-width:601px){
- html:not(.portrait-phone) .lowcom-feature-overlay{width:min(1000px,78vw,calc((76dvh - 130px) * 1.432642 + 32px));left:50%;right:auto}
+ html:not(.portrait-phone) .lowcom-feature-overlay{width:min(1000px,78vw,calc((76dvh - 130px) * 1.333333 + 32px));left:50%;right:auto}
  html:not(.portrait-phone) .lowcom-card.is-open .lowcom-feature-overlay{transform:translate(-50%,-50%) scale(1)}
 }
 html.portrait-phone .feature-overlay{--gallery-unit:calc(1px / var(--portrait-ui-scale));width:92vw;right:4vw;left:auto;padding:calc(8 * var(--gallery-unit));max-height:82vh;max-height:82dvh}

@@ -116,8 +116,13 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         for lowcom in tree.xpath('//*[@id="lowcomProjectCard"]'):
             images = lowcom.xpath('.//img[@src or @data-src]')
             certificates = [i for i in images if 'award-certificate.png' in (i.get('src') or i.get('data-src') or '')]
-            assert len(certificates) == 2, str(p)
-            assert len(lowcom.xpath('.//div[@class="lowcom-grid"]/figure')) == 1, str(p)
+            assert len(certificates) == 1, str(p)
+            figures = lowcom.xpath('.//div[@class="lowcom-grid"]/figure')
+            assert len(figures) == 2, str(p)
+            cover = f'cover-{language}.jpg'
+            assert urlsplit(lowcom.xpath('./button/img/@src')[0]).path.endswith('/' + cover), str(p)
+            assert urlsplit(figures[0].xpath('./img/@data-src')[0]).path.endswith('/' + cover), str(p)
+            assert 'award-certificate.png' in figures[1].xpath('./img/@data-src')[0], str(p)
             for image in images:
                 value = image.get('src') or image.get('data-src')
                 if '/low-altitude-communication/' in value:

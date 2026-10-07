@@ -27,9 +27,10 @@ try:
         assert not (directory / name).exists(), 'Private source/stale PPT leaked'
         assert not (directory / 'page-08.webp').exists(), 'Stale slide export leaked'
         assert (directory / 'award-certificate.png').is_file()
+        assert all((directory / ('cover-' + lang + '.jpg')).is_file() for lang in ('zh','en'))
     assert not site.public_media_allowed(project + '/slides/deck.pptx')
     assert not site.public_media_allowed(project + '/new-technical-cover.jpg')
-    print('{"status":"passed","checks":"private source preserved; PPT and stale slide blocked in both builds; only allowed certificate/logos exported"}')
+    print('{"status":"passed","checks":"private source preserved; PPT and stale slide blocked in both builds; authorized hero, certificate and logos exported"}')
 finally:
     assert fixture.read_bytes() == marker
     fixture.unlink()
