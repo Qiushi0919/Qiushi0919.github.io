@@ -15,6 +15,8 @@
 
 桌面图文并排，文字区与缩略图画面居中对齐，不把播放键计入对齐高度。手机保留现有 980px 画布及显示比例，概览／大图视图共用项目内容。`source/work-view.*`、`source/work-media-sizes.json` 维护视图；`source/site-typography.css` 使用 Times New Roman 与 Microsoft YaHei 及系统回退，不分发商业字体。作品与页脚分割线为 0.8px、#333333。
 
+EECS 与 NCS（VaseMuseum）的白底缩略图顶部使用紧凑机构标志栏；EECS 仅放华中科技大学、不放 SPIE，VaseMuseum 沿用现有合作院校。华科按 Intel 杯头图统一尺寸与左边距，北交和中国科学院大学使用圆形校徽。`source/paper-preview-organizations.css` 管理这一栏；它与科学图表和视频画面分开，更新标志不需要重新编码动画。
+
 放大窗口标题与关闭键固定顶部，内部独立滚动，底层页面锁定并在关闭后恢复位置。手机图片自然比例、单列展示，小型界面截图限制视觉宽度，深色模式适配标题、副标题与关闭键。`source/gallery-readability.css`、`source/gallery-scroll.js` 维护相关规则。
 
 ## 动画只保留最终结果

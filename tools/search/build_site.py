@@ -24,7 +24,7 @@ def public_media_allowed(relative):
     return not policy or len(parts) == 2 and parts[1] in policy['allowed']
 
 BUILD = ROOT / 'build'
-VERSION = 'motion-results-20261008'
+VERSION = 'paper-logos-20261008'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -118,6 +118,35 @@ def author_paragraphs(language):
     # relying on text-fragment translation across nested markup.
     return [html.fragment_fromstring('<p>' + paragraph + '</p>')
             for paragraph in AUTHOR['biography'][language]]
+
+
+def add_paper_preview_organizations(card):
+    """Reuse the paper's existing institutional marks above its preview."""
+    preview = card.xpath('./button[contains(concat(" ",@class," ")," paper-preview ")]')[0]
+    group = card.xpath('./div[@class="paper-affiliations"]/div')[0]
+    header = element('span', **{'class':'paper-preview-organizations',
+                              'aria-label':group.get('aria-label')})
+    for original in group:
+        image = original.find('img')
+        if image is None: continue
+        label = original.get('data-label')
+        image = deepcopy(image)
+        classes = ['paper-organization-mark']
+        if label == '华中科技大学':
+            classes.append('organization-hust')
+        elif label == '北京交通大学':
+            image.set('src', 'assets/portfolio-cover/bjtu-round.png')
+            classes.append('organization-round')
+        elif label == '中国科学院大学':
+            image.set('src', 'assets/portfolio-cover/ucas-round.png')
+            classes.extend(('organization-round', 'organization-ucas'))
+        mark = element('span', title=label, **{'class':' '.join(classes)})
+        mark.append(image)
+        header.append(mark)
+    if len(header) == 1:
+        header.set('aria-label', header[0][0].get('alt'))
+    preview.insert(0, header)
+    preview.set('class', preview.get('class') + ' has-organization-header')
 
 
 def format_competition_team(card, language):
@@ -357,7 +386,7 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-venue em{font-weight:700;font-style:italic}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
-/* Paper lists put the work first; institutional marks only render on details. */
+/* Paper previews pair a compact institutional header with the scientific figures. */
 article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0,1fr)!important;column-gap:24px!important;row-gap:0!important;padding:20px 16px!important;border-top:1px solid #edf0f2;align-items:center!important}
 article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
 article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
@@ -439,6 +468,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
     css += (SOURCE / 'work-view.css').read_text()
     css += (SOURCE / 'competition-presentation.css').read_text()
     css += (SOURCE / 'preview-playback.css').read_text()
+    css += (SOURCE / 'paper-preview-organizations.css').read_text()
     css += (SOURCE / 'gallery-readability.css').read_text()
     css += (SOURCE / 'startup-loading.css').read_text()
     typography = (SOURCE / 'site-typography.css').read_text()
@@ -570,7 +600,9 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         (route == '' and card.get('data-work-category') == 'side') or
                         (detail_id and card.get('id') != detail_id)):
                         card.getparent().remove(card)
-                # Keep affiliation originals in each paper's own page, not list headers.
+                for card in tree.xpath('//article[@data-work-category="paper"]'):
+                    add_paper_preview_organizations(card)
+                # Details retain their expanded affiliation information too.
                 if not detail_id:
                     for affiliations in tree.xpath('//*[@class="paper-affiliations"]'):
                         affiliations.getparent().remove(affiliations)
@@ -849,6 +881,8 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                                                 'style':f'--preview-ratio:{sequence["width"]}/{sequence["height"]}'})
                     button.addprevious(wrapper)
                     wrapper.append(button)
+                    for organizations in button.xpath('./span[@class="paper-preview-organizations"]'):
+                        wrapper.insert(0, organizations)
                     button.set('class', 'preview-open')
                     poster = element('img', src=poster_src, alt='', **{'class':'preview-poster', 'aria-hidden':'true'})
                     button.insert(button.index(canvas)+1, poster)

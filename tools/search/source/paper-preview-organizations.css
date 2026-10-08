@@ -1,0 +1,14 @@
+/* A white, compact logo row stays separate from both figures and playback. */
+article[data-work-category="paper"] .paper-preview.has-organization-header{display:block!important;background:#fff;container-type:inline-size}
+.paper-preview.has-organization-header>.cover-zoom-hint{top:12cqw}
+/* Match the Intel cover's 1080px canvas: HUST is 250px wide at x=40,y=31.
+   The same PNG has transparent margins, so keep its whole image proportional. */
+.paper-preview-organizations{display:flex;align-items:center;justify-content:space-between;gap:2.5%;width:100%;aspect-ratio:1080/124;padding:2.87037% 3.703704% 1.851852%;background:#fff;line-height:0;pointer-events:none}
+.paper-organization-mark{display:flex;align-items:center;justify-content:center;flex:1;min-width:0;height:100%}
+.paper-organization-mark>img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;background:transparent}
+.paper-organization-mark.organization-hust{flex:0 0 25%;justify-content:flex-start}
+.paper-organization-mark.organization-hust>img{object-position:left center}
+.paper-organization-mark.organization-round{flex:0 0 6.944444%}
+/* UCAS supplies a white transparent seal; tint it to the university's blue. */
+.paper-organization-mark.organization-ucas>img{filter:brightness(0) saturate(100%) invert(19%) sepia(96%) saturate(1768%) hue-rotate(193deg) brightness(99%) contrast(111%)}
+@media print{.paper-preview-organizations{break-inside:avoid}}
