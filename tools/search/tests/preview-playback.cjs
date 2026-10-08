@@ -1,7 +1,7 @@
 /* Playback state transitions, independent of a browser or specific layout. */
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
 const source=fs.readFileSync(require('node:path').join(__dirname,'../source/preview-playback.js'),'utf8');
-function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false,defer=false,noControl=false,transport=false,manual=false}={}){
+function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=false,policy=false,defer=false,noControl=false,transport=false,manual=false}={}){
  const events={},docEvents={},handlers={},clicks={},attrs={},frames=new Map(),mutations=[];let next=0;
  const rootClasses=new Set(),bodyClasses=new Set();
  const icon={textContent:''},label={textContent:''};
@@ -20,7 +20,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   constructor(c,url,callbacks){player=this;this.canvas=c;this.callbacks=callbacks;this.running=false;this.currentTime=0;this.plays=0;this.deny=deny}
   pause(){this.running=false}
   reset(){this.pause();this.currentTime=0}
-  play(options){this.skipCover=options?.skipCover;this.plays++;if(this.deny){this.callbacks.error();return}this.running=true;if(!defer){this.drawn=true;this.callbacks.playing()}}
+  play(options){this.skipCover=options?.skipCover;this.userGesture=options?.userGesture;this.plays++;if(this.deny){this.callbacks.error(policy?{name:'NotAllowedError'}:undefined);return}this.running=true;if(!defer){this.drawn=true;this.callbacks.playing()}}
   async seek(value){this.currentTime=Number(value);this.callbacks.time(this.currentTime,12);this.drawn=true;this.callbacks.playing()}
  }
  const nav={getBoundingClientRect:()=>({top:0,bottom:50}),style:{position:'sticky',top:'0px'}};
@@ -41,6 +41,9 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   toggle(){toggleEvents.click({stopPropagation(){}});flush()},
   seek(value){transportEvents.pointerdown();range.value=String(value);transportEvents.input();transportEvents.change();flush()},
   move(t,b){rect={...rect,top:t,bottom:b,height:b-t};docEvents.scroll();flush()},
+  layout(t,b){rect={...rect,top:t,bottom:b,height:b-t}},
+  ready(){canvas.dataset.previewBuffer='ready';player.callbacks.buffering('ready',{duration:12},true);flush()},
+  gesture(type='touchend'){docEvents[type]();flush()},
   view(){events['portfolio:workviewchange']();flush()},
   ended(){player.callbacks.ended();flush()},
   click(){let stopped=false;clicks.click({stopPropagation(){stopped=true}});flush();assert.equal(stopped,true)},
@@ -88,5 +91,11 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  clickOnly.ended();assert.equal(clickOnly.label.textContent,'播放');assert.equal(clickOnly.control.dataset.previewAction,'play');clickOnly.view();clickOnly.changed();assert.equal(clickOnly.player.running,false);n++;
  clickOnly.click();assert.equal(clickOnly.player.running,true);assert.equal(clickOnly.player.skipCover,true);n++;
  const manualGallery=scenario({manual:true,popup:true,open:true,top:100,bottom:400,transport:true,noControl:true});assert.equal(manualGallery.player.plays,0);manualGallery.toggle();assert.equal(manualGallery.player.running,true);manualGallery.ended();manualGallery.changed();assert.equal(manualGallery.player.running,false);manualGallery.toggle();assert.equal(manualGallery.player.running,true);n++;
+ const resized=scenario({noControl:true});assert.equal(resized.player.plays,0);resized.layout(100,400);resized.ready();assert.equal(resized.player.plays,1);n++;
+ const phone=scenario({top:100,bottom:400,noControl:true,deny:true,policy:true});phone.ready();phone.move(100,400);assert.equal(phone.player.plays,1);phone.player.deny=false;phone.gesture();assert.equal(phone.player.running,true);assert.equal(phone.player.userGesture,true);n++;
+ const offscreenPhone=scenario({top:100,bottom:400,noControl:true,deny:true,policy:true});offscreenPhone.ready();offscreenPhone.player.deny=false;offscreenPhone.move(700,1000);offscreenPhone.gesture();assert.equal(offscreenPhone.player.plays,1);offscreenPhone.move(100,400);offscreenPhone.gesture('pointerup');assert.equal(offscreenPhone.player.running,true);n++;
+ const reducedPhone=scenario({top:100,bottom:400,noControl:true,deny:true,policy:true});reducedPhone.ready();reducedPhone.player.deny=false;reducedPhone.motion.matches=true;reducedPhone.gesture();assert.equal(reducedPhone.player.plays,1);n++;
+ const manualPhone=scenario({manual:true,top:100,bottom:400});manualPhone.ready();manualPhone.gesture();assert.equal(manualPhone.player.plays,0);n++;
+ const decodeFailure=scenario({top:100,bottom:400,noControl:true,deny:true});decodeFailure.ready();decodeFailure.player.deny=false;decodeFailure.gesture();assert.equal(decodeFailure.player.plays,1);n++;
  console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and media loading failure'}));
 })();

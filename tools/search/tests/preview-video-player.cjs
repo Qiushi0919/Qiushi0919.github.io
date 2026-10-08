@@ -10,10 +10,11 @@ function fixture({loop=false,replayStart=0,extra=0,rejectPlay=false}={}){
   removeEventListener(type,fn){this.listeners.get(type)?.delete(fn)}
   emit(type){for(const fn of [...(this.listeners.get(type)||[])])fn()}
   setAttribute(name,value){this.attrs[name]=value}
+  getAttribute(name){return name==='src'?this.src:this.attrs[name]}
   load(){queueMicrotask(()=>{this.readyState=2;this.emit('loadeddata')})}
   get currentTime(){return this.time}
   set currentTime(value){this.time=value;this.ended=false;this.seeking=true;queueMicrotask(()=>{this.seeking=false;this.emit('seeked')})}
-  play(){if(failPlay)return Promise.reject(new Error('Autoplay blocked'));this.paused=false;return Promise.resolve()}
+  play(){if(failPlay){const error=new Error('Autoplay blocked');error.name='NotAllowedError';return Promise.reject(error)}this.paused=false;return Promise.resolve()}
   pause(){this.paused=true}
  }
  class ObjectURL extends URL {static createObjectURL(){return 'blob:shared-'+(++objectURLs)}}
@@ -23,8 +24,8 @@ function fixture({loop=false,replayStart=0,extra=0,rejectPlay=false}={}){
    requests.push(String(url));pending.push({finish(fail){if(fail)reject(new Error('Network failed'));else resolve({ok:true,blob:async()=>new Blob(['mp4'])})}})
   }),requestAnimationFrame:fn=>{raf.set(++id,fn);return id},cancelAnimationFrame:key=>raf.delete(key)});
  const make=(name,priority)=>{
-  const canvas={width:640,height:360,dataset:{previewDuration:'2',previewReplayStart:String(replayStart),previewLoop:String(loop),previewLoopIntroExtra:String(extra),previewLoadOrder:String(priority)},getContext:()=>({drawImage:()=>draws.push(name)})};
-  const player=new window.PortfolioVideoPlayer(canvas,`/assets/${name}.mp4?v=content`,{playing:()=>events.push('playing:'+name),ended:()=>events.push('ended:'+name),error:()=>events.push('error:'+name),time(){}});
+  const canvas={width:640,height:360,parentNode:{insertBefore(video,target){assert.equal(target,canvas);video.parentNode=this}},dataset:{previewDuration:'2',previewReplayStart:String(replayStart),previewLoop:String(loop),previewLoopIntroExtra:String(extra),previewLoadOrder:String(priority)},getContext:()=>({drawImage:()=>draws.push(name)})};
+  const player=new window.PortfolioVideoPlayer(canvas,`/assets/${name}.mp4?v=content`,{playing:()=>events.push('playing:'+name),ended:()=>events.push('ended:'+name),error:error=>{events.push('error:'+name);player.lastError=error},time(){}});
   return {player,canvas};
  };
  return {window,requests,pending,videos,events,draws,make,get objectURLs(){return objectURLs},
@@ -36,12 +37,12 @@ function fixture({loop=false,replayStart=0,extra=0,rejectPlay=false}={}){
  let n=0;
  const a=fixture(),c=a.make('c',2),e=a.make('eecs',0),i=a.make('intel',1),copy=a.make('eecs',0);
  assert.equal(a.requests.length,0);assert.equal(a.videos.length,0);n++;
- c.player.play();e.player.play();copy.player.play();await settle();assert.deepEqual(a.requests,['https://example.test/assets/eecs.mp4?v=content']);assert.equal(a.videos.length,0);n++;
+ c.player.play();e.player.play();copy.player.play();await settle();assert.deepEqual(a.requests,['https://example.test/assets/eecs.mp4?v=content']);assert.equal(a.videos.length,3);assert.ok(a.videos.every(v=>v.parentNode));n++;
  let details=false;a.window.PortfolioPreviewLoads.afterPreviews(()=>details=true);await a.download();await a.step();
- assert.equal(a.requests.length,2);assert.ok(a.requests[1].includes('intel.mp4'));assert.equal(a.objectURLs,1);assert.equal(a.videos.length,2);assert.deepEqual(a.videos.map(v=>v.src),['blob:shared-1','blob:shared-1']);assert.equal(details,false);n++;
+ assert.equal(a.requests.length,2);assert.ok(a.requests[1].includes('intel.mp4'));assert.equal(a.objectURLs,1);assert.equal(a.videos.length,3);assert.deepEqual(a.videos.filter(v=>v.src).map(v=>v.src),['blob:shared-1','blob:shared-1']);assert.equal(details,false);n++;
  assert.equal(e.canvas.width,1280);assert.equal(e.canvas.height,720);assert.ok(a.events.includes('playing:eecs'));assert.ok(a.videos.every(v=>v.muted && v.playsInline && !v.controls && v.attrs['webkit-playsinline']===''));n++;
  await a.download();assert.equal(details,false);assert.ok(a.requests[2].includes('/c.mp4'));await a.download();assert.equal(details,true);assert.equal(a.requests.length,3);n++;
- await a.step(400);e.player.pause();const elapsed=e.player.elapsed;await a.step(500);assert.equal(e.player.elapsed,elapsed);assert.equal(a.videos[0].paused,true);n++;
+ await a.step(400);e.player.pause();const elapsed=e.player.elapsed;await a.step(500);assert.equal(e.player.elapsed,elapsed);assert.equal(e.player.video.paused,true);n++;
  await e.player.seek(1.4);assert.equal(e.canvas.dataset.previewTime,'1.400');assert.equal(e.player.running,false);assert.equal(a.requests.length,3);n++;
  e.player.play();await settle();await a.step(700);assert.ok(a.events.includes('ended:eecs'));assert.equal(e.canvas.dataset.previewTime,'0');assert.equal(e.player.running,false);n++;
  const count=a.requests.length;e.player.play();await settle();await a.step();assert.equal(a.requests.length,count);assert.equal(a.objectURLs,3);n++;
@@ -53,7 +54,7 @@ function fixture({loop=false,replayStart=0,extra=0,rejectPlay=false}={}){
  l.player.reset();assert.equal(l.canvas.dataset.previewLoops,undefined);assert.equal(l.player.duration(),2);n++;
  const stale=fixture(),s=stale.make('eecs',0);s.player.play();await settle();s.player.pause();await stale.download();await stale.step();assert.equal(s.player.drawn,false);assert.equal(stale.events.length,0);s.player.play();await settle();await stale.step();assert.equal(stale.requests.length,1);assert.equal(stale.events[0],'playing:eecs');n++;
  const fail=fixture(),f=fail.make('eecs',0),later=fail.make('intel',1);f.player.play();await settle();await fail.download(true);assert.equal(fail.events[0],'error:eecs');assert.ok(fail.requests[1].includes('intel'));await fail.download();f.player.play();await settle();await fail.download();await fail.step();assert.equal(fail.requests.length,3);assert.ok(fail.events.includes('playing:eecs'));n++;
- const denied=fixture({rejectPlay:true}),d=denied.make('eecs',0);d.player.play();await settle();await denied.download();assert.equal(denied.events[0],'error:eecs');assert.equal(d.player.running,false);denied.allowPlay();d.player.play();await settle();await denied.step();assert.equal(denied.requests.length,1);assert.ok(denied.events.includes('playing:eecs'));n++;
+ const denied=fixture({rejectPlay:true}),d=denied.make('eecs',0);d.player.play();await settle();await denied.download();assert.equal(denied.events[0],'error:eecs');assert.equal(d.player.lastError.name,'NotAllowedError');assert.equal(d.player.running,false);denied.allowPlay();d.player.play({userGesture:true});assert.equal(d.player.video.paused,false);await settle();await denied.step();assert.equal(denied.requests.length,1);assert.ok(denied.events.includes('playing:eecs'));n++;
  const late=fixture(),first=late.make('eecs',0);first.player.play();await settle();await late.download();const registered=late.make('intel',1);await settle();assert.equal(late.requests.length,2);assert.ok(late.requests[1].endsWith('intel.mp4?v=content'));await late.download();registered.player.play();await settle();await late.step();assert.ok(late.events.includes('playing:intel'));n++;
- console.log(JSON.stringify({status:'passed',scenarios:n,checks:'ordered one-file MP4 cache, shared Blob URL, detail assets after previews, inline detached decoder, full-resolution Canvas, pause/seek/replay, longer loop intro, failure retry and stale/autoplay handling'}));
+ console.log(JSON.stringify({status:'passed',scenarios:n,checks:'ordered one-file MP4 cache, shared Blob URL, detail assets after previews, inline mounted decoder, full-resolution Canvas, pause/seek/replay, longer loop intro, failure retry and synchronous gesture recovery'}));
 })();

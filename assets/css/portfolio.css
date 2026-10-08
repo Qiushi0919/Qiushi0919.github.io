@@ -271,7 +271,7 @@ html.portrait-phone .profile-biography p{font-size:14px;line-height:1.7;margin:0
 .paper-venue em{font-weight:700;font-style:italic}
 .paper-author-note{margin:0 0 10px;color:#687985;font-size:11px;line-height:1.6}
 .paper-copy .summary,.paper-copy .vase-summary{font-size:13px;line-height:1.55;margin-bottom:12px}
-/* Paper previews pair a compact institutional header with the scientific figures. */
+/* Institutional marks are part of each complete paper preview asset. */
 article[data-work-category="paper"]{grid-template-columns:minmax(0,30%) minmax(0,1fr)!important;column-gap:24px!important;row-gap:0!important;padding:20px 16px!important;border-top:1px solid #edf0f2;align-items:center!important}
 article[data-work-category="paper"] .paper-copy{grid-column:2!important;grid-row:1!important;align-self:center;margin:0!important;padding:0!important}
 article[data-work-category="paper"] .paper-preview{grid-column:1!important;grid-row:1!important;align-self:center;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:auto!important;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
@@ -425,10 +425,11 @@ html.portrait-phone .work-list-card .preview-media:not(.no-preview-control)+.wor
 html.work-mobile .work-collection[data-work-view="large"] .preview-media+.work-copy{margin-bottom:0!important}
 @media(max-width:760px){html:not(.work-mobile):not(.portrait-phone) .work-list-card .preview-media+.work-copy{margin-bottom:0!important}}
 .preview-media>.preview-open{position:relative;display:block;appearance:none;width:100%;height:auto;aspect-ratio:var(--preview-ratio);padding:0;margin:0;border:0;border-radius:0;background:#fff;overflow:hidden;cursor:zoom-in;line-height:0;pointer-events:auto}
-.preview-open>canvas{display:block;width:100%;height:auto;aspect-ratio:var(--preview-ratio);object-fit:contain;background:#fff;pointer-events:none}
-.preview-open>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:1}
+.preview-open>canvas{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:var(--preview-ratio);object-fit:contain;background:#fff;pointer-events:none}
+.preview-open>.preview-native-decoder{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.preview-open>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:2}
 .preview-media[data-preview-state="playing"] .preview-poster{visibility:hidden}
-.preview-open>.cover-zoom-hint{z-index:2}
+.preview-open>.cover-zoom-hint{z-index:3}
 .preview-media>.preview-play-control{position:absolute;z-index:3;left:0;bottom:1px;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:24px;padding:3px 6px;border:0;border-radius:4px;background:rgba(255,255,255,.5);color:rgba(32,60,78,.7);font:11px/1.2 var(--site-font);font-weight:400;box-shadow:none;cursor:pointer;pointer-events:auto}
 .preview-play-control:hover{background:rgba(232,240,246,.65);color:#203c4e}
 .preview-media[data-preview-state="loading"]>.preview-play-control{cursor:wait}
@@ -482,20 +483,9 @@ html.portrait-phone .preview-transport{--transport-unit:calc(1px / var(--portrai
 html.portrait-phone .preview-download-menu{--menu-unit:calc(1px / var(--portrait-ui-scale))}
 @media(prefers-color-scheme:dark){.preview-download-menu{background:#192b39;border-color:#526c7e;color:#eff6fc}.preview-download-menu button:is(:hover,:focus-visible){background:#29465c}}
 @media print{.preview-download-menu{display:none!important}}
-/* A white, compact logo row stays separate from both figures and playback. */
-article[data-work-category="paper"] .paper-preview.has-organization-header{display:block!important;background:#fff;container-type:inline-size}
-.paper-preview.has-organization-header>.cover-zoom-hint{top:12cqw}
-/* Match the Intel cover's 1080px canvas: HUST is 250px wide at x=40,y=31.
-   The same PNG has transparent margins, so keep its whole image proportional. */
-.paper-preview-organizations{display:flex;align-items:center;justify-content:space-between;gap:2.5%;width:100%;aspect-ratio:1080/124;padding:2.87037% 3.703704% 1.851852%;background:#fff;line-height:0;pointer-events:none}
-.paper-organization-mark{display:flex;align-items:center;justify-content:center;flex:1;min-width:0;height:100%}
-.paper-organization-mark>img{display:block;width:100%;height:100%;max-width:none;object-fit:contain;background:transparent}
-.paper-organization-mark.organization-hust{flex:0 0 25%;justify-content:flex-start}
-.paper-organization-mark.organization-hust>img{object-position:left center}
-.paper-organization-mark.organization-round{flex:0 0 6.944444%}
-/* UCAS supplies a white transparent seal; tint it to the university's blue. */
-.paper-organization-mark.organization-ucas>img{filter:brightness(0) saturate(100%) invert(19%) sepia(96%) saturate(1768%) hue-rotate(193deg) brightness(99%) contrast(111%)}
-@media print{.paper-preview-organizations{break-inside:avoid}}
+/* Each preview is a single image/video with its institutional marks embedded. */
+article[data-work-category="paper"] .paper-preview.integrated-paper-preview{display:block!important;background:#fff;container-type:inline-size}
+.paper-preview.integrated-paper-preview .cover-zoom-hint{top:12cqw}
 /* A phone's 980px overview canvas must not keep desktop gallery columns or
    fixed picture heights. Natural ratios preserve diagrams and entire photos. */
 .feature-overlay{--gallery-unit:1px}

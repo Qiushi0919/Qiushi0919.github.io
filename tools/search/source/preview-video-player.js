@@ -1,4 +1,4 @@
-/* Decode the smaller MP4 into Canvas. The detached, muted inline decoder has
+/* Decode the smaller MP4 into Canvas. The muted inline decoder behind Canvas has
    no visible native controls or hit area. List/gallery share one cached Blob. */
 (() => {
   class PreviewVideoPlayer {
@@ -21,15 +21,21 @@
       callbacks.time?.(0,this.duration());
     }
     async decoder() {
+      const video=this.video ||= document.createElement('video');
+      video.muted=true;video.defaultMuted=true;video.playsInline=true;
+      video.controls=false;video.preload='auto';
+      video.disablePictureInPicture=true;video.disableRemotePlayback=true;
+      video.className='preview-native-decoder';
+      video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
+      video.setAttribute('muted','');video.setAttribute('aria-hidden','true');
+      video.setAttribute('controlslist','nodownload nofullscreen noremoteplayback');
+      if (!video.parentNode) this.canvas.parentNode.insertBefore(video,this.canvas);
+      if (this.resource.objectURL && video.getAttribute('src')!==this.resource.objectURL) {
+        video.src=this.resource.objectURL;video.load();
+      }
       if (this.video?.readyState>=2) return this.video;
       if (this.loading) return this.loading;
       this.loading=this.resource.complete.promise.then(()=>new Promise((resolve,reject)=>{
-        const video=this.video ||= document.createElement('video');
-        video.muted=true;video.defaultMuted=true;video.playsInline=true;
-        video.controls=false;video.preload='auto';
-        video.disablePictureInPicture=true;video.disableRemotePlayback=true;
-        video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
-        video.setAttribute('controlslist','nodownload nofullscreen noremoteplayback');
         const done=()=>{
           cleanup();
           this.canvas.width=video.videoWidth;this.canvas.height=video.videoHeight;
@@ -38,23 +44,30 @@
         const error=()=>{cleanup();reject(new Error('Preview decoder unavailable'))};
         const cleanup=()=>{video.removeEventListener('loadeddata',done);video.removeEventListener('error',error)};
         video.addEventListener('loadeddata',done,{once:true});video.addEventListener('error',error,{once:true});
-        video.src=this.resource.objectURL;video.load();
+        if (video.getAttribute('src')!==this.resource.objectURL) {
+          video.src=this.resource.objectURL;video.load();
+        }
         // Some phone browsers defer decoded data until play(), even for a
         // completely cached Blob. Prime the muted inline decoder to avoid a
         // loadeddata/play deadlock; no frame is shown until the Canvas draws.
         video.play().then(()=>{
           if (!this.running) video.pause();
           if (video.readyState>=2) done();
-        }).catch(error);
+        }).catch(cause=>{cleanup();reject(cause)});
       })).catch(error=>{this.loading=null;throw error});
       return this.loading;
     }
-    play({skipCover=false}={}) {
+    play({skipCover=false,userGesture=false}={}) {
       if (this.running) return;
       this.running=true;this.last=null;
       const epoch=++this.epoch;
       window.PortfolioPreviewLoads.request(this.resource);
-      this.decoder().then(async video=>{
+      const decoded=this.decoder();
+      // Call play within the tap/key event when a phone previously refused it.
+      const activated=userGesture && this.video?.src ? this.video.play() : null;
+      activated?.catch(()=>{});
+      decoded.then(async video=>{
+        if (activated) await activated;
         if (!this.running || epoch!==this.epoch) return;
         if (skipCover) { this.hold=0;this.elapsed=this.data.replayStart;await this.position(this.elapsed); }
         if (!this.running || epoch!==this.epoch) return;

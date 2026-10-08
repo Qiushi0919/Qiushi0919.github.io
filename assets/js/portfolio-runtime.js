@@ -27,6 +27,51 @@
   };
 })();
 
+/* A modal consumes one Back action; normal page navigation remains unchanged. */
+(() => {
+  const key='portfolioModal', session=String(Date.now())+'-'+Math.random();
+  const dialogs=new Map();
+  let current=null, restoring=false, removing=false;
+  const state=id=>({...history.state,[key]:{session,id}});
+  const owned=value=>value?.[key]?.session===session;
+  window.PortfolioModalHistory={
+    open(id,close,restore) {
+      dialogs.set(id,{close,restore});
+      if (current===id) return;
+      current=id;
+      if (restoring || removing) return;
+      if (owned(history.state)) history.replaceState(state(id),'',location.href);
+      else history.pushState(state(id),'',location.href);
+    },
+    close(id) {
+      if (current!==id) return;
+      current=null;
+      if (restoring) return;
+      // Switching directly between modals reuses the same history entry.
+      queueMicrotask(()=>{
+        if (current || removing || !owned(history.state)) return;
+        removing=true;history.back();
+      });
+    }
+  };
+  window.addEventListener('popstate',event=>{
+    if (removing) {
+      removing=false;
+      if (current) history.pushState(state(current),'',location.href);
+      return;
+    }
+    const next=owned(event.state)?event.state[key].id:null;
+    restoring=true;
+    try {
+      const previous=current;current=null;
+      if (previous && previous!==next) dialogs.get(previous)?.close();
+      if (next && dialogs.has(next)) {
+        current=next;dialogs.get(next).restore();
+      }
+    } finally { restoring=false; }
+  });
+})();
+
 
     (() => {
       window.addEventListener('portfolio:ready', () => {
@@ -103,6 +148,7 @@
         savedScroll = {x:window.scrollX,y:window.scrollY};
         document.documentElement.classList.add('contact-modal-open');
         dialog.showModal();
+        window.PortfolioModalHistory?.open(dialog.id, () => dialog.close(), () => open(trigger));
         close.focus({preventScroll:true});
       };
       document.querySelectorAll('[data-contact-src]').forEach(trigger => {
@@ -165,6 +211,7 @@
       dismiss.addEventListener('click', () => dialog.close());
       visit.addEventListener('click', () => dialog.close());
       dialog.addEventListener('close', () => {
+        window.PortfolioModalHistory?.close(dialog.id);
         document.documentElement.classList.remove('contact-modal-open');
         window.scrollTo(savedScroll.x, savedScroll.y);
         activeTrigger?.focus({preventScroll:true});
@@ -270,6 +317,9 @@
       project.trigger.setAttribute('aria-expanded', String(open));
       project.overlay.setAttribute('aria-hidden', String(!open));
       if (open) hydrateOverlay(project);
+      if (open) window.PortfolioModalHistory?.open(project.overlay.id,
+        () => setOpen(project, false), () => setOpen(project, true));
+      else window.PortfolioModalHistory?.close(project.overlay.id);
       project.overlay.querySelectorAll('video').forEach(video => {
         if (!open) video.pause();
       });
@@ -329,6 +379,7 @@
           status.textContent = '';
           document.documentElement.classList.add('contact-modal-open');
           dialog.showModal();
+          window.PortfolioModalHistory?.open(dialog.id, () => dialog.close(), () => trigger?.click());
           close.focus({preventScroll:true});
         });
       });
@@ -354,6 +405,7 @@
         if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close();
       });
       dialog.addEventListener('close', () => {
+        window.PortfolioModalHistory?.close(dialog.id);
         document.documentElement.classList.remove('contact-modal-open');
         window.scrollTo(scroll.x,scroll.y);
         trigger?.focus({preventScroll:true});
@@ -475,7 +527,7 @@
   window.PortfolioPreviewLoads=new PreviewLoadQueue();
 })();
 
-/* Decode the smaller MP4 into Canvas. The detached, muted inline decoder has
+/* Decode the smaller MP4 into Canvas. The muted inline decoder behind Canvas has
    no visible native controls or hit area. List/gallery share one cached Blob. */
 (() => {
   class PreviewVideoPlayer {
@@ -498,15 +550,21 @@
       callbacks.time?.(0,this.duration());
     }
     async decoder() {
+      const video=this.video ||= document.createElement('video');
+      video.muted=true;video.defaultMuted=true;video.playsInline=true;
+      video.controls=false;video.preload='auto';
+      video.disablePictureInPicture=true;video.disableRemotePlayback=true;
+      video.className='preview-native-decoder';
+      video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
+      video.setAttribute('muted','');video.setAttribute('aria-hidden','true');
+      video.setAttribute('controlslist','nodownload nofullscreen noremoteplayback');
+      if (!video.parentNode) this.canvas.parentNode.insertBefore(video,this.canvas);
+      if (this.resource.objectURL && video.getAttribute('src')!==this.resource.objectURL) {
+        video.src=this.resource.objectURL;video.load();
+      }
       if (this.video?.readyState>=2) return this.video;
       if (this.loading) return this.loading;
       this.loading=this.resource.complete.promise.then(()=>new Promise((resolve,reject)=>{
-        const video=this.video ||= document.createElement('video');
-        video.muted=true;video.defaultMuted=true;video.playsInline=true;
-        video.controls=false;video.preload='auto';
-        video.disablePictureInPicture=true;video.disableRemotePlayback=true;
-        video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
-        video.setAttribute('controlslist','nodownload nofullscreen noremoteplayback');
         const done=()=>{
           cleanup();
           this.canvas.width=video.videoWidth;this.canvas.height=video.videoHeight;
@@ -515,23 +573,30 @@
         const error=()=>{cleanup();reject(new Error('Preview decoder unavailable'))};
         const cleanup=()=>{video.removeEventListener('loadeddata',done);video.removeEventListener('error',error)};
         video.addEventListener('loadeddata',done,{once:true});video.addEventListener('error',error,{once:true});
-        video.src=this.resource.objectURL;video.load();
+        if (video.getAttribute('src')!==this.resource.objectURL) {
+          video.src=this.resource.objectURL;video.load();
+        }
         // Some phone browsers defer decoded data until play(), even for a
         // completely cached Blob. Prime the muted inline decoder to avoid a
         // loadeddata/play deadlock; no frame is shown until the Canvas draws.
         video.play().then(()=>{
           if (!this.running) video.pause();
           if (video.readyState>=2) done();
-        }).catch(error);
+        }).catch(cause=>{cleanup();reject(cause)});
       })).catch(error=>{this.loading=null;throw error});
       return this.loading;
     }
-    play({skipCover=false}={}) {
+    play({skipCover=false,userGesture=false}={}) {
       if (this.running) return;
       this.running=true;this.last=null;
       const epoch=++this.epoch;
       window.PortfolioPreviewLoads.request(this.resource);
-      this.decoder().then(async video=>{
+      const decoded=this.decoder();
+      // Call play within the tap/key event when a phone previously refused it.
+      const activated=userGesture && this.video?.src ? this.video.play() : null;
+      activated?.catch(()=>{});
+      decoded.then(async video=>{
+        if (activated) await activated;
         if (!this.running || epoch!==this.epoch) return;
         if (skipCover) { this.hold=0;this.elapsed=this.data.replayStart;await this.position(this.elapsed); }
         if (!this.running || epoch!==this.epoch) return;
@@ -817,7 +882,7 @@
       entry.media.dataset.previewState = 'loading';
       label(entry);
     }
-    entry.player.play({skipCover:manual});
+    entry.player.play({skipCover:manual,userGesture:manual});
     label(entry);
   };
   const pause = entry => {
@@ -868,6 +933,7 @@
         if (data && entry.seek) entry.seek.max=String(data.duration);
         if (state === 'ready' && entry.player && !entry.player.running && !entry.player.drawn) entry.media.dataset.previewState='poster';
         if (entry.player) label(entry);
+        if (state === 'ready') schedule();
       },
       time(seconds,duration) {
         if (!entry.seek) return;
@@ -889,8 +955,9 @@
         canvas.dataset.previewFinished = 'true';
         still(entry);
       },
-      error() {
+      error(error) {
         entry.needsManual = true;
+        entry.autoplayBlocked = !entry.manualOnly && error?.name === 'NotAllowedError';
         entry.media.dataset.previewState = 'poster';
         label(entry);
       }
@@ -950,6 +1017,18 @@
   window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
   document.addEventListener('visibilitychange',schedule);
   window.addEventListener('portfolio:ready',schedule);
+  // A cached automatic preview must not remain permanently stopped after a
+  // browser policy rejection. Retry inside the next actual user interaction.
+  const retryAutoplay=()=>{
+    if (motion.matches) return;
+    for (const entry of entries) {
+      if (!entry.autoplayBlocked || blocked(entry) || entry.canvas.dataset.previewBuffer!=='ready') continue;
+      if (fraction(entry.canvas.getBoundingClientRect(),viewport(entry.popup))<.15) continue;
+      entry.autoplayBlocked=false;entry.needsManual=false;entry.userPaused=false;
+      entry.player.play({userGesture:true});label(entry);
+    }
+  };
+  for (const type of ['pointerup','touchend','keydown']) document.addEventListener(type,retryAutoplay,{capture:true,passive:true});
   motion.addEventListener('change',schedule);
   const mutation = new MutationObserver(schedule);
   mutation.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true});

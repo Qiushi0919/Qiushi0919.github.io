@@ -15,16 +15,18 @@
 
 桌面图文并排，文字区与缩略图画面居中对齐，不把播放键计入对齐高度。手机保留现有 980px 画布及显示比例，概览／大图视图共用项目内容。`source/work-view.*`、`source/work-media-sizes.json` 维护视图；`source/site-typography.css` 使用 Times New Roman 与 Microsoft YaHei 及系统回退，不分发商业字体。作品与页脚分割线为 0.8px、#333333。
 
-EECS 与 NCS（VaseMuseum）的白底缩略图顶部使用紧凑机构标志栏；EECS 仅放华中科技大学、不放 SPIE，VaseMuseum 沿用现有合作院校。华科按 Intel 杯头图统一尺寸与左边距，北交和中国科学院大学使用圆形校徽。`source/paper-preview-organizations.css` 管理这一栏；它与科学图表和视频画面分开，更新标志不需要重新编码动画。
+EECS 与 NCS（VaseMuseum）使用完整合成素材，HTML 不再拼接独立标志栏。EECS 的 `method-preview-cover.png` 和最终 `method-preview.mp4` 每一帧均含华科标志；NCS 的 `vasemuseum/thumbnail-integrated.svg` 自包含五个组织标志与两幅研究示意图，没有额外图像请求。华科按 Intel 杯头图统一尺寸与左边距，北交用圆徽，中科院用用户提供的中国科学院圆标。整体同比缩放，放大和下载共用完整版本。`source/paper-preview-integrated.css` 仅调整放大提示位置；视频编码／合成过程文件不放入维护源码。
 
 放大窗口标题与关闭键固定顶部，内部独立滚动，底层页面锁定并在关闭后恢复位置。手机图片自然比例、单列展示，小型界面截图限制视觉宽度，深色模式适配标题、副标题与关闭键。`source/gallery-readability.css`、`source/gallery-scroll.js` 维护相关规则。
+
+`source/modal-history.js` 为图片详情、联系／二维码及引用弹窗加入一次临时浏览历史。系统返回先关闭当前弹窗，之后正常返回上一网页；关闭按钮、Escape 与背景关闭也移除该临时步骤，前进可恢复弹窗，切换窗口不积累历史。
 
 ## 动画只保留最终结果
 
 当前结果是 EECS 的 `source/publication-figures/eecs-2026/method-preview.mp4`、Intel／C 题的 `source/project-previews/<项目>/preview-with-cover-{zh,en}.mp4`，以及中英文首图 JPG。`source/preview-videos.json` 保存尺寸、时长、回放起点与 EECS 后续循环延长量；EECS 时间记录另见 `source/publication-figures/eecs-2026/preview-timing.json`。
 
 - 下载顺序为 EECS → Intel 杯 → C 题，每项完整下载后继续下一项。缩略图、放大播放器和右键下载共用同一 MP4 Blob／对象 URL。
-- 隐藏的静音内联视频解码器向 Canvas 输出画面，避免手机原生播放器抢占缩略图点击。EECS 可见后自动循环，无列表重播键；Intel／C 题点击 ▶ 播放才开始，从封面后的第一幅演示播放，结束回到首图。
+- 放在 Canvas 后方的静音内联视频解码器向 Canvas 输出画面，避免手机原生播放器抢占缩略图点击。EECS 可见后自动循环，无列表重播键；Intel／C 题点击 ▶ 播放才开始，从封面后的第一幅演示播放，结束回到首图。下载完成重新判断可见性，手机拒绝 EECS 自动播放后，在下一次真实触摸／点击／按键中重试缓存视频，保留减少动态设置及其他项目手动播放规则。
 - 离屏、后台或被弹窗遮挡时暂停。放大播放器有播放／暂停、可拖动进度条、时间显示；右键或 Shift+F10 下载复用缓存，不重新请求。
 - 不显示加载文字、倒计时或转圈。缩略图顶边的 3px 矩形条按实际接收字节推进，绝对定位、不增加行高；完成或失败隐藏。详情图片／视频等待缩略图队列完成或失败后加载。
 - EECS 首轮总览 1.5 秒、后续 2.7 秒；ALA–VMD 3.125 秒、输入整理 1.8 秒、BiTCN＋Attention 2.4 秒、结果 2.5 秒，过渡各 0.55 秒。编码首轮约 13.533333 秒，后续约 14.733333 秒。
@@ -57,6 +59,7 @@ node tests/preview-video-player.cjs
 node tests/preview-playback.cjs
 node tests/preview-progress.cjs
 node tests/preview-download.cjs
+node tests/modal-history.cjs
 python3 -B tests/public-media-policy.py
 ```
 

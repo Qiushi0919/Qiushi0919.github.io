@@ -249,11 +249,8 @@
     
 
     <article class="project-card vase-card" id="vaseProjectCard" data-work-category="paper">
-      <button class="paper-preview vase-cover-trigger" id="vaseCoverTrigger" type="button" aria-expanded="false" aria-controls="vaseFeatureOverlay" aria-label="展开 VaseMuseum 论文关键流程与实验结果">
-        <span class="paper-preview-stack">
-          <img class="paper-preview-image" loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程" />
-          <img class="paper-preview-image" loading="lazy" decoding="async" src="assets/portfolio-cover/vase-paper-preview/reliability-clean.webp" alt="VaseAgent 可靠性框架" />
-        </span>
+      <button class="paper-preview vase-cover-trigger integrated-paper-preview" id="vaseCoverTrigger" type="button" aria-expanded="false" aria-controls="vaseFeatureOverlay" aria-label="展开 VaseMuseum 论文关键流程与实验结果">
+        <img class="paper-preview-image" loading="lazy" decoding="async" src="assets/portfolio-cover/vasemuseum/thumbnail-integrated.svg" alt="VaseMuseum 合作组织与研究框架" />
         <span class="cover-zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M10 7v6M7 10h6"/></svg></span>
       </button>
       <div class="vase-copy project-copy paper-copy">
@@ -281,6 +278,7 @@
           <button class="close" id="vaseCloseOverlay" type="button" aria-label="关闭论文图示汇总">×</button>
         </div>
         <div class="research-grid">
+          <figure class="research-figure"><img loading="lazy" decoding="async" data-src="assets/portfolio-cover/vasemuseum/thumbnail-integrated.svg" alt="VaseMuseum 合作组织与研究框架" width="1080" height="891" /><figcaption>研究概览 · 合作组织、交互流程与可靠性框架</figcaption></figure>
           <figure class="research-figure"><img loading="lazy" decoding="async" data-src="assets/portfolio-cover/vase-paper-preview/architecture-clean.webp" alt="VaseMuseum 系统架构" /><figcaption>系统架构 · 感知、检索与可靠性控制</figcaption></figure>
           <figure class="research-figure"><img loading="lazy" decoding="async" data-src="assets/portfolio-cover/vase-paper-preview/interaction-clean.webp" alt="虚拟博物馆交互流程" /><figcaption>交互流程 · 从藏品导入到数字展陈</figcaption></figure>
           <figure class="research-figure"><img loading="lazy" decoding="async" data-src="assets/portfolio-cover/vase-paper-preview/interface-clean.webp" alt="虚拟博物馆界面" /><figcaption>系统界面 · 3D 展品与可验证问答</figcaption></figure>
@@ -293,8 +291,8 @@
 
     <article class="project-card eecs-card" id="eecsProjectCard" data-work-category="paper">
 
-      <button class="paper-preview eecs-cover-trigger" id="eecsCoverTrigger" type="button" aria-expanded="false" aria-controls="eecsFeatureOverlay" aria-label="展开 EECS 2026 电池剩余寿命预测论文方法与实验结果">
-        <img class="paper-preview-image" loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/framework-landscape.webp" alt="ALA-VMD-BiTCN-AM 电池剩余寿命预测框架" />
+      <button class="paper-preview eecs-cover-trigger integrated-paper-preview" id="eecsCoverTrigger" type="button" aria-expanded="false" aria-controls="eecsFeatureOverlay" aria-label="展开 EECS 2026 电池剩余寿命预测论文方法与实验结果">
+        <img class="paper-preview-image" loading="lazy" decoding="async" src="assets/portfolio-cover/eecs-2026/method-preview-cover.png" alt="ALA-VMD-BiTCN-AM 电池剩余寿命预测框架" />
         <span class="cover-zoom-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6M10 7v6M7 10h6"/></svg></span>
       </button>
 
@@ -856,6 +854,7 @@
         savedScroll = {x:window.scrollX,y:window.scrollY};
         document.documentElement.classList.add('contact-modal-open');
         dialog.showModal();
+        window.PortfolioModalHistory?.open(dialog.id, () => dialog.close(), () => open(trigger));
         close.focus({preventScroll:true});
       };
       document.querySelectorAll('[data-contact-src]').forEach(trigger => {
@@ -918,6 +917,7 @@
       dismiss.addEventListener('click', () => dialog.close());
       visit.addEventListener('click', () => dialog.close());
       dialog.addEventListener('close', () => {
+        window.PortfolioModalHistory?.close(dialog.id);
         document.documentElement.classList.remove('contact-modal-open');
         window.scrollTo(savedScroll.x, savedScroll.y);
         activeTrigger?.focus({preventScroll:true});
@@ -1033,6 +1033,9 @@
       project.card.classList.toggle('is-open', open);
       project.trigger.setAttribute('aria-expanded', String(open));
       project.overlay.setAttribute('aria-hidden', String(!open));
+      if (open) window.PortfolioModalHistory?.open(project.overlay.id,
+        () => setOpen(project, false), () => setOpen(project, true));
+      else window.PortfolioModalHistory?.close(project.overlay.id);
       project.overlay.querySelectorAll('video').forEach(video => {
         if (open && !reduceMotion) video.play().catch(() => {});
         else video.pause();
@@ -1096,6 +1099,7 @@
           status.textContent = '';
           document.documentElement.classList.add('contact-modal-open');
           dialog.showModal();
+          window.PortfolioModalHistory?.open(dialog.id, () => dialog.close(), () => trigger?.click());
           close.focus({preventScroll:true});
         });
       });
@@ -1121,6 +1125,7 @@
         if (event.clientX < b.left || event.clientX > b.right || event.clientY < b.top || event.clientY > b.bottom) dialog.close();
       });
       dialog.addEventListener('close', () => {
+        window.PortfolioModalHistory?.close(dialog.id);
         document.documentElement.classList.remove('contact-modal-open');
         window.scrollTo(scroll.x,scroll.y);
         trigger?.focus({preventScroll:true});

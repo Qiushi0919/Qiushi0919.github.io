@@ -84,7 +84,7 @@
       entry.media.dataset.previewState = 'loading';
       label(entry);
     }
-    entry.player.play({skipCover:manual});
+    entry.player.play({skipCover:manual,userGesture:manual});
     label(entry);
   };
   const pause = entry => {
@@ -135,6 +135,7 @@
         if (data && entry.seek) entry.seek.max=String(data.duration);
         if (state === 'ready' && entry.player && !entry.player.running && !entry.player.drawn) entry.media.dataset.previewState='poster';
         if (entry.player) label(entry);
+        if (state === 'ready') schedule();
       },
       time(seconds,duration) {
         if (!entry.seek) return;
@@ -156,8 +157,9 @@
         canvas.dataset.previewFinished = 'true';
         still(entry);
       },
-      error() {
+      error(error) {
         entry.needsManual = true;
+        entry.autoplayBlocked = !entry.manualOnly && error?.name === 'NotAllowedError';
         entry.media.dataset.previewState = 'poster';
         label(entry);
       }
@@ -217,6 +219,18 @@
   window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
   document.addEventListener('visibilitychange',schedule);
   window.addEventListener('portfolio:ready',schedule);
+  // A cached automatic preview must not remain permanently stopped after a
+  // browser policy rejection. Retry inside the next actual user interaction.
+  const retryAutoplay=()=>{
+    if (motion.matches) return;
+    for (const entry of entries) {
+      if (!entry.autoplayBlocked || blocked(entry) || entry.canvas.dataset.previewBuffer!=='ready') continue;
+      if (fraction(entry.canvas.getBoundingClientRect(),viewport(entry.popup))<.15) continue;
+      entry.autoplayBlocked=false;entry.needsManual=false;entry.userPaused=false;
+      entry.player.play({userGesture:true});label(entry);
+    }
+  };
+  for (const type of ['pointerup','touchend','keydown']) document.addEventListener(type,retryAutoplay,{capture:true,passive:true});
   motion.addEventListener('change',schedule);
   const mutation = new MutationObserver(schedule);
   mutation.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true});

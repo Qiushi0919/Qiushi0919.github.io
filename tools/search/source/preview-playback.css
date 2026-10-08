@@ -9,10 +9,11 @@ html.portrait-phone .work-list-card .preview-media:not(.no-preview-control)+.wor
 html.work-mobile .work-collection[data-work-view="large"] .preview-media+.work-copy{margin-bottom:0!important}
 @media(max-width:760px){html:not(.work-mobile):not(.portrait-phone) .work-list-card .preview-media+.work-copy{margin-bottom:0!important}}
 .preview-media>.preview-open{position:relative;display:block;appearance:none;width:100%;height:auto;aspect-ratio:var(--preview-ratio);padding:0;margin:0;border:0;border-radius:0;background:#fff;overflow:hidden;cursor:zoom-in;line-height:0;pointer-events:auto}
-.preview-open>canvas{display:block;width:100%;height:auto;aspect-ratio:var(--preview-ratio);object-fit:contain;background:#fff;pointer-events:none}
-.preview-open>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:1}
+.preview-open>canvas{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:var(--preview-ratio);object-fit:contain;background:#fff;pointer-events:none}
+.preview-open>.preview-native-decoder{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.preview-open>.preview-poster{position:absolute!important;inset:0;width:100%!important;height:100%!important;object-fit:contain!important;background:#fff;pointer-events:none;z-index:2}
 .preview-media[data-preview-state="playing"] .preview-poster{visibility:hidden}
-.preview-open>.cover-zoom-hint{z-index:2}
+.preview-open>.cover-zoom-hint{z-index:3}
 .preview-media>.preview-play-control{position:absolute;z-index:3;left:0;bottom:1px;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:24px;padding:3px 6px;border:0;border-radius:4px;background:rgba(255,255,255,.5);color:rgba(32,60,78,.7);font:11px/1.2 var(--site-font);font-weight:400;box-shadow:none;cursor:pointer;pointer-events:auto}
 .preview-play-control:hover{background:rgba(232,240,246,.65);color:#203c4e}
 .preview-media[data-preview-state="loading"]>.preview-play-control{cursor:wait}

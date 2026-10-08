@@ -1,0 +1,3 @@
+/* Each preview is a single image/video with its institutional marks embedded. */
+article[data-work-category="paper"] .paper-preview.integrated-paper-preview{display:block!important;background:#fff;container-type:inline-size}
+.paper-preview.integrated-paper-preview .cover-zoom-hint{top:12cqw}
