@@ -115,16 +115,15 @@
   const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
   for (const entry of entries) {
     const canvas = entry.canvas;
-    const Player=canvas.dataset.previewVideo?window.PortfolioVideoPlayer:window.PortfolioFramePlayer;
-    entry.player = new Player(canvas, canvas.dataset.previewVideo || canvas.dataset.previewSequence, {
+    const Player=window.PortfolioVideoPlayer;
+    entry.player = new Player(canvas, canvas.dataset.previewVideo, {
       buffering(state,data,canPlay,resource) {
         entry.media.dataset.previewBuffer = state;
         const indicator = entry.media.querySelector('.preview-load-progress');
         indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
         if (indicator) {
-          const total=resource?.totalBytes || data?.sheetBytes?.reduce((sum,size)=>sum+size,0) || 0;
-          const loaded=resource?.kind === 'video'?resource.loadedBytes:
-            [...(resource?.blobs?.values() || [])].reduce((sum,blob)=>sum+blob.size,0);
+          const total=resource?.totalBytes || 0;
+          const loaded=resource?.loadedBytes || 0;
           const percent=state === 'ready'?100:total?Math.min(99,Math.floor(loaded/total*100)):0;
           indicator.dataset.indeterminate=String(state === 'loading' && !total);
           if (total || state === 'ready') indicator.setAttribute('aria-valuenow',String(percent));

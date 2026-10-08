@@ -15,8 +15,6 @@
         Number(canvas.dataset.previewLoadOrder),this.data);
       window.PortfolioPreviewLoads.subscribe(this.resource,item=>{
         canvas.dataset.previewBuffer=item.state;
-        canvas.dataset.previewLoadedSheets=String(item.blobs.size);
-        canvas.dataset.previewTotalSheets='1';
         canvas.dataset.previewPlayable=String(item.canPlay);
         callbacks.buffering?.(item.state,item.data,item.canPlay,item);
       });

@@ -24,7 +24,7 @@ def public_media_allowed(relative):
     return not policy or len(parts) == 2 and parts[1] in policy['allowed']
 
 BUILD = ROOT / 'build'
-VERSION = 'preview-download-20261007'
+VERSION = 'motion-results-20261008'
 CN = 'https://qiushi0919.cn/'
 GH = 'https://qiushi0919.github.io/'
 LEGACY_GH = 'https://qiushi0919.github.io/Qiushi-Portfolio/'
@@ -59,14 +59,7 @@ VERIFICATION = json.loads((SOURCE / 'search-verification.json').read_text()) if 
 GITHUB_PROJECT_SITES = json.loads((SOURCE / 'github-project-sites.json').read_text())
 PORTRAIT_PATH = 'assets/contact/profile-photo.jpg'
 PORTRAIT_VERSION = hashlib.sha256((SOURCE / 'contact/profile-photo.jpg').read_bytes()).hexdigest()[:12]
-PREVIEW_VERSIONS = {}
-for preview_directory in sorted((SOURCE / 'preview-frames').iterdir()):
-    if not preview_directory.is_dir(): continue
-    fingerprint = hashlib.sha256()
-    for file in sorted(preview_directory.iterdir()):
-        if file.suffix not in ('.json', '.webp'): continue
-        fingerprint.update(file.name.encode() + b'\0' + file.read_bytes())
-    PREVIEW_VERSIONS[preview_directory.name] = fingerprint.hexdigest()[:12]
+PREVIEW_VIDEOS = json.loads((SOURCE / 'preview-videos.json').read_text())
 
 
 def portrait_url(base=''):
@@ -222,7 +215,7 @@ def format_project_list(card, is_detail, language):
                 'aria-label':'数字钥匙实验系统循环演示'}))
         chosen = {
             'embeddedProjectCard': (f'assets/portfolio-cover/embedded-2025/cover-{language}.jpg', '智能烟雾检测与预测系统组成' if language == 'zh' else 'Smoke detection and prediction system components'),
-            'lowcomProjectCard': (f'assets/portfolio-cover/low-altitude-communication/cover-{language}.jpg', '凌云睿通技术概览：波束转向、波束追踪与模拟移相器结构' if language == 'zh' else 'Lingyun Ruitong overview: beam steering, beam tracking and simulated phase shifter structure'),
+            'lowcomProjectCard': (f'assets/portfolio-cover/low-altitude-communication/cover-motion-{language}.svg', '凌云睿通技术概览：波束转向、波束追踪与模拟移相器结构' if language == 'zh' else 'Lingyun Ruitong overview: beam steering, beam tracking and simulated phase shifter structure'),
         }.get(card.get('id'))
         if chosen:
             for child in list(preview):
@@ -483,7 +476,6 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 "if (!anyOpen() || (event.key !== 'Escape' && event.key !== ' ')) return;\n      if (event.key === ' ' && event.target.closest('button,a,input,summary,video,select,textarea')) return;")
         scripts.append(code)
     scripts.append((SOURCE / 'preview-load-queue.js').read_text())
-    scripts.append((SOURCE / 'preview-frame-player.js').read_text())
     scripts.append((SOURCE / 'preview-video-player.js').read_text())
     scripts.append((SOURCE / 'preview-download.js').read_text())
     scripts.append((SOURCE / 'preview-playback.js').read_text())
@@ -542,11 +534,6 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
         for source_file in (SOURCE / 'project-previews').rglob('*'):
             if source_file.is_file() and public_media_allowed(source_file.relative_to(SOURCE/'project-previews')) and 'inputs' not in source_file.parts and source_file.suffix in ('.mp4', '.jpg', '.webp', '.svg'):
                 target = destination / 'assets/portfolio-cover' / source_file.relative_to(SOURCE/'project-previews')
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(source_file.read_bytes())
-        for source_file in (SOURCE / 'preview-frames').rglob('*'):
-            if source_file.is_file():
-                target = destination / 'assets/preview-frames' / source_file.relative_to(SOURCE/'preview-frames')
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(source_file.read_bytes())
         for source_file in (SOURCE / 'citations').glob('*.bib'):
@@ -837,7 +824,7 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     name = {'coverTrigger':f'intelcup-2026-{language}',
                             'nuedcCoverTrigger':f'nuedc-c-{language}',
                             'eecsCoverTrigger':'battery-method'}[button.get('id')]
-                    sequence = json.loads((SOURCE / 'preview-frames' / name / 'sequence.json').read_text())
+                    sequence = PREVIEW_VIDEOS[name]
                     video_path = video.get('data-src').split('?', 1)[0]
                     video_version = hashlib.sha256((destination / video_path.lstrip('/')).read_bytes()).hexdigest()[:12]
                     canvas = element('canvas', **{'id':preview_id,'data-preview-auto':'',
@@ -846,7 +833,6 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         'data-preview-bytes':str((destination / video_path.lstrip('/')).stat().st_size),
                         'data-preview-replay-start':str(sequence.get('replayStart', 0)),
                         'data-preview-loop-intro-extra':str(sequence.get('loopIntroExtra', 0)),
-                        'data-preview-sequence':f'/assets/preview-frames/{name}/sequence.json?v={PREVIEW_VERSIONS[name]}',
                         'data-preview-load-order':str({'eecsCoverTrigger':0,'coverTrigger':1,'nuedcCoverTrigger':2}[button.get('id')]),
                         'aria-label':video.get('aria-label'),'role':'img',
                         'width':str(sequence['width']),'height':str(sequence['height'])})

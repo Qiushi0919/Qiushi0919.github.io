@@ -5,6 +5,7 @@ import sys
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT))
 spec = importlib.util.spec_from_file_location('site_build', ROOT / 'build_site.py')
 site = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(site)
@@ -28,6 +29,13 @@ try:
         assert not (directory / 'page-08.webp').exists(), 'Stale slide export leaked'
         assert (directory / 'award-certificate.png').is_file()
         assert all((directory / ('cover-' + lang + '.jpg')).is_file() for lang in ('zh','en'))
+        for lang in ('zh','en'):
+            motion=(directory / ('cover-motion-'+lang+'.svg')).read_text()
+            assert 'beam-sweep' in motion and 'drone-flight' in motion
+            assert 'prefers-reduced-motion' in motion
+            from lxml import etree
+            svg=etree.fromstring(motion.encode())
+            assert all(ref.startswith('data:') for ref in svg.xpath('//*[local-name()="image"]/@href')), 'Motion result must be self-contained'
     assert not site.public_media_allowed(project + '/slides/deck.pptx')
     assert not site.public_media_allowed(project + '/new-technical-cover.jpg')
     print('{"status":"passed","checks":"private source preserved; PPT and stale slide blocked in both builds; authorized hero, certificate and logos exported"}')

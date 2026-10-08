@@ -1,0 +1,33 @@
+{
+  "battery-method": {
+    "width": 640,
+    "height": 360,
+    "duration": 13.533333,
+    "replayStart": 0,
+    "loopIntroExtra": 1.2
+  },
+  "intelcup-2026-zh": {
+    "width": 640,
+    "height": 426,
+    "duration": 12.041667,
+    "replayStart": 2
+  },
+  "intelcup-2026-en": {
+    "width": 640,
+    "height": 426,
+    "duration": 12.041667,
+    "replayStart": 2
+  },
+  "nuedc-c-zh": {
+    "width": 640,
+    "height": 480,
+    "duration": 6.5,
+    "replayStart": 2
+  },
+  "nuedc-c-en": {
+    "width": 640,
+    "height": 480,
+    "duration": 6.5,
+    "replayStart": 2
+  }
+}

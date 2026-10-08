@@ -40,5 +40,24 @@
     "path": "source/publication-figures/low-altitude-communication/mcsp-lab-logo.svg",
     "url": "https://qiushi0919.github.io/assets/portfolio-cover/low-altitude-communication/mcsp-lab-logo.svg",
     "sha256": "283d62c8a9d2f0c5f751d16dfd6641d4c185842b5fbaa5595a47bbe7861cf5f6"
+  },
+  "tracking_motion": {
+    "authorized_on": "2026-10-08",
+    "origin": "User-opened WPS original presentation, slide 13; only beam/drone illustration effect authorized",
+    "beam_degrees": 50,
+    "one_way_seconds": 2,
+    "repeat": "alternate, indefinite",
+    "drone_path": "Original reversed cubic motion with 50% acceleration/deceleration",
+    "outputs": {
+      "zh": {
+        "path": "source/project-previews/low-altitude-communication/cover-motion-zh.svg",
+        "sha256": "afeebdb3ad24a27a8bee465583a2bdc278608af7c0386c837954ce09ad03f3ee"
+      },
+      "en": {
+        "path": "source/project-previews/low-altitude-communication/cover-motion-en.svg",
+        "sha256": "8b6251d383a23cc239c59a57897aab4b5399b37263ddbe495b7ecff9c71169a3"
+      }
+    },
+    "private_presentation_uploaded": false
   }
 }

@@ -11,10 +11,6 @@
     1920,
     1440
   ],
-  "assets/portfolio-cover/low-altitude-communication/page-11.webp": [
-    1392,
-    770
-  ],
   "assets/portfolio-cover/embedded-2025/finals-dual-board.webp": [
     1600,
     1026
@@ -42,14 +38,6 @@
   "assets/portfolio-cover/eecs-2026/framework-landscape.webp": [
     2400,
     1350
-  ],
-  "assets/portfolio-cover/intelcup-2026/preview-sequence.mp4": [
-    1080,
-    720
-  ],
-  "assets/portfolio-cover/nuedc-c/preview-sequence.mp4": [
-    1280,
-    960
   ],
   "assets/portfolio-cover/intelcup-2026/cover-zh.jpg": [
     1080,
@@ -88,6 +76,14 @@
     960
   ],
   "assets/portfolio-cover/embedded-2025/cover-en.jpg": [
+    1280,
+    960
+  ],
+  "assets/portfolio-cover/low-altitude-communication/cover-motion-zh.svg": [
+    1280,
+    960
+  ],
+  "assets/portfolio-cover/low-altitude-communication/cover-motion-en.svg": [
     1280,
     960
   ]

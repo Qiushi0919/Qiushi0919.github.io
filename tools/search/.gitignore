@@ -1,3 +1,5 @@
 .private/
 __pycache__/
 *.pyc
+build/
+.deployment/

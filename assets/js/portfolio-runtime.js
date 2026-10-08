@@ -360,9 +360,8 @@
       });
     })();
   
-/* One project queue for all animated thumbnails and their expanded copies.
-   Download up to four compressed sheets within the active project together.
-   Retain compressed blobs; players keep only a few decoded sprite sheets. */
+/* Download final MP4 previews in page order; thumbnails, dialogs and downloads
+   share the same completed Blob and object URL. */
 (() => {
   const deferred = () => {
     let resolve, reject;
@@ -370,30 +369,18 @@
     promise.catch(() => {}); // Background previews may not have a consumer yet.
     return {promise, resolve, reject};
   };
-  const valid = data => data.duration > 0 && data.duration < 300 && data.fps > 0 && data.fps <= 30 &&
-    data.width > 0 && data.width <= 1280 && data.height > 0 && data.height <= 1280 &&
-    (data.replayStart === undefined || (Number.isFinite(data.replayStart) && data.replayStart >= 0 && data.replayStart < data.duration)) &&
-    (data.loopIntroExtra === undefined || (Number.isFinite(data.loopIntroExtra) && data.loopIntroExtra >= 0 && data.loopIntroExtra <= 10)) &&
-    data.columns === 4 && data.tilesPerSheet === 16 && data.frames?.length && data.sheets?.length &&
-    (data.sheetBytes === undefined || (Array.isArray(data.sheetBytes) && data.sheetBytes.length === data.sheets.length &&
-      data.sheetBytes.every(size=>Number.isInteger(size) && size>0))) &&
-    data.sheets.every(name => /^sheet-\d{3}\.webp$/.test(name)) &&
-    data.frames.every(tile => Number.isInteger(tile) && tile >= 0 && tile < data.sheets.length * 16);
   class PreviewLoadQueue {
     constructor() { this.items=new Map(); this.busy=false; this.started=false; this.details=[]; }
-    register(url, priority, videoData) {
+    registerVideo(url, priority, videoData) {
       const key=url.href;
       if (!this.items.has(key)) this.items.set(key, {url, priority:Number.isFinite(priority)?priority:100,
         position:this.items.size, state:'waiting', blobs:new Map(), listeners:new Set(),
-        manifest:deferred(), playable:deferred(), complete:deferred(), available:new Map(), canPlay:false,
+        playable:deferred(), complete:deferred(), canPlay:false,
         loadedBytes:0, totalBytes:videoData?.bytes || 0,
-        ...(videoData?{kind:'video',data:{...videoData,sheets:[url.pathname.split('/').pop()]}}:{})});
+        kind:'video',data:{...videoData}});
       const item=this.items.get(key);
       if (this.started) this.pump();
       return item;
-    }
-    registerVideo(url,priority,data) {
-      return this.register(url,priority,data);
     }
     afterPreviews(callback) {
       this.details.push(callback);
@@ -407,8 +394,8 @@
     subscribe(item, listener) { item.listeners.add(listener); listener(item); }
     request(item) {
       if (item.state === 'error') {
-        item.manifest=deferred(); item.playable=deferred(); item.complete=deferred();
-        item.available=new Map();item.canPlay=false;
+        item.playable=deferred(); item.complete=deferred();
+        item.canPlay=false;
         item.error=null;
         item.loadedBytes=0;
         this.notify(item,'waiting'); // Explicit retry reuses successful blobs.
@@ -422,30 +409,6 @@
       if (!first) return Promise.resolve();
       this.request(first);
       return first.playable.promise;
-    }
-    sheet(item,index) {
-      if (item.blobs.has(index)) return Promise.resolve(item.blobs.get(index));
-      if (item.state === 'error') return Promise.reject(item.error);
-      if (!item.available.has(index)) item.available.set(index,deferred());
-      return item.available.get(index).promise;
-    }
-    playable(item) {
-      if (item.canPlay) return;
-      const data=item.data;
-      let frames=0;
-      while (frames<data.frames.length && item.blobs.has(Math.floor(data.frames[frames]/data.tilesPerSheet))) ++frames;
-      const ahead=frames/data.fps;
-      if (ahead<Math.min(data.frames.length/data.fps,(data.replayStart || 0)+2.5)) return;
-      const downloaded=[...item.blobs.values()].reduce((sum,blob)=>sum+blob.size,0);
-      const remaining=data.sheetBytes
-        ? data.sheetBytes.reduce((sum,size,index)=>sum+(item.blobs.has(index)?0:size),0)
-        : downloaded/item.blobs.size*(data.sheets.length-item.blobs.size);
-      const elapsed=Math.max(.05,(Date.now()-item.startedAt)/1000);
-      // Begin only after a contiguous prefix and enough measured throughput to
-      // finish downloading during this play. A margin absorbs small fluctuations.
-      const runway=data.duration-(data.replayStart || 0)-1.5;
-      if (remaining && remaining/(downloaded/elapsed)*1.1>runway) return;
-      item.canPlay=true;item.playable.resolve(data);this.notify(item,'loading');
     }
     async fetch(url, type, item) {
       const controller=new AbortController();
@@ -477,27 +440,6 @@
         return await response[type]();
       } finally { clearTimeout(timeout); }
     }
-    async sheets(item) {
-      let cursor=0, failure;
-      const worker=async () => {
-        while (!failure && cursor<item.data.sheets.length) {
-          const index=cursor++;
-          if (item.blobs.has(index)) continue;
-          try {
-            const url=new URL(item.data.sheets[index],item.url);
-            url.search=item.url.search;
-            item.blobs.set(index,await this.fetch(url,'blob'));
-            item.available.get(index)?.resolve(item.blobs.get(index));
-            this.playable(item);
-            this.notify(item,'loading');
-          } catch (error) { failure ||= error; }
-        }
-      };
-      // Drain in-flight requests even after a failure. The next project must
-      // never compete with unfinished downloads from the current one.
-      await Promise.all(Array.from({length:Math.min(4,item.data.sheets.length)},worker));
-      if (failure) throw failure;
-    }
     async pump() {
       if (!this.started || this.busy) return;
       this.busy=true;
@@ -507,26 +449,18 @@
           item.startedAt=Date.now();
           this.notify(item,'loading');
           try {
-            if (!item.data) {
-              const data=await this.fetch(item.url,'json');
-              if (!valid(data)) throw new Error('Invalid preview manifest');
-              item.data=data;
-            }
-            item.manifest.resolve(item.data);
             this.notify(item,'loading');
-            if (item.kind === 'video') {
-              if (!item.blobs.has(0)) item.blobs.set(0,await this.fetch(item.url,'blob',item));
-              item.loadedBytes=item.totalBytes=item.blobs.get(0).size;
-              item.objectURL ||= URL.createObjectURL(item.blobs.get(0));
-            } else await this.sheets(item);
+            if (!item.blobs.has(0)) item.blobs.set(0,await this.fetch(item.url,'blob',item));
+            item.loadedBytes=item.totalBytes=item.blobs.get(0).size;
+            item.objectURL ||= URL.createObjectURL(item.blobs.get(0));
+
             item.canPlay=true;item.playable.resolve(item.data);
             this.notify(item,'ready');
             item.complete.resolve(item.data);
           } catch (error) {
             item.error=error;
             this.notify(item,'error');
-            item.manifest.reject(error); item.playable.reject(error);item.complete.reject(error);
-            for (const pending of item.available.values()) pending.reject(error);
+            item.playable.reject(error);item.complete.reject(error);
             // A failed upper preview must not block the remaining projects.
           }
         }
@@ -539,204 +473,6 @@
     }
   }
   window.PortfolioPreviewLoads=new PreviewLoadQueue();
-})();
-
-/* Raster frames only: thumbnail playback never creates an HTML video player. */
-(() => {
-  class PreviewFramePlayer {
-    constructor(canvas, url, callbacks) {
-      this.canvas = canvas;
-      this.url = new URL(url, document.baseURI);
-      this.callbacks = callbacks;
-      this.context = canvas.getContext('2d', {alpha:false});
-      this.images = new Map();
-      this.pending = new Map();
-      this.elapsed = 0;
-      this.running = false;
-      this.epoch = 0;
-      this.raf = 0;
-      this.last = null;
-      this.tile = -1;
-      this.drawn = false;
-      this.loop = canvas.dataset.previewLoop === 'true';
-      this.round = 0;
-      this.resource = window.PortfolioPreviewLoads.register(this.url, Number(canvas.dataset.previewLoadOrder));
-      window.PortfolioPreviewLoads.subscribe(this.resource, item => {
-        canvas.dataset.previewBuffer = item.state;
-        canvas.dataset.previewLoadedSheets = String(item.blobs.size);
-        canvas.dataset.previewTotalSheets = String(item.data?.sheets.length || 0);
-        canvas.dataset.previewPlayable=String(item.canPlay);
-        callbacks.buffering?.(item.state, item.data, item.canPlay, item);
-      });
-    }
-    async manifest() {
-      if (this.data) return this.data;
-      if (!this.loading) this.loading = window.PortfolioPreviewLoads.request(this.resource).manifest.promise.then(data => {
-        this.canvas.width = data.width;
-        this.canvas.height = data.height;
-        this.data = data;
-        this.callbacks.time?.(this.elapsed, this.duration());
-        return data;
-      }).catch(error => { this.loading = null; throw error; });
-      return this.loading;
-    }
-    sheet(index) {
-      if (this.images.has(index)) return Promise.resolve(this.images.get(index));
-      if (this.pending.has(index)) return this.pending.get(index);
-      const epoch = this.epoch;
-      const image = new Image();
-      image.decoding = 'async';
-      let url;
-      const pending = window.PortfolioPreviewLoads.sheet(this.resource,index).then(blob=>new Promise((resolve, reject) => {
-        url = URL.createObjectURL(blob);
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error('Preview frame unavailable'));
-        image.src = url;
-      })).then(async image => {
-        if (typeof image.decode === 'function') await image.decode();
-        // A paused/closed gallery must not retain decoded offscreen atlases.
-        if (this.running && epoch === this.epoch) this.images.set(index, image);
-        return image;
-      }).finally(() => {
-        if (url) URL.revokeObjectURL(url);
-        if (this.pending.get(index) === pending) this.pending.delete(index);
-      });
-      this.pending.set(index, pending);
-      return pending;
-    }
-    play({skipCover=false}={}) {
-      if (this.running) return;
-      this.running = true;
-      const epoch = ++this.epoch;
-      this.last = null;
-      window.PortfolioPreviewLoads.request(this.resource);
-      Promise.all([this.manifest(), this.resource.playable.promise]).then(([data]) => {
-        if (this.running && epoch === this.epoch) {
-          if (skipCover) this.elapsed = data.replayStart || 0;
-          this.tick();
-        }
-      }).catch(error => {
-        if (this.running && epoch === this.epoch) this.fail(error);
-      });
-    }
-    tick() {
-      this.raf = requestAnimationFrame(now => {
-        this.raf = 0;
-        if (!this.running) return;
-        const data = this.data;
-        // Buffering and pauses do not consume the demonstration's timeline.
-        let elapsed = this.elapsed + (this.last === null ? 0 : Math.max(0, (now-this.last)/1000));
-        this.last = now;
-        if (elapsed >= data.duration) {
-          if (!this.loop) {
-            this.reset();
-            this.callbacks.ended();
-            return;
-          }
-          let cycleDuration = data.duration + (this.round ? data.loopIntroExtra || 0 : 0);
-          while (elapsed >= cycleDuration) {
-            elapsed -= cycleDuration;
-            ++this.round;
-            cycleDuration = data.duration + (data.loopIntroExtra || 0);
-          }
-          this.canvas.dataset.previewLoops = String(this.round);
-          this.elapsed = elapsed;
-        }
-        const frameTime = Math.max(0, elapsed - (this.loop && this.round ? data.loopIntroExtra || 0 : 0));
-        const frame = Math.min(data.frames.length-1, Math.floor(frameTime * data.fps));
-        const tile = data.frames[frame];
-        const sheet = Math.floor(tile / data.tilesPerSheet);
-        const image = this.images.get(sheet);
-        if (image) {
-          this.elapsed = elapsed;
-          if (tile !== this.tile || !this.drawn) {
-            const offset = tile % data.tilesPerSheet;
-            this.context.drawImage(image, (offset % data.columns)*data.width,
-              Math.floor(offset/data.columns)*data.height, data.width, data.height,
-              0, 0, data.width, data.height);
-            this.tile = tile;
-          }
-          this.canvas.dataset.previewFrame = String(frame);
-          this.canvas.dataset.previewTime = frameTime.toFixed(3);
-          this.canvas.dataset.previewCycleTime = this.elapsed.toFixed(3);
-          this.callbacks.time?.(this.elapsed, this.duration());
-          if (!this.drawn) { this.drawn = true; this.callbacks.playing(); }
-          // At 30fps one atlas lasts only about half a second. Decode two
-          // upcoming atlases in advance, including frame zero near a loop.
-          const upcoming = data.frames.slice(frame+1, frame+1+Math.ceil(data.fps*1.5));
-          if (this.loop && frame+upcoming.length+1 >= data.frames.length) upcoming.push(...data.frames.slice(0,32));
-          const keep = new Set([sheet]);
-          const ahead = this.loop ? 2 : 1;
-          for (const tile of upcoming) {
-            const index = Math.floor(tile/data.tilesPerSheet);
-            if (!keep.has(index)) keep.add(index);
-            if (keep.size === ahead+1) break;
-          }
-          for (const key of this.images.keys()) {
-            if (!keep.has(key)) this.images.delete(key);
-          }
-          for (const index of keep) if (!this.images.has(index)) this.loadSheet(index);
-        } else {
-          this.last = null;
-          this.loadSheet(sheet);
-        }
-        if (this.running) this.tick();
-      });
-    }
-    loadSheet(sheet) {
-      const epoch = this.epoch;
-      this.sheet(sheet).catch(error => {
-        if (this.running && epoch === this.epoch) this.fail(error);
-      });
-    }
-    duration() { return this.data ? this.data.duration + (this.loop && this.round ? this.data.loopIntroExtra || 0 : 0) : 0; }
-    async seek(seconds) {
-      if (!this.data || this.resource.state !== 'ready') return;
-      this.elapsed = Math.max(0,Math.min(this.duration()-.001,Number(seconds)||0));
-      this.last = null;
-      const epoch=this.epoch;
-      const serial=this.seekSerial=(this.seekSerial||0)+1;
-      const frameTime=Math.max(0,this.elapsed-(this.loop && this.round ? this.data.loopIntroExtra || 0 : 0));
-      const frame=Math.min(this.data.frames.length-1,Math.floor(frameTime*this.data.fps));
-      const tile=this.data.frames[frame];
-      this.callbacks.time?.(this.elapsed,this.duration());
-      const image=await this.sheet(Math.floor(tile/this.data.tilesPerSheet));
-      if (this.epoch !== epoch || this.seekSerial !== serial) return;
-      const offset=tile%this.data.tilesPerSheet,data=this.data;
-      this.context.drawImage(image,(offset%data.columns)*data.width,Math.floor(offset/data.columns)*data.height,
-        data.width,data.height,0,0,data.width,data.height);
-      this.tile=tile;
-      this.canvas.dataset.previewFrame=String(frame);
-      this.canvas.dataset.previewTime=frameTime.toFixed(3);
-      this.canvas.dataset.previewCycleTime=this.elapsed.toFixed(3);
-      if (!this.drawn) { this.drawn=true;this.callbacks.playing(); }
-    }
-    pause({release=true}={}) {
-      this.running = false;
-      ++this.epoch;
-      cancelAnimationFrame(this.raf);
-      this.raf = 0;
-      this.last = null;
-      if (release) { this.images.clear();this.pending.clear(); }
-    }
-    reset() {
-      this.pause();
-      this.elapsed = 0;
-      this.tile = -1;
-      this.drawn = false;
-      this.round = 0;
-      this.canvas.dataset.previewTime = '0';
-      delete this.canvas.dataset.previewFrame;
-      delete this.canvas.dataset.previewLoops;
-      delete this.canvas.dataset.previewCycleTime;
-      this.callbacks.time?.(0,this.duration());
-    }
-    fail(error) {
-      this.reset();
-      this.callbacks.error(error);
-    }
-  }
-  window.PortfolioFramePlayer = PreviewFramePlayer;
 })();
 
 /* Decode the smaller MP4 into Canvas. The detached, muted inline decoder has
@@ -756,8 +492,6 @@
         Number(canvas.dataset.previewLoadOrder),this.data);
       window.PortfolioPreviewLoads.subscribe(this.resource,item=>{
         canvas.dataset.previewBuffer=item.state;
-        canvas.dataset.previewLoadedSheets=String(item.blobs.size);
-        canvas.dataset.previewTotalSheets='1';
         canvas.dataset.previewPlayable=String(item.canPlay);
         callbacks.buffering?.(item.state,item.data,item.canPlay,item);
       });
@@ -1114,16 +848,15 @@
   const schedule = () => { if (!frame) frame = requestAnimationFrame(sync); };
   for (const entry of entries) {
     const canvas = entry.canvas;
-    const Player=canvas.dataset.previewVideo?window.PortfolioVideoPlayer:window.PortfolioFramePlayer;
-    entry.player = new Player(canvas, canvas.dataset.previewVideo || canvas.dataset.previewSequence, {
+    const Player=window.PortfolioVideoPlayer;
+    entry.player = new Player(canvas, canvas.dataset.previewVideo, {
       buffering(state,data,canPlay,resource) {
         entry.media.dataset.previewBuffer = state;
         const indicator = entry.media.querySelector('.preview-load-progress');
         indicator?.setAttribute('aria-hidden', String(state === 'ready' || state === 'error'));
         if (indicator) {
-          const total=resource?.totalBytes || data?.sheetBytes?.reduce((sum,size)=>sum+size,0) || 0;
-          const loaded=resource?.kind === 'video'?resource.loadedBytes:
-            [...(resource?.blobs?.values() || [])].reduce((sum,blob)=>sum+blob.size,0);
+          const total=resource?.totalBytes || 0;
+          const loaded=resource?.loadedBytes || 0;
           const percent=state === 'ready'?100:total?Math.min(99,Math.floor(loaded/total*100)):0;
           indicator.dataset.indeterminate=String(state === 'loading' && !total);
           if (total || state === 'ready') indicator.setAttribute('aria-valuenow',String(percent));

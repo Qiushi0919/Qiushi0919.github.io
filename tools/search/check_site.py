@@ -100,9 +100,9 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
         battery = tree.xpath('//*[@id="eecsCoverTrigger"]')
         if battery:
             preview = battery[0].xpath('./canvas[@data-preview-auto]')
-            assert len(preview) == 1 and urlsplit(preview[0].get('data-preview-sequence')).path == '/assets/preview-frames/battery-method/sequence.json'
+            assert len(preview) == 1 and urlsplit(preview[0].get('data-preview-video')).path == '/assets/portfolio-cover/eecs-2026/method-preview.mp4'
             assert preview[0].get('data-preview-loop') == 'true'
-            assert (directory / urlsplit(preview[0].get('data-preview-sequence')).path.lstrip('/')).is_file()
+            assert (directory / urlsplit(preview[0].get('data-preview-video')).path.lstrip('/')).is_file()
         assert '谢秋实' in tree.text_content() and 'Qiushi Xie' in tree.text_content()
         assert tree.xpath('//meta[@name="description"]/@content')[0]
         schema = json.loads(tree.xpath('//script[@type="application/ld+json"]/text()')[0])
@@ -140,7 +140,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert len(certificates) == 1, str(p)
             figures = lowcom.xpath('.//div[@class="lowcom-grid"]/figure')
             assert len(figures) == 2, str(p)
-            cover = f'cover-{language}.jpg'
+            cover = f'cover-motion-{language}.svg'
             assert urlsplit(lowcom.xpath('./button/img/@src')[0]).path.endswith('/' + cover), str(p)
             assert urlsplit(figures[0].xpath('./img/@data-src')[0]).path.endswith('/' + cover), str(p)
             assert 'award-certificate.png' in figures[1].xpath('./img/@data-src')[0], str(p)
@@ -151,8 +151,8 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert '中国国际大学生创新大赛（2026）' not in lowcom.text_content(), str(p)
         for trigger, project in [('coverTrigger','intelcup-2026'), ('nuedcCoverTrigger','nuedc-c')]:
             for canvas in tree.xpath(f'//*[@id="{trigger}"]/canvas'):
-                assert urlsplit(canvas.get('data-preview-sequence')).path == f'/assets/preview-frames/{project}-{language}/sequence.json', str(p)
-                assert urlsplit(canvas.get('data-preview-sequence')).query.startswith('v='), str(p)
+                assert urlsplit(canvas.get('data-preview-video')).path == f'/assets/portfolio-cover/{project}/preview-with-cover-{language}.mp4', str(p)
+                assert urlsplit(canvas.get('data-preview-video')).query.startswith('v='), str(p)
                 poster = canvas.getnext()
                 assert urlsplit(poster.get('src')).path == f'/assets/portfolio-cover/{project}/cover-{language}.jpg', str(p)
                 poster_file = directory / urlsplit(poster.get('src')).path.lstrip('/')
@@ -179,15 +179,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert int(canvas[0].get('data-preview-bytes')) == video_file.stat().st_size, str(p)
             assert not wrapper.xpath('./span[@class="preview-load-progress"]')[0].text_content().strip(), str(p)
             assert len(wrapper.xpath('./span[@class="preview-load-progress" and @role="progressbar"]')) == 1, str(p)
-            sequence = directory / urlsplit(canvas[0].get('data-preview-sequence')).path.lstrip('/')
-            data = json.loads(sequence.read_text())
-            assert data['frames'] and data['duration'] > 0, str(p)
-            assert all((sequence.parent / name).is_file() for name in data['sheets']), str(p)
-            assert data['sheetBytes'] == [(sequence.parent / name).stat().st_size for name in data['sheets']], str(p)
-            fingerprint = hashlib.sha256()
-            for file in sorted(sequence.parent.iterdir()):
-                if file.suffix in ('.json', '.webp'): fingerprint.update(file.name.encode() + b'\0' + file.read_bytes())
-            assert urlsplit(canvas[0].get('data-preview-sequence')).query == 'v=' + fingerprint.hexdigest()[:12], str(p)
+            assert not canvas[0].get('data-preview-sequence'), str(p)
             if 'data-preview-popup' in wrapper.attrib:
                 assert wrapper.getprevious().get('class') == 'overlay-head', str(p)
                 assert len(wrapper.xpath('./div[@class="preview-transport"]/input[@data-preview-seek]')) == 1, str(p)

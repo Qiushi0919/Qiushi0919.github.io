@@ -14,7 +14,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
   getBoundingClientRect:()=>({top:20,bottom:580,left:0,right:400}),
   querySelector:()=>({getBoundingClientRect:()=>({top:20,bottom:60})})};
  let rect={top,bottom,left:0,right:400,width:400,height:bottom-top};
- const canvas={dataset:{previewSequence:'demo.json',previewManual:String(manual)},closest:s=>s==='.preview-media'?media:(popup?overlay:null),getBoundingClientRect:()=>rect};
+ const canvas={dataset:{previewVideo:'demo.mp4',previewManual:String(manual)},closest:s=>s==='.preview-media'?media:(popup?overlay:null),getBoundingClientRect:()=>rect};
  let player;
  class FakePlayer {
   constructor(c,url,callbacks){player=this;this.canvas=c;this.callbacks=callbacks;this.running=false;this.currentTime=0;this.plays=0;this.deny=deny}
@@ -29,7 +29,7 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  const root={dataset:{language:'zh'},classList:{contains:v=>rootClasses.has(v)}};
  const document={hidden:false,documentElement:root,body:{classList:{contains:v=>bodyClasses.has(v)}},
   querySelectorAll:s=>s.startsWith('.preview-media')?[canvas]:[nav,bar],addEventListener:(e,f)=>docEvents[e]=f};
- const window={PortfolioFramePlayer:FakePlayer,visualViewport:{offsetLeft:0,offsetTop:0,width:400,height:600,addEventListener(){}},addEventListener:(e,f)=>events[e]=f};
+ const window={PortfolioVideoPlayer:FakePlayer,visualViewport:{offsetLeft:0,offsetTop:0,width:400,height:600,addEventListener(){}},addEventListener:(e,f)=>events[e]=f};
  const raf=f=>{frames.set(++next,f);return next};
  vm.runInNewContext(source,{document,window,matchMedia:()=>motion,innerWidth:400,innerHeight:600,
   getComputedStyle:e=>e.style,requestAnimationFrame:raf,cancelAnimationFrame:i=>frames.delete(i),
@@ -88,5 +88,5 @@ function scenario({top=450,bottom=750,popup=false,open=false,reduce=false,deny=f
  clickOnly.ended();assert.equal(clickOnly.label.textContent,'播放');assert.equal(clickOnly.control.dataset.previewAction,'play');clickOnly.view();clickOnly.changed();assert.equal(clickOnly.player.running,false);n++;
  clickOnly.click();assert.equal(clickOnly.player.running,true);assert.equal(clickOnly.player.skipCover,true);n++;
  const manualGallery=scenario({manual:true,popup:true,open:true,top:100,bottom:400,transport:true,noControl:true});assert.equal(manualGallery.player.plays,0);manualGallery.toggle();assert.equal(manualGallery.player.running,true);manualGallery.ended();manualGallery.changed();assert.equal(manualGallery.player.running,false);manualGallery.toggle();assert.equal(manualGallery.player.running,true);n++;
- console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and frame loading failure'}));
+ console.log(JSON.stringify({status:'passed',scenarios:n,checks:'all-view full visibility, sticky occlusion, offscreen suspension, finish-to-cover latch, explicit replay, independent control, reduced motion, hidden tabs, expanded gallery and media loading failure'}));
 })();
