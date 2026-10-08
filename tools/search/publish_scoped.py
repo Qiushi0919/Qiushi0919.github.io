@@ -79,6 +79,8 @@ print(json.dumps(result))
     print(json.dumps({'prepared': True, 'cn_files': len(plan['cn']), 'github_files': len(plan['github']), 'github_head': head}))
 
 def publish_cn(plan):
+    if not plan['cn']:
+        print(json.dumps({'cn': {'status':'unchanged'}}), flush=True); return
     content = cn_content()
     stage = HERE / 'release-staging'
     assert not stage.exists(), 'Use a fresh reviewed staging directory'
@@ -103,6 +105,8 @@ def publish_cn(plan):
     print(json.dumps({'cn': result}), flush=True)
 
 def publish_github(plan):
+    if not plan['github']:
+        print(json.dumps({'github': {'status':'unchanged'}}), flush=True); return
     head = api('git/ref/heads/main')['object']['sha']
     assert head == plan['github_head'], 'GitHub main changed since review'
     commit = api('git/commits/' + head)
