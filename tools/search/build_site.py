@@ -969,7 +969,10 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                 for media in tree.iter():
                     for attribute in ('src', 'data-src', 'poster'):
                         value = media.get(attribute, '')
-                        if re.search(r'/portfolio-cover/(intelcup-2026|nuedc-c|embedded-2025|low-altitude-communication)/(cover-(zh|en)\.jpg|preview-with-cover-(zh|en)\.mp4)$', value):
+                        if re.search(r'/portfolio-cover/low-altitude-communication/cover-motion-(zh|en)\.svg$', value):
+                            result = SOURCE / 'project-previews/low-altitude-communication' / value.rsplit('/',1)[-1]
+                            media.set(attribute, value + '?v=' + hashlib.sha256(result.read_bytes()).hexdigest()[:12])
+                        elif re.search(r'/portfolio-cover/(intelcup-2026|nuedc-c|embedded-2025|low-altitude-communication)/(cover-(zh|en)\.jpg|preview-with-cover-(zh|en)\.mp4)$', value):
                             media.set(attribute, value + '?v=' + VERSION)
                 target = destination / lang_prefix / route / 'index.html'
                 document = (protect_document(tree, language, local_base, route, gate_config) if protected_route(route)
