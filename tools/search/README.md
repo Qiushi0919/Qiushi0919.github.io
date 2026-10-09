@@ -44,6 +44,8 @@ EECS 与 NCS（VaseMuseum）使用完整合成素材，HTML 不再拼接独立�
 
 ## 小项目与简历
 
+个人照片于 2026-10-09 恢复为此前的 900×1200 原图；恢复原件在 `docs/profile-photo-20261005/previous-photo.jpg`，当前维护源为 `source/contact/profile-photo.jpg`。更换前照片及本次发布记录保存在 `docs/profile-photo-restore-20261009/`，照片地址按内容哈希更新以刷新缓存。
+
 “全部”固定只显示论文与比赛，不显示四个小项目。小项目分类和详情在密码解锁后可见，界面白底、简约，表单上方只有一行“暂不开放，输入密码后查看”，不显示有效期说明。成功验证后同浏览器／域名保留 180 天；受保护内容在公开 HTML 内采用 AES-GCM 加密，过期重新验证。密码构建配置只在本地 `.private/side-project-access.json`，不得上传。小项目受保护页面 noindex、不进入地图；此前公开的独立仓库／项目站不因此变为私有。
 
 `source/cv/qiushi-xie-cv.pdf` 保留用户提供的原 PDF，不重新排版；`source/cv/qiushi-xie-cv.webp` 是第一页面的移动端预览（pypdfium2，2.5 倍，WebP 92）。当前简历更新于 2026-10-08。生成后的 `/cv/` 可预览、打开和下载。
