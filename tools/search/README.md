@@ -11,6 +11,8 @@
 
 `source/portfolio.html` 是作品内容来源，`source/translations.json` 提供英文文本；`source/author-profile.json` 管理双语简介、姓名和身份。中文首页标题为“浙江大学2027级直博生-谢秋实（Qiushi Xie）”；英文也把 Zhejiang University 与 Incoming PhD Student (2027) 放在姓名前，明确目前为华中科技大学本科生、拟于 2027 年入学。
 
+个人介绍于 2026-10-09 按用户提供的三段更新，首页和关于我共用双语正文；大学链接到官网，团队指导老师陈红胜、郑斌、赵纪伟链接到各自教师主页。
+
 论文卡片依次显示标题、作者、期刊／会议与月份、简介和资源链接。作者标记为 † 共同第一作者、‡ 项目负责人、* 通讯作者／竞赛指导教师，均为上标。VaseMuseum 作者顺序及贡献按用户提供的当前稿件；电池论文作者与 DOI 10.1117/12.3122481 一致。竞赛不显示引用／BibTeX，论文保留复制、下载和无 JavaScript 的 `.bib` 入口。
 
 桌面图文并排，文字区与缩略图画面居中对齐，不把播放键计入对齐高度。手机保留现有 980px 画布及显示比例，概览／大图视图共用项目内容。`source/work-view.*`、`source/work-media-sizes.json` 维护视图；`source/site-typography.css` 使用 Times New Roman 与 Microsoft YaHei 及系统回退，不分发商业字体。作品与页脚分割线为 0.8px、#333333。
