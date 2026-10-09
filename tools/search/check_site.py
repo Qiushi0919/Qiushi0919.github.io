@@ -197,7 +197,7 @@ for origin, host, prefix in [('cn', 'qiushi0919.cn', ''), ('github', 'qiushi0919
             assert len(tree.xpath('//section[@class="biography"]/p')) == 5
             assert not tree.xpath('//article[@data-work-category]')
             assert len(tree.xpath('//section[@data-profile-page="about"]//img[@class="profile-photo"]')) == 1
-            assert len(tree.xpath('//section[@data-profile-page="about"]//nav[contains(@class,"profile-icon-links")]/*')) == 9
+            assert len(tree.xpath('//section[@data-profile-page="about"]//nav[contains(@class,"profile-icon-links")]/*')) == 8
             assert len(tree.xpath('//dialog[@id="contactDialog"]')) == 1
             assert len(tree.xpath('//section[@class="biography"]//li/a')) == 4
         if len(urlsplit(canonical).path.strip('/').split('/')) == 2:
