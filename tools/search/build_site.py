@@ -662,6 +662,15 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                     for meta_name, meta_value in VERIFICATION.get('platform_meta', {}).get(origin, {}).items():
                         head.append(element('meta', name=meta_name, content=meta_value))
                 head.append(element('link', rel='stylesheet', href=asset_prefix + 'css/portfolio.css?v=' + VERSION))
+                if route in ('', 'about'):
+                    # Enlarge authored desktop prose without changing phone/tablet text or shared asset URLs.
+                    desktop_biography_style = element('style')
+                    desktop_biography_style.text = '''@media(min-width:901px) and (hover:hover) and (pointer:fine){
+html:not(.portrait-phone) .profile-biography p{font-size:16px}
+html[lang="en"]:not(.portrait-phone) .profile-biography p{font-size:14px}
+html:not(.portrait-phone) .biography>p{font-size:17px}
+}'''
+                    head.append(desktop_biography_style)
                 canonical = route_url(canonical_base, route)
                 head.append(element('link', rel='canonical', href=canonical))
                 for lang, target in [('zh-CN', route_url(CN, route)), ('en', route_url(GH, route)), ('x-default', route_url(GH, route))]:
@@ -974,6 +983,9 @@ html.portrait-phone .work-list-card .cover-zoom-hint{width:calc(18px / var(--por
                         value = media.get(attribute, '')
                         if re.search(r'/portfolio-cover/low-altitude-communication/cover-motion-(zh|en)\.svg$', value):
                             result = SOURCE / 'project-previews/low-altitude-communication' / value.rsplit('/',1)[-1]
+                            media.set(attribute, value + '?v=' + hashlib.sha256(result.read_bytes()).hexdigest()[:12])
+                        elif value.endswith('/portfolio-cover/vasemuseum/thumbnail-integrated.svg'):
+                            result = SOURCE / 'publication-figures/vasemuseum/thumbnail-integrated.svg'
                             media.set(attribute, value + '?v=' + hashlib.sha256(result.read_bytes()).hexdigest()[:12])
                         elif re.search(r'/portfolio-cover/(intelcup-2026|nuedc-c|embedded-2025|low-altitude-communication)/(cover-(zh|en)\.jpg|preview-with-cover-(zh|en)\.mp4)$', value):
                             media.set(attribute, value + '?v=' + VERSION)

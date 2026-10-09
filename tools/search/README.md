@@ -15,9 +15,11 @@
 
 论文卡片依次显示标题、作者、期刊／会议与月份、简介和资源链接。作者标记为 † 共同第一作者、‡ 项目负责人、* 通讯作者／竞赛指导教师，均为上标。VaseMuseum 作者顺序及贡献按用户提供的当前稿件；电池论文作者与 DOI 10.1117/12.3122481 一致。竞赛不显示引用／BibTeX，论文保留复制、下载和无 JavaScript 的 `.bib` 入口。
 
+电脑端个人介绍正文于 2026-10-09 增大 2px：首页中文 16px、英文 14px，关于我正文 17px；桌面覆盖仅写入首页和关于我，手机／平板字号沿用原值。
+
 桌面图文并排，文字区与缩略图画面居中对齐，不把播放键计入对齐高度。手机保留现有 980px 画布及显示比例，概览／大图视图共用项目内容。`source/work-view.*`、`source/work-media-sizes.json` 维护视图；`source/site-typography.css` 使用 Times New Roman 与 Microsoft YaHei 及系统回退，不分发商业字体。作品与页脚分割线为 0.8px、#333333。
 
-EECS 与 NCS（VaseMuseum）使用完整合成素材，HTML 不再拼接独立标志栏。EECS 的 `method-preview-cover.png` 和最终 `method-preview.mp4` 每一帧均含华科标志；NCS 的 `vasemuseum/thumbnail-integrated.svg` 自包含五个组织标志与两幅研究示意图，没有额外图像请求。华科按 Intel 杯头图统一尺寸与左边距，北交用圆徽，中科院用用户提供的中国科学院圆标。整体同比缩放，放大和下载共用完整版本。`source/paper-preview-integrated.css` 仅调整放大提示位置；视频编码／合成过程文件不放入维护源码。
+EECS 与 NCS（VaseMuseum）使用完整合成素材，HTML 不再拼接独立标志栏。EECS 的 `method-preview-cover.png` 和最终 `method-preview.mp4` 每一帧均含华科标志；NCS 的 `vasemuseum/thumbnail-integrated.svg` 自包含五个组织标志与两幅研究示意图，没有额外图像请求。华科按 Intel 杯头图统一尺寸与左边距并保留横版；其余四个机构用圆标，北大取原标志圆徽，La Trobe 用用户 2026-10-09 提供的完整圆形 PNG，中科院沿用用户提供的中国科学院圆标。图标整排居左、间隔紧凑统一；封面地址按内容哈希刷新。整体同比缩放，放大和下载共用完整版本。`source/paper-preview-integrated.css` 仅调整放大提示位置；视频编码／合成过程文件不放入维护源码。
 
 放大窗口标题与关闭键固定顶部，内部独立滚动，底层页面锁定并在关闭后恢复位置。手机图片自然比例、单列展示，小型界面截图限制视觉宽度，深色模式适配标题、副标题与关闭键。`source/gallery-readability.css`、`source/gallery-scroll.js` 维护相关规则。
 
